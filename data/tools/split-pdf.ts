@@ -4,14 +4,26 @@ export const splitPdfTool = {
   title: "Split PDF Online",
   description: "Split a PDF file into separate pages or extract a range of pages for free.",
   shortDescription: "Split PDF files into separate pages online for free.",
-  category: "PDF Tools",
-
+  category: "core",
+  type: "process",
+  primaryKeyword: "split pdf",
+  secondaryKeywords: [
+    "split pdf online",
+    "split pdf free",
+    "extract pages from pdf",
+    "split pdf into pages",
+    "separate pdf pages",
+  ],
+  inputOutput: {
+    input: "pdf",
+    output: "pdf",
+  },
+  relatedTools: ["merge-pdf", "compress-pdf"],
   howTo: [
     "Upload your PDF file.",
     "Enter the page range you want to extract.",
     "Download the new PDF with selected pages.",
   ],
-
   faqs: [
     {
       question: "How do I split a PDF?",

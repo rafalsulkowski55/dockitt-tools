@@ -15,3 +15,9 @@ export function getAllTools() {
 export function getToolBySlug(slug: string) {
   return tools.find((tool) => tool.slug === slug);
 }
+
+export function getRelatedTools(slugs: string[]) {
+  return slugs
+    .map((slug) => tools.find((tool) => tool.slug === slug))
+    .filter(Boolean);
+}

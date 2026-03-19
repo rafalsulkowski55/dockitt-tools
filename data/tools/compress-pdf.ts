@@ -4,14 +4,27 @@ export const compressPdfTool = {
   title: "Compress PDF Online",
   description: "Reduce PDF file size quickly with our free online PDF compressor.",
   shortDescription: "Compress PDF files online for free.",
-  category: "PDF Tools",
-
+  category: "core",
+  type: "process",
+  primaryKeyword: "compress pdf",
+  secondaryKeywords: [
+    "compress pdf online",
+    "compress pdf free",
+    "reduce pdf size",
+    "compress pdf for email",
+    "compress pdf to 1mb",
+    "compress pdf to 100kb",
+  ],
+  inputOutput: {
+    input: "pdf",
+    output: "pdf",
+  },
+  relatedTools: ["merge-pdf", "split-pdf"],
   howTo: [
     "Upload your PDF file.",
     "Click Compress PDF.",
     "Download the compressed PDF.",
   ],
-
   faqs: [
     {
       question: "How do I compress a PDF?",

@@ -4,14 +4,26 @@ export const mergePdfTool = {
   title: "Merge PDF Files Online",
   description: "Combine multiple PDF files into one document quickly and for free.",
   shortDescription: "Merge multiple PDF files into one online for free.",
-  category: "PDF Tools",
-
+  category: "core",
+  type: "process",
+  primaryKeyword: "merge pdf",
+  secondaryKeywords: [
+    "merge pdf online",
+    "merge pdf free",
+    "combine pdf files",
+    "join pdf files",
+    "merge pdf files into one",
+  ],
+  inputOutput: {
+    input: "pdf",
+    output: "pdf",
+  },
+  relatedTools: ["split-pdf", "compress-pdf"],
   howTo: [
     "Upload two or more PDF files.",
     "Arrange them in the desired order.",
     "Download the merged PDF.",
   ],
-
   faqs: [
     {
       question: "How do I merge PDF files?",
@@ -19,7 +31,7 @@ export const mergePdfTool = {
     },
     {
       question: "Is this PDF merger free?",
-      answer: "Yes, you can merge PDF files online for free.",
+      answer: "Yes, you can merge PDF files online for free with no limits.",
     },
     {
       question: "How many files can I merge?",

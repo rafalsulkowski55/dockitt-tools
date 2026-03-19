@@ -1,9 +1,10 @@
 import { notFound } from "next/navigation";
-import { getAllTools, getToolBySlug } from "@/lib/tools";
+import { getAllTools, getToolBySlug, getRelatedTools } from "@/lib/tools";
 import ToolUpload from "./ToolUpload";
 import MergeUpload from "./MergeUpload";
 import SplitUpload from "./SplitUpload";
 import Breadcrumbs from "./Breadcrumbs";
+import Link from "next/link";
 
 type ToolPageProps = {
   params: Promise<{
@@ -47,6 +48,8 @@ export default async function ToolPage({ params }: ToolPageProps) {
   if (!tool) {
     notFound();
   }
+
+  const related = getRelatedTools(tool.relatedTools ?? []);
 
   return (
     <main style={{ maxWidth: "780px", margin: "0 auto", padding: "40px 20px" }}>
@@ -105,6 +108,36 @@ export default async function ToolPage({ params }: ToolPageProps) {
             ))}
           </div>
         </section>
+
+        {related.length > 0 && (
+          <section style={{
+            background: "#ffffff", border: "1px solid #e5e7eb",
+            borderRadius: "16px", padding: "24px",
+          }}>
+            <h2 style={{ marginTop: 0, fontSize: "20px" }}>Related Tools</h2>
+            <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+              {related.map((relatedTool) => (
+                <Link
+                  key={relatedTool!.slug}
+                  href={`/tools/${relatedTool!.slug}`}
+                  style={{
+                    display: "flex", flexDirection: "column",
+                    padding: "16px", background: "#f9fafb",
+                    border: "1px solid #e5e7eb", borderRadius: "12px",
+                    textDecoration: "none",
+                  }}
+                >
+                  <span style={{ fontWeight: 600, color: "#111", fontSize: "15px" }}>
+                    {relatedTool!.name}
+                  </span>
+                  <span style={{ color: "#666", fontSize: "13px", marginTop: "4px" }}>
+                    {relatedTool!.shortDescription}
+                  </span>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
 
       </div>
     </main>
