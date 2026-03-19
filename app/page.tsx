@@ -17,9 +17,15 @@ export default function Home() {
       </section>
 
       <section style={{ marginBottom: "60px" }}>
-        <h2 style={{ fontSize: "22px", fontWeight: 700, marginBottom: "24px" }}>
+        <h2 style={{ fontSize: "22px", fontWeight: 700, marginBottom: "8px" }}>
           All Tools
         </h2>
+        <p style={{ fontSize: "15px", color: "#666", marginBottom: "24px" }}>
+          Looking to convert PDF files?{" "}
+          <Link href="/convert-pdf" style={{ color: "#2563eb", textDecoration: "none" }}>
+            See all conversion tools →
+          </Link>
+        </p>
         <div style={{
           display: "grid",
           gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))",
