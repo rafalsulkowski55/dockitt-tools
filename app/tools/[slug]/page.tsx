@@ -78,6 +78,17 @@ export default async function ToolPage({ params }: ToolPageProps) {
           </div>
         </section>
 
+        {tool.longDescription && (
+          <section style={{
+            background: "#ffffff", border: "1px solid #e5e7eb",
+            borderRadius: "16px", padding: "24px",
+          }}>
+            <p style={{ fontSize: "15px", color: "#555", lineHeight: "1.8", margin: 0 }}>
+              {tool.longDescription}
+            </p>
+          </section>
+        )}
+
         <section style={{
           background: "#ffffff", border: "1px solid #e5e7eb",
           borderRadius: "16px", padding: "24px",

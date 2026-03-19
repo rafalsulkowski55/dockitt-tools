@@ -3,6 +3,7 @@ export const compressPdfTool = {
   name: "Compress PDF",
   title: "Compress PDF Online",
   description: "Reduce PDF file size quickly with our free online PDF compressor.",
+  longDescription: `Compressing a PDF reduces its file size, making it easier to share via email, upload to websites, or store on your device. Our free PDF compressor works by optimizing the structure of your PDF file removing redundant data and streamlining the document without affecting its content. This approach works best on text-heavy PDFs such as reports, contracts, presentations, and forms. If your PDF contains high-resolution images, the reduction in size may be smaller, as image data requires more advanced processing. No sign-up is required, and your file is deleted from our servers immediately after processing.`,
   shortDescription: "Compress PDF files online for free.",
   category: "core",
   type: "process",

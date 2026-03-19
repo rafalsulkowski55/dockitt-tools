@@ -3,6 +3,7 @@ export const mergePdfTool = {
   name: "Merge PDF",
   title: "Merge PDF Files Online",
   description: "Combine multiple PDF files into one document quickly and for free.",
+  longDescription: `Merging PDF files lets you combine multiple documents into a single, organized file. This is useful when you need to send several documents together, create a combined report, or simply keep related files in one place. Our free PDF merger lets you upload as many files as you need, arrange them in the right order, and download the result instantly. No account is required, and your files are deleted from our servers immediately after processing.`,
   shortDescription: "Merge multiple PDF files into one online for free.",
   category: "core",
   type: "process",
