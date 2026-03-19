@@ -61,16 +61,22 @@ export default function RootLayout({
         {children}
 
         <footer style={{
-          borderTop: "1px solid #e5e7eb",
-          background: "#ffffff",
-          padding: "24px",
-          marginTop: "80px",
-          textAlign: "center",
-          fontSize: "13px",
-          color: "#999",
-        }}>
-          © {new Date().getFullYear()} Dockitt — Free PDF Tools Online
-        </footer>
+  borderTop: "1px solid #e5e7eb",
+  background: "#ffffff",
+  padding: "24px",
+  marginTop: "80px",
+  textAlign: "center",
+  fontSize: "13px",
+  color: "#999",
+}}>
+  <div style={{ display: "flex", justifyContent: "center", gap: "24px", marginBottom: "12px" }}>
+    <Link href="/about" style={{ color: "#999", textDecoration: "none" }}>About</Link>
+    <Link href="/contact" style={{ color: "#999", textDecoration: "none" }}>Contact</Link>
+    <Link href="/privacy" style={{ color: "#999", textDecoration: "none" }}>Privacy Policy</Link>
+    <Link href="/terms" style={{ color: "#999", textDecoration: "none" }}>Terms of Use</Link>
+  </div>
+  © {new Date().getFullYear()} Dockitt — Free PDF Tools Online
+</footer>
 
       </body>
     </html>
