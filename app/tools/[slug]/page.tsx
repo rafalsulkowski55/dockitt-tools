@@ -3,6 +3,7 @@ import { getAllTools, getToolBySlug } from "@/lib/tools";
 import ToolUpload from "./ToolUpload";
 import MergeUpload from "./MergeUpload";
 import SplitUpload from "./SplitUpload";
+import Breadcrumbs from "./Breadcrumbs";
 
 type ToolPageProps = {
   params: Promise<{
@@ -52,6 +53,7 @@ export default async function ToolPage({ params }: ToolPageProps) {
       <div style={{ display: "flex", flexDirection: "column", gap: "40px" }}>
 
         <section>
+          <Breadcrumbs toolName={tool.name} />
           <h1 style={{ fontSize: "32px", fontWeight: 700, marginBottom: "12px" }}>
             {tool.title}
           </h1>

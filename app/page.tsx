@@ -16,7 +16,7 @@ export default function Home() {
         </p>
       </section>
 
-      <section>
+      <section style={{ marginBottom: "60px" }}>
         <h2 style={{ fontSize: "22px", fontWeight: 700, marginBottom: "24px" }}>
           All Tools
         </h2>
@@ -38,7 +38,6 @@ export default function Home() {
                 borderRadius: "16px",
                 boxShadow: "0 1px 2px rgba(0,0,0,0.04)",
                 cursor: "pointer",
-                transition: "border-color 0.15s",
               }}>
                 <h3 style={{ fontSize: "17px", fontWeight: 700, margin: "0 0 8px 0", color: "#111" }}>
                   {tool.name}
@@ -48,6 +47,59 @@ export default function Home() {
                 </p>
               </div>
             </Link>
+          ))}
+        </div>
+      </section>
+
+      <section style={{
+        background: "#ffffff",
+        border: "1px solid #e5e7eb",
+        borderRadius: "16px",
+        padding: "48px",
+        marginBottom: "60px",
+      }}>
+        <h2 style={{ fontSize: "26px", fontWeight: 700, marginBottom: "32px", textAlign: "center" }}>
+          Why use Dockitt?
+        </h2>
+        <div style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))",
+          gap: "32px",
+        }}>
+          {[
+            {
+              title: "No sign-up required",
+              description: "Just open the tool and use it. No account, no email, no registration.",
+            },
+            {
+              title: "Completely free",
+              description: "No subscriptions, no paywalls, no hidden limits. Free forever.",
+            },
+            {
+              title: "No watermarks",
+              description: "Your files come back clean. No branding added to your documents.",
+            },
+            {
+              title: "Fast and lightweight",
+              description: "Built to be quick. No bloated interface, no unnecessary loading.",
+            },
+            {
+              title: "Your files stay private",
+              description: "Files are deleted immediately after processing. We don't store them.",
+            },
+            {
+              title: "Works in your browser",
+              description: "No software to install. Open the tool, upload your file, done.",
+            },
+          ].map((item) => (
+            <div key={item.title}>
+              <h3 style={{ fontSize: "16px", fontWeight: 700, marginBottom: "8px", color: "#111" }}>
+                {item.title}
+              </h3>
+              <p style={{ fontSize: "14px", color: "#666", lineHeight: "1.6", margin: 0 }}>
+                {item.description}
+              </p>
+            </div>
           ))}
         </div>
       </section>
