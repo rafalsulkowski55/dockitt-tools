@@ -38,7 +38,7 @@ export default function ConvertTool({ variant }: Props) {
       canvas.height = viewport.height;
 
       const ctx = canvas.getContext("2d")!;
-      await page.render({ canvasContext: ctx as unknown as CanvasRenderingContext2D, canvas, viewport }).promise;
+      await page.render({ canvasContext: ctx as unknown as CanvasRenderingContext2D, viewport }).promise;
 
       const mimeType = format === "jpeg" ? "image/jpeg" : "image/png";
       const url = canvas.toDataURL(mimeType, 0.92);
