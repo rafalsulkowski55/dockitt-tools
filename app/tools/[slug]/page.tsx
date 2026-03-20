@@ -7,6 +7,7 @@ import Breadcrumbs from "./Breadcrumbs";
 import RotateUpload from "./RotateUpload";
 import DeletePagesUpload from "./DeletePagesUpload";
 import ExtractPagesUpload from "./ExtractPagesUpload";
+import ProtectUpload from "./ProtectUpload";
 import UnlockUpload from "./UnlockUpload";
 import WatermarkUpload from "./WatermarkUpload";
 import SignUpload from "./SignUpload";
@@ -50,6 +51,8 @@ function ToolComponent({ slug }: { slug: string }) {
       return <DeletePagesUpload />;
     case "extract-pdf-pages":
       return <ExtractPagesUpload />;
+    case "protect-pdf":
+      return <ProtectUpload />;
     case "unlock-pdf":
       return <UnlockUpload />;
     case "watermark-pdf":
