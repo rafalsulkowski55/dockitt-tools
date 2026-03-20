@@ -4,6 +4,14 @@ import ToolUpload from "./ToolUpload";
 import MergeUpload from "./MergeUpload";
 import SplitUpload from "./SplitUpload";
 import Breadcrumbs from "./Breadcrumbs";
+import RotateUpload from "./RotateUpload";
+import DeletePagesUpload from "./DeletePagesUpload";
+import ExtractPagesUpload from "./ExtractPagesUpload";
+import UnlockUpload from "./UnlockUpload";
+import WatermarkUpload from "./WatermarkUpload";
+import SignUpload from "./SignUpload";
+import CropUpload from "./CropUpload";
+import ReorderUpload from "./ReorderUpload";
 import Link from "next/link";
 
 type ToolPageProps = {
@@ -36,6 +44,22 @@ function ToolComponent({ slug }: { slug: string }) {
       return <MergeUpload />;
     case "split-pdf":
       return <SplitUpload />;
+    case "rotate-pdf":
+      return <RotateUpload />;
+    case "delete-pdf-pages":
+      return <DeletePagesUpload />;
+    case "extract-pdf-pages":
+      return <ExtractPagesUpload />;
+    case "unlock-pdf":
+      return <UnlockUpload />;
+    case "watermark-pdf":
+      return <WatermarkUpload />;
+    case "sign-pdf":
+      return <SignUpload />;
+    case "crop-pdf":
+      return <CropUpload />;
+    case "reorder-pdf-pages":
+      return <ReorderUpload />;
     default:
       return <ToolUpload />;
   }
