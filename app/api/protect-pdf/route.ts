@@ -6,7 +6,7 @@ export async function POST(req: NextRequest) {
   try {
     const formData = await req.formData();
     
-    const response = await fetch(`${RAILWAY_API_URL}/unlock-pdf`, {
+    const response = await fetch(`${RAILWAY_API_URL}/protect-pdf`, {
       method: 'POST',
       body: formData,
     });
@@ -20,11 +20,11 @@ export async function POST(req: NextRequest) {
     return new NextResponse(buffer, {
       headers: {
         'Content-Type': 'application/pdf',
-        'Content-Disposition': 'attachment; filename="unlocked.pdf"',
+        'Content-Disposition': 'attachment; filename="protected.pdf"',
       },
     });
   } catch (error) {
-    console.error('unlock-pdf error:', error);
-    return NextResponse.json({ error: 'Failed to unlock PDF' }, { status: 500 });
+    console.error('protect-pdf error:', error);
+    return NextResponse.json({ error: 'Failed to protect PDF' }, { status: 500 });
   }
 }

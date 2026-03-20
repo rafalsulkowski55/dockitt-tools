@@ -4,6 +4,8 @@ import { PDFDocument } from "pdf-lib";
 export const runtime = "nodejs";
 export const maxDuration = 30;
 
+const RAILWAY_API_URL = process.env.RAILWAY_API_URL || 'https://dockitt-api-production.up.railway.app';
+
 export async function POST(req: NextRequest) {
   try {
     const formData = await req.formData();
@@ -44,7 +46,7 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    // pdf to jpg/png — placeholder, returns message
+    // pdf to jpg/png — pdfjs w przeglądarce, nie przez API
     if (variant === "pdf-to-jpg" || variant === "pdf-to-png") {
       return NextResponse.json(
         { error: "PDF to image conversion requires additional server setup. Coming soon." },
@@ -52,20 +54,42 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // pdf to word — placeholder
+    // pdf to word — Railway
     if (variant === "pdf-to-word") {
-      return NextResponse.json(
-        { error: "PDF to Word conversion requires additional server setup. Coming soon." },
-        { status: 501 }
-      );
+      const response = await fetch(`${RAILWAY_API_URL}/pdf-to-word`, {
+        method: 'POST',
+        body: formData,
+      });
+      if (!response.ok) {
+        const error = await response.json().catch(() => ({ error: 'Server error' }));
+        return NextResponse.json(error, { status: response.status });
+      }
+      const buffer = await response.arrayBuffer();
+      return new NextResponse(Buffer.from(buffer), {
+        headers: {
+          'Content-Type': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+          'Content-Disposition': 'attachment; filename="converted.docx"',
+        },
+      });
     }
 
-    // word to pdf — placeholder
+    // word to pdf — Railway
     if (variant === "word-to-pdf") {
-      return NextResponse.json(
-        { error: "Word to PDF conversion requires additional server setup. Coming soon." },
-        { status: 501 }
-      );
+      const response = await fetch(`${RAILWAY_API_URL}/word-to-pdf`, {
+        method: 'POST',
+        body: formData,
+      });
+      if (!response.ok) {
+        const error = await response.json().catch(() => ({ error: 'Server error' }));
+        return NextResponse.json(error, { status: response.status });
+      }
+      const buffer = await response.arrayBuffer();
+      return new NextResponse(Buffer.from(buffer), {
+        headers: {
+          'Content-Type': 'application/pdf',
+          'Content-Disposition': 'attachment; filename="converted.pdf"',
+        },
+      });
     }
 
     return NextResponse.json({ error: "Unknown conversion type" }, { status: 400 });
