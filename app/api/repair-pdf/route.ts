@@ -12,12 +12,14 @@ export async function POST(req: NextRequest) {
     });
 
     if (!response.ok) {
-      const error = await response.json().catch(() => ({ error: 'Server error' }));
-      return NextResponse.json(error, { status: response.status });
+      const text = await response.text();
+      let message = 'Server error';
+      try { message = JSON.parse(text).error; } catch {}
+      return NextResponse.json({ error: message }, { status: response.status });
     }
 
     const buffer = await response.arrayBuffer();
-    return new NextResponse(buffer, {
+    return new NextResponse(Buffer.from(buffer), {
       headers: {
         'Content-Type': 'application/pdf',
         'Content-Disposition': 'attachment; filename="repaired.pdf"',
