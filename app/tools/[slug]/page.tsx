@@ -13,6 +13,8 @@ import WatermarkUpload from "./WatermarkUpload";
 import SignUpload from "./SignUpload";
 import CropUpload from "./CropUpload";
 import ReorderUpload from "./ReorderUpload";
+import RepairUpload from "./RepairUpload";
+import OcrUpload from "./OcrUpload";
 import Link from "next/link";
 
 type ToolPageProps = {
@@ -63,6 +65,10 @@ function ToolComponent({ slug }: { slug: string }) {
       return <CropUpload />;
     case "reorder-pdf-pages":
       return <ReorderUpload />;
+    case "repair-pdf":
+      return <RepairUpload />;
+    case "ocr-pdf":
+      return <OcrUpload />;
     default:
       return <ToolUpload />;
   }
