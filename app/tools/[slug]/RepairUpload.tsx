@@ -84,7 +84,9 @@ export default function RepairUpload() {
           padding: "14px 16px", background: "#fef2f2", color: "#dc2626",
           border: "1px solid #fecaca", borderRadius: "10px", fontSize: "14px",
         }}>
-          {errorMessage || "Something went wrong. Please try again."}
+          {errorMessage === "Failed to repair PDF" 
+          ? "Could not repair this file. The PDF may be too severely damaged to recover." 
+          : errorMessage || "Something went wrong. Please try again."}
         </div>
       )}
 
