@@ -28,8 +28,10 @@ export default function RepairUpload() {
       });
 
       if (!res.ok) {
-        const err = await res.json();
-        throw new Error(err.error ?? "Unknown error");
+        const text = await res.text();
+        let message = 'Unknown error';
+        try { message = JSON.parse(text).error; } catch {}
+        throw new Error(message);
       }
 
       const blob = await res.blob();
