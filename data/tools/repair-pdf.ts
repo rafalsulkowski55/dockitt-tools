@@ -21,10 +21,10 @@ export const repairPdfTool = {
   },
   relatedTools: ["compress-pdf", "unlock-pdf"],
   howTo: [
-    "Upload your damaged or corrupted PDF file.",
-    "Click Repair PDF and wait while Ghostscript rebuilds the file structure.",
-    "Download the repaired PDF.",
-    "Open the file in your PDF viewer to verify the content has been recovered.",
+    "Click 'Choose PDF' and select the damaged or corrupted file you want to repair.",
+    "Click 'Repair PDF' and wait while Ghostscript rebuilds the internal structure of the file.",
+    "Download the repaired PDF and open it in your PDF viewer to verify the content has been recovered.",
+    "If the file still does not open correctly, the damage may be too severe to recover from the available data.",
   ],
   faqs: [
     {

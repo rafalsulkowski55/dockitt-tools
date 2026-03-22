@@ -21,10 +21,10 @@ export const deletePdfPagesTool = {
   },
   relatedTools: ["split-pdf", "extract-pdf-pages"],
   howTo: [
-    "Upload your PDF file.",
-    "Enter the page numbers you want to delete, separated by commas.",
-    "Click Delete Pages.",
-    "Download the updated PDF with the selected pages removed.",
+    "Click 'Choose PDF' and select the file you want to edit.",
+    "Enter the page numbers you want to delete, separated by commas. For example: 2, 5, 8 will remove those three pages.",
+    "Click 'Delete Pages' to remove the selected pages from the document.",
+    "Download the updated PDF with the specified pages removed.",
   ],
   faqs: [
     {

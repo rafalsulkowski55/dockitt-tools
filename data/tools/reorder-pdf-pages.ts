@@ -21,11 +21,10 @@ export const reorderPdfPagesTool = {
   },
   relatedTools: ["extract-pdf-pages", "delete-pdf-pages"],
   howTo: [
-    "Upload your PDF file.",
-    "The tool will display thumbnail previews of all pages.",
-    "Drag and drop the page thumbnails into the order you want.",
-    "Click Save Order to generate the reordered PDF.",
-    "Download the reordered PDF file.",
+    "Click 'Choose PDF' and select the file whose pages you want to reorder.",
+    "The tool will display thumbnail previews of all pages. Drag and drop the thumbnails into the order you want.",
+    "Double-check the sequence by reviewing the thumbnails before confirming.",
+    "Click 'Save Order' to generate the reordered PDF, then download the result.",
   ],
   faqs: [
     {

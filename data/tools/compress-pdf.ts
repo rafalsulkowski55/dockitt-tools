@@ -22,9 +22,9 @@ export const compressPdfTool = {
   },
   relatedTools: ["merge-pdf", "split-pdf"],
   howTo: [
-    "Upload your PDF file.",
-    "Click Compress PDF.",
-    "Download the compressed PDF.",
+  "Click 'Choose PDF' and select the PDF file you want to compress from your device. Files up to 4.5MB are supported.",
+  "Click 'Process PDF' to start the compression. The tool will optimise the internal structure of your file without altering any content.",
+  "Once processing is complete, click the download button to save your compressed PDF. The file will be smaller than the original and identical in appearance.",
   ],
   faqs: [
     {

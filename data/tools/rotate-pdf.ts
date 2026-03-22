@@ -21,10 +21,10 @@ export const rotatePdfTool = {
   },
   relatedTools: ["split-pdf", "merge-pdf"],
   howTo: [
-    "Upload your PDF file.",
-    "Select the rotation angle: 90 degrees clockwise, 90 degrees counter-clockwise, or 180 degrees.",
-    "Click Rotate PDF.",
-    "Download the rotated PDF.",
+  "Click 'Choose PDF' and select the PDF file with pages you want to rotate.",
+  "Select the rotation angle: 90 degrees clockwise, 90 degrees counter-clockwise, or 180 degrees.",
+  "Click 'Rotate PDF' to apply the rotation to all pages in the document.",
+  "Download the rotated PDF. The orientation is saved permanently into the file.",
   ],
   faqs: [
     {

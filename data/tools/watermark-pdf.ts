@@ -21,10 +21,10 @@ export const watermarkPdfTool = {
   },
   relatedTools: ["protect-pdf", "sign-pdf"],
   howTo: [
-    "Upload your PDF file.",
-    "Enter the watermark text you want to add, for example DRAFT, CONFIDENTIAL, or your name.",
-    "Click Add Watermark.",
-    "Download the watermarked PDF.",
+   "Click 'Choose PDF' and select the file you want to watermark.",
+   "Enter the watermark text you want to add. Common choices include DRAFT, CONFIDENTIAL, SAMPLE, or your name and company.",
+   "Click 'Add Watermark' to embed the text into every page of the document.",
+   "Download the watermarked PDF. The watermark is embedded directly into the page content.",
   ],
   faqs: [
     {

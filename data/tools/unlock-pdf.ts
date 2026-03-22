@@ -21,10 +21,10 @@ export const unlockPdfTool = {
   },
   relatedTools: ["protect-pdf", "repair-pdf"],
   howTo: [
-    "Upload your password-protected PDF file.",
-    "Enter the current password for the document.",
-    "Click Unlock PDF.",
-    "Download the unlocked PDF.",
+   "Click 'Choose PDF' and select the password-protected PDF file you want to unlock.",
+   "Enter the current password for the document. The tool requires the correct password to remove protection.",
+   "Click 'Unlock PDF' and wait while the encryption is removed.",
+   "Download the unlocked PDF. It will open on any device without requiring a password.",
   ],
   faqs: [
     {

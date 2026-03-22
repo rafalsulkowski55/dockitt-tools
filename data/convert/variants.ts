@@ -26,9 +26,9 @@ export const convertVariants: ConvertVariant[] = [
     inputLabel: "Choose PDF",
     accept: ".pdf",
     howTo: [
-      "Upload your PDF file.",
-      "Click Convert to JPG.",
-      "Download your JPG images — one file per page.",
+      "Click 'Choose PDF' and select the PDF file you want to convert to images.",
+      "Click 'Convert to JPG' and wait while each page is rendered as a separate image.",
+      "Download the JPG images. Each page of the PDF becomes one individual JPG file.",
     ],
     faqs: [
       {
@@ -69,9 +69,9 @@ export const convertVariants: ConvertVariant[] = [
     inputLabel: "Choose PDF",
     accept: ".pdf",
     howTo: [
-      "Upload your PDF file.",
-      "Click Convert to PNG.",
-      "Download your PNG images — one file per page.",
+      "Click 'Choose PDF' and select the PDF file you want to convert to PNG images.",
+      "Click 'Convert to PNG' and wait while each page is rendered at full quality.",
+      "Download the PNG images. Each page becomes a separate lossless PNG file.",
     ],
     faqs: [
       {
@@ -112,10 +112,9 @@ export const convertVariants: ConvertVariant[] = [
     inputLabel: "Choose PDF",
     accept: ".pdf",
     howTo: [
-      "Upload your PDF file.",
-      "Click Convert to Word.",
-      "Download your Word document (.docx).",
-      "Open the file in Microsoft Word, Google Docs, or LibreOffice to edit it.",
+      "Click 'Choose PDF' and select the file you want to convert to an editable Word document.",
+      "Click 'Convert to Word' and wait while LibreOffice processes the conversion on the server.",
+      "Download the .docx file and open it in Microsoft Word, Google Docs, or LibreOffice to edit it.",
     ],
     faqs: [
       {
@@ -156,10 +155,10 @@ export const convertVariants: ConvertVariant[] = [
     inputLabel: "Choose JPG",
     accept: ".jpg,.jpeg",
     howTo: [
-      "Upload one or more JPG images.",
-      "Check that they are in the correct order.",
-      "Click Convert to PDF.",
-      "Download your PDF file.",
+      "Click 'Choose JPG' and select one or more JPG images you want to combine into a PDF.",
+      "Check that the images are in the correct order before converting.",
+      "Click 'Convert to PDF' to create the document.",
+      "Download the PDF. Each image becomes one page in the document.",
     ],
     faqs: [
       {
@@ -200,10 +199,10 @@ export const convertVariants: ConvertVariant[] = [
     inputLabel: "Choose PNG",
     accept: ".png",
     howTo: [
-      "Upload one or more PNG images.",
-      "Check that they are in the correct order.",
-      "Click Convert to PDF.",
-      "Download your PDF file.",
+      "Click 'Choose PNG' and select one or more PNG images you want to combine into a PDF.",
+      "Check that the images are in the correct order before converting.",
+      "Click 'Convert to PDF' to create the document.",
+      "Download the PDF. Each image becomes one page in the document.",
     ],
     faqs: [
       {
@@ -244,10 +243,10 @@ export const convertVariants: ConvertVariant[] = [
     inputLabel: "Choose Word file",
     accept: ".doc,.docx",
     howTo: [
-      "Upload your Word document (.doc or .docx).",
-      "Click Convert to PDF.",
-      "Download your PDF file.",
-      "Open it to verify the formatting looks as expected before sharing.",
+      "Click 'Choose Word file' and select your .doc or .docx document.",
+      "Click 'Convert to PDF' and wait while LibreOffice processes the conversion.",
+      "Download the PDF file.",
+      "Open it to verify the formatting looks as expected before sharing with others.",
     ],
     faqs: [
       {

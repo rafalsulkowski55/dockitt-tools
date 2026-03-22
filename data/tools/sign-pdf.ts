@@ -21,11 +21,10 @@ export const signPdfTool = {
   },
   relatedTools: ["protect-pdf", "watermark-pdf"],
   howTo: [
-    "Upload your PDF file.",
-    "Draw your signature in the signature area using your mouse or finger.",
-    "Position the signature on the correct page.",
-    "Click Apply Signature to embed it into the document.",
-    "Download the signed PDF.",
+    "Click 'Choose PDF' and select the document you need to sign.",
+    "Draw your signature in the signature area using your mouse on desktop, or your finger or stylus on a touchscreen.",
+    "Position the signature on the correct location on the page.",
+    "Click 'Apply Signature' to embed it permanently into the document, then download the signed PDF.",
   ],
   faqs: [
     {

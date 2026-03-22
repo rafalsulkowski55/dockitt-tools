@@ -21,10 +21,10 @@ export const extractPdfPagesTool = {
   },
   relatedTools: ["split-pdf", "reorder-pdf-pages"],
   howTo: [
-    "Upload your PDF file.",
-    "Enter the page numbers you want to extract, separated by commas. For example: 1, 4, 7, 12.",
-    "Click Extract Pages.",
-    "Download the new PDF containing only the pages you selected.",
+    "Click 'Choose PDF' and select the file you want to extract pages from.",
+    "Enter the individual page numbers you want to extract, separated by commas. For example: 1, 4, 7, 12.",
+    "Click 'Extract Pages' to create a new document containing only the pages you specified.",
+    "Download the extracted PDF. Pages will appear in the order you entered them.",
   ],
   faqs: [
     {

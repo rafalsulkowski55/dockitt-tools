@@ -21,10 +21,10 @@ export const protectPdfTool = {
   },
   relatedTools: ["unlock-pdf", "watermark-pdf"],
   howTo: [
-    "Upload your PDF file.",
-    "Enter the password you want to set for the document.",
-    "Click Protect PDF.",
-    "Download your password-protected PDF.",
+   "Click 'Choose PDF' and select the file you want to password protect.",
+   "Enter the password you want to set. Use at least 12 characters combining letters, numbers, and symbols for strong protection.",
+   "Click 'Protect PDF' and wait while the file is encrypted with 128-bit security.",
+   "Download the protected PDF. Share the password with recipients through a separate channel, not in the same email as the file.",
   ],
   faqs: [
     {

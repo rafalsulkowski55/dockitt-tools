@@ -21,10 +21,10 @@ export const mergePdfTool = {
   },
   relatedTools: ["split-pdf", "compress-pdf"],
   howTo: [
-    "Upload two or more PDF files.",
-    "Arrange them in the desired order.",
-    "Click Merge PDFs.",
-    "Download the merged PDF.",
+  "Click 'Choose PDFs' and select all the PDF files you want to combine. You can select multiple files at once from your device.",
+  "Arrange the files in the order you want them to appear in the final document. The pages will follow the sequence shown.",
+  "Click 'Merge PDFs' to combine the files into a single document.",
+  "Download the merged PDF once processing is complete.",
   ],
   faqs: [
     {

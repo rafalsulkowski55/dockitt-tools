@@ -21,11 +21,10 @@ export const cropPdfTool = {
   },
   relatedTools: ["rotate-pdf", "split-pdf"],
   howTo: [
-    "Upload your PDF file.",
-    "Set the crop margins using the interactive crop frame or by entering specific values.",
-    "Preview the result on the page shown.",
-    "Click Crop PDF to apply the crop to all pages.",
-    "Download the cropped PDF.",
+   "Click 'Choose PDF' and select the file whose pages you want to crop.",
+   "Use the interactive crop frame to set the area you want to keep, or enter specific margin values for each side of the page.",
+   "Preview the result on the page shown to verify the crop looks correct.",
+   "Click 'Crop PDF' to apply the crop to all pages, then download the result.",
   ],
   faqs: [
     {

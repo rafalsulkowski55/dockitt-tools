@@ -21,10 +21,10 @@ export const ocrPdfTool = {
   },
   relatedTools: ["repair-pdf", "compress-pdf"],
   howTo: [
-    "Upload your scanned PDF file.",
-    "Click Run OCR and wait while Tesseract analyses each page.",
+    "Click 'Choose PDF' and select your scanned PDF document.",
+    "Click 'Run OCR' and wait while Tesseract analyses each page and adds an invisible text layer to the document.",
     "Download the OCR-processed PDF.",
-    "Open the file and try using Ctrl+F or Cmd+F to search for text.",
+    "Open the file and press Ctrl+F on Windows or Cmd+F on Mac to search for text and verify the OCR worked correctly.",
   ],
   faqs: [
     {
