@@ -2,8 +2,8 @@ export const rotatePdfTool = {
   slug: "rotate-pdf",
   name: "Rotate PDF",
   title: "Rotate PDF Pages Online",
-  description: "Rotate pages in your PDF file online — free and without any sign-up.",
-  longDescription: `Sometimes PDF pages end up in the wrong orientation — scanned documents, exported files, or converted PDFs can all have pages that are sideways or upside down. Our free PDF rotation tool lets you rotate all pages in your PDF by 90 or 180 degrees and download the corrected file instantly. No account required, and your file is deleted immediately after processing.`,
+  description: "Rotate pages in your PDF file online — fix upside-down or sideways pages free and without any software.",
+  longDescription: `Scanned documents often come out rotated the wrong way. A page that should be portrait ends up landscape, or an entire document is upside down because the paper was fed into the scanner incorrectly. Fixing this manually in a PDF editor can be time-consuming. Dockitt's Rotate PDF tool lets you rotate all pages in your PDF by 90, 180, or 270 degrees in seconds, directly in your browser. The rotation is saved permanently into the file, so it opens correctly in any PDF viewer without needing to be adjusted again.`,
   shortDescription: "Rotate PDF pages online for free.",
   category: "core",
   type: "process",
@@ -19,24 +19,37 @@ export const rotatePdfTool = {
     input: "pdf",
     output: "pdf",
   },
-  relatedTools: ["compress-pdf", "merge-pdf", "split-pdf"],
+  relatedTools: ["split-pdf", "merge-pdf"],
   howTo: [
     "Upload your PDF file.",
-    "Choose the rotation angle — 90°, 180°, or 270°.",
+    "Select the rotation angle: 90 degrees clockwise, 90 degrees counter-clockwise, or 180 degrees.",
+    "Click Rotate PDF.",
     "Download the rotated PDF.",
   ],
   faqs: [
     {
-      question: "How do I rotate a PDF?",
-      answer: "Upload your PDF, choose the rotation angle, and download the corrected file.",
+      question: "Can I rotate only specific pages instead of the entire document?",
+      answer: "The tool currently rotates all pages in the document by the same angle. If you need to rotate only specific pages, the workaround is to split the document into sections using the Split PDF tool, rotate the relevant section separately, and then merge everything back together using the Merge PDF tool. This takes a few extra steps but gives you full control over which pages are rotated.",
     },
     {
-      question: "Can I rotate just one page?",
-      answer: "Currently this tool rotates all pages in the PDF. Per-page rotation is coming soon.",
+      question: "Will the rotation be saved permanently in the PDF?",
+      answer: "Yes. The rotation is embedded into the page orientation data of the PDF file itself. When you open the downloaded file in any PDF viewer, the pages will display at the correct orientation without needing any manual adjustment. This is different from a viewer-only rotation that some PDF apps apply temporarily without saving it to the file.",
     },
     {
-      question: "Is this PDF rotation tool free?",
-      answer: "Yes, you can rotate PDF files online for free with no limits.",
+      question: "Why does the PDF still look sideways after I download it?",
+      answer: "Some PDF viewers override the rotation stored in the file and display pages based on their own settings. If the downloaded file appears incorrectly rotated in one viewer, try opening it in a different application such as Adobe Acrobat Reader or your browser's built-in PDF viewer. The rotation data in the file itself is correct.",
+    },
+    {
+      question: "Does rotating a PDF change the file size?",
+      answer: "No. Rotating pages only updates the orientation metadata stored in the file. The content of each page, including text, images, and fonts, is not altered in any way. The file size remains essentially the same after rotation.",
+    },
+    {
+      question: "Can I rotate a scanned PDF?",
+      answer: "Yes. Scanned PDFs are fully supported. Each scanned page is treated as an image within the PDF structure, and the rotation is applied to the page orientation just as it would be for any other PDF. The scanned content remains at its original resolution and quality.",
+    },
+    {
+      question: "What rotation angles are available?",
+      answer: "You can rotate pages by 90 degrees clockwise, 90 degrees counter-clockwise, or 180 degrees. Applying 90 degrees clockwise twice is equivalent to 180 degrees, and applying it three times is equivalent to 90 degrees counter-clockwise.",
     },
   ],
 };
