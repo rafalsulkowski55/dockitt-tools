@@ -61,6 +61,9 @@ export default function RootLayout({
             <Link href="/categories" style={{ fontSize: "14px", color: "#555", textDecoration: "none" }}>
               Categories
             </Link>
+            <Link href="/guides" style={{ fontSize: "14px", color: "#555", textDecoration: "none" }}>
+              Guides
+            </Link>
           </nav>
         </header>
 
@@ -80,6 +83,7 @@ export default function RootLayout({
             <Link href="/categories/core" style={{ color: "#999", textDecoration: "none" }}>Core Tools</Link>
             <Link href="/categories/security" style={{ color: "#999", textDecoration: "none" }}>Security Tools</Link>
             <Link href="/categories/utility" style={{ color: "#999", textDecoration: "none" }}>Utility Tools</Link>
+            <Link href="/guides" style={{ color: "#999", textDecoration: "none" }}>Guides</Link>
             <Link href="/about" style={{ color: "#999", textDecoration: "none" }}>About</Link>
             <Link href="/contact" style={{ color: "#999", textDecoration: "none" }}>Contact</Link>
             <Link href="/privacy" style={{ color: "#999", textDecoration: "none" }}>Privacy Policy</Link>
