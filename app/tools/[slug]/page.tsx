@@ -174,8 +174,44 @@ export default async function ToolPage({ params }: ToolPageProps) {
   const categoryLabel = categoryLabels[tool.category] ?? tool.category
   const variant = introVariants[slug] ?? "A"
 
+  const schemaApp = {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": tool.name,
+    "applicationCategory": "WebApplication",
+    "operatingSystem": "Web",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "description": tool.description,
+    "url": `https://www.dockitt.com/tools/${slug}`,
+  }
+
+  const schemaFaq = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": tool.faqs.map((faq) => ({
+      "@type": "Question",
+      "name": faq.question,
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": faq.answer
+      }
+    }))
+  }
+
   return (
     <main style={{ maxWidth: "780px", margin: "0 auto", padding: "40px 20px" }}>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaApp) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaFaq) }}
+      />
       <div style={{ display: "flex", flexDirection: "column", gap: "40px" }}>
 
         <div>

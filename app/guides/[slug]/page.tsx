@@ -2,11 +2,38 @@ import { getGuideBySlug, getAllGuides } from '@/data/guides/index'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 
+type GuidePageProps = {
+  params: Promise<{ slug: string }>
+}
+
+export async function generateMetadata({ params }: GuidePageProps) {
+  const { slug } = await params
+  const guide = getGuideBySlug(slug)
+  if (!guide) return {}
+  return {
+    title: guide.title,
+    description: guide.description,
+    openGraph: {
+      title: guide.title,
+      description: guide.description,
+      url: `https://www.dockitt.com/guides/${slug}`,
+      siteName: 'Dockitt',
+      locale: 'en_US',
+      type: 'article',
+    },
+    twitter: {
+      card: 'summary',
+      title: guide.title,
+      description: guide.description,
+    },
+  }
+}
+
 export function generateStaticParams() {
   return getAllGuides().map((guide) => ({ slug: guide.slug }))
 }
 
-export default async function GuidePage({ params }: { params: Promise<{ slug: string }> }) {
+export default async function GuidePage({ params }: GuidePageProps) {
   const { slug } = await params
   const guide = getGuideBySlug(slug)
   if (!guide) notFound()
@@ -19,8 +46,42 @@ export default async function GuidePage({ params }: { params: Promise<{ slug: st
     marginBottom: '24px',
   }
 
+  const schemaArticle = {
+    '@context': 'https://schema.org',
+    '@type': 'HowTo',
+    'name': guide.title,
+    'description': guide.description,
+    'step': guide.steps.map((step, i) => ({
+      '@type': 'HowToStep',
+      'position': i + 1,
+      'text': step,
+    })),
+  }
+
+  const schemaFaq = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    'mainEntity': guide.faqs.map((faq) => ({
+      '@type': 'Question',
+      'name': faq.question,
+      'acceptedAnswer': {
+        '@type': 'Answer',
+        'text': faq.answer,
+      },
+    })),
+  }
+
   return (
     <main style={{ maxWidth: '720px', margin: '48px auto', padding: '0 20px' }}>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaArticle) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaFaq) }}
+      />
+
       <nav style={{ fontSize: '13px', color: '#999', marginBottom: '24px' }}>
         <Link href="/" style={{ color: '#999' }}>Home</Link>
         {' / '}
