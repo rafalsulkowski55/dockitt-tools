@@ -74,6 +74,12 @@ function ToolComponent({ slug }: { slug: string }) {
   }
 }
 
+const categoryLabels: Record<string, string> = {
+  core: "Core PDF Tools",
+  security: "PDF Security Tools",
+  utility: "PDF Utility Tools",
+}
+
 export default async function ToolPage({ params }: ToolPageProps) {
   const { slug } = await params;
   const tool = getToolBySlug(slug);
@@ -83,6 +89,7 @@ export default async function ToolPage({ params }: ToolPageProps) {
   }
 
   const related = getRelatedTools(tool.relatedTools ?? []);
+  const categoryLabel = categoryLabels[tool.category] ?? tool.category
 
   return (
     <main style={{ maxWidth: "780px", margin: "0 auto", padding: "40px 20px" }}>
@@ -109,6 +116,33 @@ export default async function ToolPage({ params }: ToolPageProps) {
           }}>
             <ToolComponent slug={slug} />
           </div>
+        </section>
+
+        <section style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+          <Link
+            href={`/categories/${tool.category}`}
+            style={{
+              display: "inline-flex", alignItems: "center",
+              background: "#ffffff", border: "1px solid #e5e7eb",
+              color: "#555", padding: "6px 14px",
+              borderRadius: "8px", fontSize: "13px",
+              textDecoration: "none", fontWeight: 500,
+            }}
+          >
+            ← {categoryLabel}
+          </Link>
+          <Link
+            href={`/guides/how-to-${tool.slug}`}
+            style={{
+              display: "inline-flex", alignItems: "center",
+              background: "#ffffff", border: "1px solid #e5e7eb",
+              color: "#555", padding: "6px 14px",
+              borderRadius: "8px", fontSize: "13px",
+              textDecoration: "none", fontWeight: 500,
+            }}
+          >
+            📖 How to {tool.name} →
+          </Link>
         </section>
 
         {tool.longDescription && (
