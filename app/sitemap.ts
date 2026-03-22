@@ -1,6 +1,7 @@
 import { getAllTools } from '@/lib/tools'
 import { getAllConvertVariants } from '@/data/convert/variants'
 import { getAllGuides } from '@/data/guides/index'
+import { getAllVariants } from '@/data/variants'
 
 export default function sitemap() {
   const baseUrl = 'https://www.dockitt.com'
@@ -11,6 +12,14 @@ export default function sitemap() {
     lastModified: new Date(),
     changeFrequency: 'weekly' as const,
     priority: 0.8,
+  }))
+
+  const variants = getAllVariants()
+  const variantUrls = variants.map((variant) => ({
+    url: `${baseUrl}/${variant.slug}`,
+    lastModified: new Date(),
+    changeFrequency: 'monthly' as const,
+    priority: 0.6,
   }))
 
   const convertVariants = getAllConvertVariants()
@@ -51,5 +60,5 @@ export default function sitemap() {
     changeFrequency: 'monthly' as const,
   }))
 
-  return [...staticPages, ...toolUrls, ...convertUrls, ...categoryUrls, ...guideUrls]
+  return [...staticPages, ...toolUrls, ...variantUrls, ...convertUrls, ...categoryUrls, ...guideUrls]
 }
