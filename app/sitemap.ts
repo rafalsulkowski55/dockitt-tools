@@ -1,5 +1,6 @@
 import { getAllTools } from '@/lib/tools'
 import { getAllConvertVariants } from '@/data/convert/variants'
+import { getAllGuides } from '@/data/guides/index'
 
 export default function sitemap() {
   const baseUrl = 'https://www.dockitt.com'
@@ -27,10 +28,19 @@ export default function sitemap() {
     priority: 0.7,
   }))
 
+  const guides = getAllGuides()
+  const guideUrls = guides.map((guide) => ({
+    url: `${baseUrl}/guides/${guide.slug}`,
+    lastModified: new Date(),
+    changeFrequency: 'monthly' as const,
+    priority: 0.7,
+  }))
+
   const staticPages = [
     { url: baseUrl, priority: 1.0 },
     { url: `${baseUrl}/convert-pdf`, priority: 0.9 },
     { url: `${baseUrl}/categories`, priority: 0.8 },
+    { url: `${baseUrl}/guides`, priority: 0.8 },
     { url: `${baseUrl}/about`, priority: 0.4 },
     { url: `${baseUrl}/contact`, priority: 0.4 },
     { url: `${baseUrl}/privacy`, priority: 0.3 },
@@ -41,5 +51,5 @@ export default function sitemap() {
     changeFrequency: 'monthly' as const,
   }))
 
-  return [...staticPages, ...toolUrls, ...convertUrls, ...categoryUrls]
+  return [...staticPages, ...toolUrls, ...convertUrls, ...categoryUrls, ...guideUrls]
 }
