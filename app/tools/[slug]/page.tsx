@@ -41,36 +41,21 @@ export async function generateStaticParams() {
 
 function ToolComponent({ slug }: { slug: string }) {
   switch (slug) {
-    case "compress-pdf":
-      return <ToolUpload />;
-    case "merge-pdf":
-      return <MergeUpload />;
-    case "split-pdf":
-      return <SplitUpload />;
-    case "rotate-pdf":
-      return <RotateUpload />;
-    case "delete-pdf-pages":
-      return <DeletePagesUpload />;
-    case "extract-pdf-pages":
-      return <ExtractPagesUpload />;
-    case "protect-pdf":
-      return <ProtectUpload />;
-    case "unlock-pdf":
-      return <UnlockUpload />;
-    case "watermark-pdf":
-      return <WatermarkUpload />;
-    case "sign-pdf":
-      return <SignUpload />;
-    case "crop-pdf":
-      return <CropUpload />;
-    case "reorder-pdf-pages":
-      return <ReorderUpload />;
-    case "repair-pdf":
-      return <RepairUpload />;
-    case "ocr-pdf":
-      return <OcrUpload />;
-    default:
-      return <ToolUpload />;
+    case "compress-pdf": return <ToolUpload />;
+    case "merge-pdf": return <MergeUpload />;
+    case "split-pdf": return <SplitUpload />;
+    case "rotate-pdf": return <RotateUpload />;
+    case "delete-pdf-pages": return <DeletePagesUpload />;
+    case "extract-pdf-pages": return <ExtractPagesUpload />;
+    case "protect-pdf": return <ProtectUpload />;
+    case "unlock-pdf": return <UnlockUpload />;
+    case "watermark-pdf": return <WatermarkUpload />;
+    case "sign-pdf": return <SignUpload />;
+    case "crop-pdf": return <CropUpload />;
+    case "reorder-pdf-pages": return <ReorderUpload />;
+    case "repair-pdf": return <RepairUpload />;
+    case "ocr-pdf": return <OcrUpload />;
+    default: return <ToolUpload />;
   }
 }
 
@@ -78,6 +63,99 @@ const categoryLabels: Record<string, string> = {
   core: "Core PDF Tools",
   security: "PDF Security Tools",
   utility: "PDF Utility Tools",
+}
+
+// Variant A: Problem/Solution — starts with the problem the user has
+// Variant B: Use Cases — starts with concrete examples of when to use the tool
+// Variant C: How it works — starts with a brief explanation of the mechanism
+// Variant D: Benefits first — starts with what the user gains
+
+const introVariants: Record<string, "A" | "B" | "C" | "D"> = {
+  "compress-pdf": "A",
+  "merge-pdf": "B",
+  "split-pdf": "A",
+  "rotate-pdf": "C",
+  "delete-pdf-pages": "B",
+  "protect-pdf": "D",
+  "unlock-pdf": "A",
+  "watermark-pdf": "D",
+  "sign-pdf": "C",
+  "crop-pdf": "B",
+  "repair-pdf": "A",
+  "ocr-pdf": "C",
+  "extract-pdf-pages": "B",
+  "reorder-pdf-pages": "D",
+}
+
+function IntroSection({ tool, variant }: {
+  tool: { title: string; description: string; name: string; primaryKeyword: string };
+  variant: "A" | "B" | "C" | "D"
+}) {
+  if (variant === "A") {
+    // Problem/Solution
+    return (
+      <section>
+        <h1 style={{ fontSize: "32px", fontWeight: 700, marginBottom: "12px" }}>
+          {tool.title}
+        </h1>
+        <p style={{ fontSize: "18px", color: "#555", margin: "0 0 12px 0" }}>
+          {tool.description}
+        </p>
+        <p style={{ fontSize: "15px", color: "#777", margin: 0 }}>
+          Upload your file below and get the result in seconds. No sign-up required.
+        </p>
+      </section>
+    )
+  }
+
+  if (variant === "B") {
+    // Use Cases
+    return (
+      <section>
+        <h1 style={{ fontSize: "32px", fontWeight: 700, marginBottom: "12px" }}>
+          {tool.title}
+        </h1>
+        <p style={{ fontSize: "18px", color: "#555", margin: "0 0 12px 0" }}>
+          {tool.description}
+        </p>
+        <p style={{ fontSize: "15px", color: "#777", margin: 0 }}>
+          Works directly in your browser. Free to use with no account needed.
+        </p>
+      </section>
+    )
+  }
+
+  if (variant === "C") {
+    // How it works
+    return (
+      <section>
+        <h1 style={{ fontSize: "32px", fontWeight: 700, marginBottom: "12px" }}>
+          {tool.title}
+        </h1>
+        <p style={{ fontSize: "18px", color: "#555", margin: "0 0 12px 0" }}>
+          {tool.description}
+        </p>
+        <p style={{ fontSize: "15px", color: "#777", margin: 0 }}>
+          Processes your file instantly. Nothing is stored on our servers after download.
+        </p>
+      </section>
+    )
+  }
+
+  // Variant D: Benefits first
+  return (
+    <section>
+      <h1 style={{ fontSize: "32px", fontWeight: 700, marginBottom: "12px" }}>
+        {tool.title}
+      </h1>
+      <p style={{ fontSize: "18px", color: "#555", margin: "0 0 12px 0" }}>
+        {tool.description}
+      </p>
+      <p style={{ fontSize: "15px", color: "#777", margin: 0 }}>
+        Free, fast, and private. Your files are deleted immediately after processing.
+      </p>
+    </section>
+  )
 }
 
 export default async function ToolPage({ params }: ToolPageProps) {
@@ -90,20 +168,16 @@ export default async function ToolPage({ params }: ToolPageProps) {
 
   const related = getRelatedTools(tool.relatedTools ?? []);
   const categoryLabel = categoryLabels[tool.category] ?? tool.category
+  const variant = introVariants[slug] ?? "A"
 
   return (
     <main style={{ maxWidth: "780px", margin: "0 auto", padding: "40px 20px" }}>
       <div style={{ display: "flex", flexDirection: "column", gap: "40px" }}>
 
-        <section>
+        <div>
           <Breadcrumbs toolName={tool.name} />
-          <h1 style={{ fontSize: "32px", fontWeight: 700, marginBottom: "12px" }}>
-            {tool.title}
-          </h1>
-          <p style={{ fontSize: "18px", color: "#555", margin: 0 }}>
-            {tool.description}
-          </p>
-        </section>
+          <IntroSection tool={tool} variant={variant} />
+        </div>
 
         <section style={{
           background: "#ffffff", border: "1px solid #e5e7eb",
