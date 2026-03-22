@@ -58,6 +58,9 @@ export default function RootLayout({
             <Link href="/convert-pdf" style={{ fontSize: "14px", color: "#555", textDecoration: "none" }}>
               Convert PDF
             </Link>
+            <Link href="/categories" style={{ fontSize: "14px", color: "#555", textDecoration: "none" }}>
+              Categories
+            </Link>
           </nav>
         </header>
 
@@ -73,6 +76,10 @@ export default function RootLayout({
           color: "#999",
         }}>
           <div style={{ display: "flex", justifyContent: "center", gap: "24px", marginBottom: "12px" }}>
+            <Link href="/convert-pdf" style={{ color: "#999", textDecoration: "none" }}>Convert PDF</Link>
+            <Link href="/categories/core" style={{ color: "#999", textDecoration: "none" }}>Core Tools</Link>
+            <Link href="/categories/security" style={{ color: "#999", textDecoration: "none" }}>Security Tools</Link>
+            <Link href="/categories/utility" style={{ color: "#999", textDecoration: "none" }}>Utility Tools</Link>
             <Link href="/about" style={{ color: "#999", textDecoration: "none" }}>About</Link>
             <Link href="/contact" style={{ color: "#999", textDecoration: "none" }}>Contact</Link>
             <Link href="/privacy" style={{ color: "#999", textDecoration: "none" }}>Privacy Policy</Link>
