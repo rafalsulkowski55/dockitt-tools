@@ -31,6 +31,19 @@ export async function generateMetadata({ params }: Props) {
     alternates: {
       canonical: `https://www.dockitt.com/tools/${variant.toolSlug}`,
     },
+    openGraph: {
+      title: variant.title,
+      description: variant.description,
+      url: `https://www.dockitt.com/${variant.slug}`,
+      siteName: "Dockitt",
+      locale: "en_US",
+      type: "website",
+    },
+    twitter: {
+      card: "summary",
+      title: variant.title,
+      description: variant.description,
+    },
   }
 }
 

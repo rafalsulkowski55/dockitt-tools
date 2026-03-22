@@ -12,6 +12,20 @@ const geistSans = Geist({
 export const metadata: Metadata = {
   title: "Dockitt — Free PDF Tools Online",
   description: "Compress, merge, split and convert PDF files — free, fast, and without limits.",
+  metadataBase: new URL("https://www.dockitt.com"),
+  openGraph: {
+    title: "Dockitt — Free PDF Tools Online",
+    description: "Compress, merge, split and convert PDF files — free, fast, and without limits.",
+    url: "https://www.dockitt.com",
+    siteName: "Dockitt",
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary",
+    title: "Dockitt — Free PDF Tools Online",
+    description: "Compress, merge, split and convert PDF files — free, fast, and without limits.",
+  },
 };
 
 export default function RootLayout({

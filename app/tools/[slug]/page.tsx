@@ -30,6 +30,19 @@ export async function generateMetadata({ params }: ToolPageProps) {
   return {
     title: tool.title,
     description: tool.description,
+    openGraph: {
+      title: tool.title,
+      description: tool.description,
+      url: `https://www.dockitt.com/tools/${slug}`,
+      siteName: "Dockitt",
+      locale: "en_US",
+      type: "website",
+    },
+    twitter: {
+      card: "summary",
+      title: tool.title,
+      description: tool.description,
+    },
   };
 }
 
@@ -65,11 +78,6 @@ const categoryLabels: Record<string, string> = {
   utility: "PDF Utility Tools",
 }
 
-// Variant A: Problem/Solution — starts with the problem the user has
-// Variant B: Use Cases — starts with concrete examples of when to use the tool
-// Variant C: How it works — starts with a brief explanation of the mechanism
-// Variant D: Benefits first — starts with what the user gains
-
 const introVariants: Record<string, "A" | "B" | "C" | "D"> = {
   "compress-pdf": "A",
   "merge-pdf": "B",
@@ -92,7 +100,6 @@ function IntroSection({ tool, variant }: {
   variant: "A" | "B" | "C" | "D"
 }) {
   if (variant === "A") {
-    // Problem/Solution
     return (
       <section>
         <h1 style={{ fontSize: "32px", fontWeight: 700, marginBottom: "12px" }}>
@@ -109,7 +116,6 @@ function IntroSection({ tool, variant }: {
   }
 
   if (variant === "B") {
-    // Use Cases
     return (
       <section>
         <h1 style={{ fontSize: "32px", fontWeight: 700, marginBottom: "12px" }}>
@@ -126,7 +132,6 @@ function IntroSection({ tool, variant }: {
   }
 
   if (variant === "C") {
-    // How it works
     return (
       <section>
         <h1 style={{ fontSize: "32px", fontWeight: 700, marginBottom: "12px" }}>
@@ -142,7 +147,6 @@ function IntroSection({ tool, variant }: {
     )
   }
 
-  // Variant D: Benefits first
   return (
     <section>
       <h1 style={{ fontSize: "32px", fontWeight: 700, marginBottom: "12px" }}>
