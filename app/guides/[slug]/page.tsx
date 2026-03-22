@@ -64,7 +64,7 @@ export default async function GuidePage({ params }: { params: Promise<{ slug: st
       <div style={card}>
         <p style={{ fontWeight: 600, color: '#111', marginBottom: '12px' }}>Try it now</p>
         <Link
-          href={`/tools/${guide.relatedTool}`}
+          href={'relatedToolUrl' in guide && guide.relatedToolUrl ? guide.relatedToolUrl : `/tools/${guide.relatedTool}`}
           style={{
             display: 'inline-block',
             background: '#111',
