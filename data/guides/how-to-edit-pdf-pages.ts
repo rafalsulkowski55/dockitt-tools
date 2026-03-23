@@ -9,11 +9,77 @@ export const howToEditPdfPages = {
   intro:
     'Editing PDF pages can be frustrating — especially when pages are upside down, in the wrong order, or contain unwanted content. In this guide, you’ll learn how to rotate, delete, reorder, extract and crop PDF pages directly in your browser.',
 
-  steps: [
-    'Upload your PDF file using one of the editing tools.',
-    'Choose the action you want to perform (rotate, delete, reorder, extract, or crop).',
-    'Apply the changes to your document.',
-    'Download the updated PDF file.',
+  sections: [
+    {
+      title: 'When do you need to edit PDF pages?',
+      items: [
+        'Pages are upside down after scanning',
+        'The document contains extra or blank pages',
+        'Pages are in the wrong order',
+        'You only need specific pages from a large file',
+        'Margins or whitespace need trimming',
+      ],
+      outro: 'These are the most common real-world PDF problems.',
+    },
+
+    {
+      title: 'How to rotate PDF pages',
+      intro: 'If your PDF pages are sideways or upside down:',
+      steps: [
+        'Upload your PDF file',
+        'Select the pages to rotate',
+        'Choose rotation direction (90°, 180°)',
+        'Download the corrected file',
+      ],
+      outro: 'This is common for scanned documents.',
+    },
+
+    {
+      title: 'How to delete pages from a PDF',
+      intro: 'To remove unwanted pages:',
+      steps: [
+        'Upload your PDF',
+        'Select pages you want to remove',
+        'Apply changes',
+        'Download the cleaned file',
+      ],
+      outro: 'Useful when PDFs contain blank or duplicate pages.',
+    },
+
+    {
+      title: 'How to reorder PDF pages',
+      intro: 'If pages are in the wrong order:',
+      steps: [
+        'Upload your PDF',
+        'Drag and rearrange pages',
+        'Apply changes',
+        'Download the updated file',
+      ],
+      outro: 'Especially useful for merged documents.',
+    },
+
+    {
+      title: 'How to extract pages from a PDF',
+      intro: 'To get only specific pages:',
+      steps: [
+        'Upload your PDF',
+        'Select pages you want to keep',
+        'Export as a new file',
+      ],
+      outro: 'Ideal for large documents or reports.',
+    },
+
+    {
+      title: 'How to crop PDF pages (remove margins)',
+      intro: 'To remove whitespace or borders:',
+      steps: [
+        'Upload your PDF',
+        'Adjust crop area',
+        'Apply changes',
+        'Download the trimmed file',
+      ],
+      outro: 'Useful for printing or presentations.',
+    },
   ],
 
   commonProblems: [

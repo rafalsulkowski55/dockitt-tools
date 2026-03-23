@@ -6,10 +6,23 @@ type GuidePageProps = {
   params: Promise<{ slug: string }>
 }
 
+type GuideSection = {
+  title: string
+  intro?: string
+  items?: string[]
+  steps?: string[]
+  outro?: string
+}
+
+type GuideWithOptionalSections = {
+  sections?: GuideSection[]
+}
+
 export async function generateMetadata({ params }: GuidePageProps) {
   const { slug } = await params
   const guide = getGuideBySlug(slug)
   if (!guide) return {}
+
   return {
     title: guide.title,
     description: guide.description,
@@ -38,6 +51,8 @@ export default async function GuidePage({ params }: GuidePageProps) {
   const guide = getGuideBySlug(slug)
   if (!guide) notFound()
 
+  const guideWithSections = guide as typeof guide & GuideWithOptionalSections
+
   const card: React.CSSProperties = {
     background: '#fff',
     border: '1px solid #e5e7eb',
@@ -46,27 +61,52 @@ export default async function GuidePage({ params }: GuidePageProps) {
     marginBottom: '24px',
   }
 
+  const howToSteps =
+    guideWithSections.sections && guideWithSections.sections.length > 0
+      ? guideWithSections.sections.flatMap((section, sectionIndex) => {
+          const sectionSteps = section.steps ?? []
+
+          if (sectionSteps.length > 0) {
+            return sectionSteps.map((step, stepIndex) => ({
+              '@type': 'HowToStep',
+              position: sectionIndex * 100 + stepIndex + 1,
+              text: step,
+            }))
+          }
+
+          return section.intro
+            ? [
+                {
+                  '@type': 'HowToStep',
+                  position: sectionIndex + 1,
+                  text: section.intro,
+                },
+              ]
+            : []
+        })
+      : guide.steps.map((step, i) => ({
+          '@type': 'HowToStep',
+          position: i + 1,
+          text: step,
+        }))
+
   const schemaArticle = {
     '@context': 'https://schema.org',
     '@type': 'HowTo',
-    'name': guide.title,
-    'description': guide.description,
-    'step': guide.steps.map((step, i) => ({
-      '@type': 'HowToStep',
-      'position': i + 1,
-      'text': step,
-    })),
+    name: guide.title,
+    description: guide.description,
+    step: howToSteps,
   }
 
   const schemaFaq = {
     '@context': 'https://schema.org',
     '@type': 'FAQPage',
-    'mainEntity': guide.faqs.map((faq) => ({
+    mainEntity: guide.faqs.map((faq) => ({
       '@type': 'Question',
-      'name': faq.question,
-      'acceptedAnswer': {
+      name: faq.question,
+      acceptedAnswer: {
         '@type': 'Answer',
-        'text': faq.answer,
+        text: faq.answer,
       },
     })),
   }
@@ -83,30 +123,91 @@ export default async function GuidePage({ params }: GuidePageProps) {
       />
 
       <nav style={{ fontSize: '13px', color: '#999', marginBottom: '24px' }}>
-        <Link href="/" style={{ color: '#999' }}>Home</Link>
+        <Link href="/" style={{ color: '#999' }}>
+          Home
+        </Link>
         {' / '}
-        <Link href="/guides" style={{ color: '#999' }}>Guides</Link>
+        <Link href="/guides" style={{ color: '#999' }}>
+          Guides
+        </Link>
         {' / '}
         <span>{guide.title}</span>
       </nav>
 
-      <h1 style={{ fontSize: '32px', fontWeight: 700, marginBottom: '12px' }}>{guide.title}</h1>
-      <p style={{ fontSize: '16px', color: '#555', marginBottom: '32px', lineHeight: 1.6 }}>{guide.intro}</p>
+      <h1 style={{ fontSize: '32px', fontWeight: 700, marginBottom: '12px' }}>
+        {guide.title}
+      </h1>
 
-      <div style={card}>
-        <h2 style={{ fontSize: '18px', fontWeight: 700, marginBottom: '16px' }}>Step-by-step instructions</h2>
-        <ol style={{ paddingLeft: '20px', lineHeight: 1.8 }}>
-          {guide.steps.map((step, i) => (
-            <li key={i} style={{ color: '#444', marginBottom: '4px' }}>{step}</li>
+      <p style={{ fontSize: '16px', color: '#555', marginBottom: '32px', lineHeight: 1.6 }}>
+        {guide.intro}
+      </p>
+
+      {guideWithSections.sections && guideWithSections.sections.length > 0 ? (
+        <>
+          {guideWithSections.sections.map((section, i) => (
+            <div key={i} style={card}>
+              <h2 style={{ fontSize: '18px', fontWeight: 700, marginBottom: '16px' }}>
+                {section.title}
+              </h2>
+
+              {section.intro ? (
+                <p style={{ color: '#555', lineHeight: 1.7, marginBottom: '16px' }}>
+                  {section.intro}
+                </p>
+              ) : null}
+
+              {section.items && section.items.length > 0 ? (
+                <ul style={{ paddingLeft: '20px', lineHeight: 1.8, marginBottom: '16px' }}>
+                  {section.items.map((item, j) => (
+                    <li key={j} style={{ color: '#444', marginBottom: '4px' }}>
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              ) : null}
+
+              {section.steps && section.steps.length > 0 ? (
+                <ol style={{ paddingLeft: '20px', lineHeight: 1.8, marginBottom: '16px' }}>
+                  {section.steps.map((step, j) => (
+                    <li key={j} style={{ color: '#444', marginBottom: '4px' }}>
+                      {step}
+                    </li>
+                  ))}
+                </ol>
+              ) : null}
+
+              {section.outro ? (
+                <p style={{ color: '#555', lineHeight: 1.7, margin: 0 }}>
+                  {section.outro}
+                </p>
+              ) : null}
+            </div>
           ))}
-        </ol>
-      </div>
+        </>
+      ) : (
+        <div style={card}>
+          <h2 style={{ fontSize: '18px', fontWeight: 700, marginBottom: '16px' }}>
+            Step-by-step instructions
+          </h2>
+          <ol style={{ paddingLeft: '20px', lineHeight: 1.8 }}>
+            {guide.steps.map((step, i) => (
+              <li key={i} style={{ color: '#444', marginBottom: '4px' }}>
+                {step}
+              </li>
+            ))}
+          </ol>
+        </div>
+      )}
 
       <div style={card}>
-        <h2 style={{ fontSize: '18px', fontWeight: 700, marginBottom: '16px' }}>Common problems</h2>
+        <h2 style={{ fontSize: '18px', fontWeight: 700, marginBottom: '16px' }}>
+          Common problems
+        </h2>
         {guide.commonProblems.map((item, i) => (
           <div key={i} style={{ marginBottom: '16px' }}>
-            <p style={{ fontWeight: 600, color: '#111', marginBottom: '4px' }}>{item.problem}</p>
+            <p style={{ fontWeight: 600, color: '#111', marginBottom: '4px' }}>
+              {item.problem}
+            </p>
             <p style={{ color: '#555', margin: 0 }}>{item.solution}</p>
           </div>
         ))}
@@ -116,7 +217,9 @@ export default async function GuidePage({ params }: GuidePageProps) {
         <h2 style={{ fontSize: '18px', fontWeight: 700, marginBottom: '16px' }}>FAQ</h2>
         {guide.faqs.map((faq, i) => (
           <div key={i} style={{ marginBottom: '16px' }}>
-            <p style={{ fontWeight: 600, color: '#111', marginBottom: '4px' }}>{faq.question}</p>
+            <p style={{ fontWeight: 600, color: '#111', marginBottom: '4px' }}>
+              {faq.question}
+            </p>
             <p style={{ color: '#555', margin: 0 }}>{faq.answer}</p>
           </div>
         ))}
@@ -125,7 +228,11 @@ export default async function GuidePage({ params }: GuidePageProps) {
       <div style={card}>
         <p style={{ fontWeight: 600, color: '#111', marginBottom: '12px' }}>Try it now</p>
         <Link
-          href={'relatedToolUrl' in guide && guide.relatedToolUrl ? guide.relatedToolUrl : `/tools/${guide.relatedTool}`}
+          href={
+            'relatedToolUrl' in guide && guide.relatedToolUrl
+              ? guide.relatedToolUrl
+              : `/tools/${guide.relatedTool}`
+          }
           style={{
             display: 'inline-block',
             background: '#111',
