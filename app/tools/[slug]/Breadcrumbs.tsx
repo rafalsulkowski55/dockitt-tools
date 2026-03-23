@@ -15,10 +15,10 @@ export default function Breadcrumbs({ toolName }: BreadcrumbsProps) {
         margin: 0,
         padding: 0,
         fontSize: "14px",
-        color: "#999",
+        color: "#666",
       }}>
         <li>
-          <Link href="/" style={{ color: "#999", textDecoration: "none" }}>
+          <Link href="/" style={{ color: "#666", textDecoration: "none" }}>
             Home
           </Link>
         </li>
