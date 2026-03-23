@@ -1,50 +1,40 @@
-import { NextRequest, NextResponse } from "next/server";
-import { PDFDocument } from "pdf-lib";
+import { NextRequest, NextResponse } from 'next/server';
 
-export const runtime = "nodejs";
+const RAILWAY_API_URL = process.env.RAILWAY_API_URL || 'https://dockitt-api-production.up.railway.app';
+
 export const maxDuration = 30;
 
 export async function POST(req: NextRequest) {
   try {
     const formData = await req.formData();
-    const file = formData.get("file") as File | null;
 
-    if (!file) {
-      return NextResponse.json({ error: "No file provided" }, { status: 400 });
-    }
-
-    if (file.type !== "application/pdf") {
-      return NextResponse.json({ error: "File must be a PDF" }, { status: 400 });
-    }
-
-    const arrayBuffer = await file.arrayBuffer();
-    const originalSize = arrayBuffer.byteLength;
-
-    const pdfDoc = await PDFDocument.load(arrayBuffer, {
-      ignoreEncryption: true,
+    const response = await fetch(`${RAILWAY_API_URL}/compress-pdf`, {
+      method: 'POST',
+      body: formData,
     });
 
-    const compressedBytes = await pdfDoc.save({
-      useObjectStreams: true,
-      addDefaultPage: false,
-      objectsPerTick: 50,
-    });
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({ error: 'Server error' }));
+      return NextResponse.json(error, { status: response.status });
+    }
 
-    const compressedSize = compressedBytes.byteLength;
-    const reduction = Math.round((1 - compressedSize / originalSize) * 100);
+    const buffer = await response.arrayBuffer();
+    const originalSize = response.headers.get('X-Original-Size') ?? '0';
+    const compressedSize = response.headers.get('X-Compressed-Size') ?? '0';
+    const reduction = response.headers.get('X-Reduction-Percent') ?? '0';
 
-    return new NextResponse(Buffer.from(compressedBytes), {
+    return new NextResponse(buffer, {
       status: 200,
       headers: {
-        "Content-Type": "application/pdf",
-        "Content-Disposition": `attachment; filename="compressed.pdf"`,
-        "X-Original-Size": originalSize.toString(),
-        "X-Compressed-Size": compressedSize.toString(),
-        "X-Reduction-Percent": reduction.toString(),
+        'Content-Type': 'application/pdf',
+        'Content-Disposition': 'attachment; filename="compressed.pdf"',
+        'X-Original-Size': originalSize,
+        'X-Compressed-Size': compressedSize,
+        'X-Reduction-Percent': reduction,
       },
     });
-  } catch (err) {
-    console.error("Compress PDF error:", err);
-    return NextResponse.json({ error: "Failed to process PDF" }, { status: 500 });
+  } catch (error) {
+    console.error('compress-pdf error:', error);
+    return NextResponse.json({ error: 'Failed to compress PDF' }, { status: 500 });
   }
 }
