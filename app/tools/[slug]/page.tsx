@@ -105,10 +105,10 @@ function IntroSection({ tool, variant }: {
         <h1 style={{ fontSize: "32px", fontWeight: 700, marginBottom: "12px" }}>
           {tool.title}
         </h1>
-        <p style={{ fontSize: "18px", color: "#555", margin: "0 0 12px 0" }}>
+        <p style={{ fontSize: "18px", color: "#444", margin: "0 0 12px 0" }}>
           {tool.description}
         </p>
-        <p style={{ fontSize: "15px", color: "#777", margin: 0 }}>
+        <p style={{ fontSize: "15px", color: "#555", margin: 0 }}>
           Upload your file below and get the result in seconds. No sign-up required.
         </p>
       </section>
@@ -121,10 +121,10 @@ function IntroSection({ tool, variant }: {
         <h1 style={{ fontSize: "32px", fontWeight: 700, marginBottom: "12px" }}>
           {tool.title}
         </h1>
-        <p style={{ fontSize: "18px", color: "#555", margin: "0 0 12px 0" }}>
+        <p style={{ fontSize: "18px", color: "#444", margin: "0 0 12px 0" }}>
           {tool.description}
         </p>
-        <p style={{ fontSize: "15px", color: "#777", margin: 0 }}>
+        <p style={{ fontSize: "15px", color: "#555", margin: 0 }}>
           Works directly in your browser. Free to use with no account needed.
         </p>
       </section>
@@ -137,10 +137,10 @@ function IntroSection({ tool, variant }: {
         <h1 style={{ fontSize: "32px", fontWeight: 700, marginBottom: "12px" }}>
           {tool.title}
         </h1>
-        <p style={{ fontSize: "18px", color: "#555", margin: "0 0 12px 0" }}>
+        <p style={{ fontSize: "18px", color: "#444", margin: "0 0 12px 0" }}>
           {tool.description}
         </p>
-        <p style={{ fontSize: "15px", color: "#777", margin: 0 }}>
+        <p style={{ fontSize: "15px", color: "#555", margin: 0 }}>
           Processes your file instantly. Nothing is stored on our servers after download.
         </p>
       </section>
@@ -152,10 +152,10 @@ function IntroSection({ tool, variant }: {
       <h1 style={{ fontSize: "32px", fontWeight: 700, marginBottom: "12px" }}>
         {tool.title}
       </h1>
-      <p style={{ fontSize: "18px", color: "#555", margin: "0 0 12px 0" }}>
+      <p style={{ fontSize: "18px", color: "#444", margin: "0 0 12px 0" }}>
         {tool.description}
       </p>
-      <p style={{ fontSize: "15px", color: "#777", margin: 0 }}>
+      <p style={{ fontSize: "15px", color: "#555", margin: 0 }}>
         Free, fast, and private. Your files are deleted immediately after processing.
       </p>
     </section>
@@ -238,7 +238,7 @@ export default async function ToolPage({ params }: ToolPageProps) {
             style={{
               display: "inline-flex", alignItems: "center",
               background: "#ffffff", border: "1px solid #e5e7eb",
-              color: "#555", padding: "6px 14px",
+              color: "#444", padding: "6px 14px",
               borderRadius: "8px", fontSize: "13px",
               textDecoration: "none", fontWeight: 500,
             }}
@@ -250,7 +250,7 @@ export default async function ToolPage({ params }: ToolPageProps) {
             style={{
               display: "inline-flex", alignItems: "center",
               background: "#ffffff", border: "1px solid #e5e7eb",
-              color: "#555", padding: "6px 14px",
+              color: "#444", padding: "6px 14px",
               borderRadius: "8px", fontSize: "13px",
               textDecoration: "none", fontWeight: 500,
             }}
@@ -264,7 +264,7 @@ export default async function ToolPage({ params }: ToolPageProps) {
             background: "#ffffff", border: "1px solid #e5e7eb",
             borderRadius: "16px", padding: "24px",
           }}>
-            <p style={{ fontSize: "15px", color: "#555", lineHeight: "1.8", margin: 0 }}>
+            <p style={{ fontSize: "15px", color: "#444", lineHeight: "1.8", margin: 0 }}>
               {tool.longDescription}
             </p>
           </section>
@@ -295,7 +295,7 @@ export default async function ToolPage({ params }: ToolPageProps) {
                 <h3 style={{ margin: "0 0 8px 0", fontSize: "17px" }}>
                   {faq.question}
                 </h3>
-                <p style={{ margin: 0, color: "#555" }}>{faq.answer}</p>
+                <p style={{ margin: 0, color: "#444" }}>{faq.answer}</p>
               </div>
             ))}
           </div>
@@ -322,7 +322,7 @@ export default async function ToolPage({ params }: ToolPageProps) {
                   <span style={{ fontWeight: 600, color: "#111", fontSize: "15px" }}>
                     {relatedTool!.name}
                   </span>
-                  <span style={{ color: "#666", fontSize: "13px", marginTop: "4px" }}>
+                  <span style={{ color: "#555", fontSize: "13px", marginTop: "4px" }}>
                     {relatedTool!.shortDescription}
                   </span>
                 </Link>

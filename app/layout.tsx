@@ -66,16 +66,16 @@ export default function RootLayout({
             </span>
           </Link>
           <nav style={{ display: "flex", gap: "24px" }}>
-            <Link href="/" style={{ fontSize: "14px", color: "#555", textDecoration: "none" }}>
+            <Link href="/" style={{ fontSize: "14px", color: "#444", textDecoration: "none" }}>
               All Tools
             </Link>
-            <Link href="/convert-pdf" style={{ fontSize: "14px", color: "#555", textDecoration: "none" }}>
+            <Link href="/convert-pdf" style={{ fontSize: "14px", color: "#444", textDecoration: "none" }}>
               Convert PDF
             </Link>
-            <Link href="/categories" style={{ fontSize: "14px", color: "#555", textDecoration: "none" }}>
+            <Link href="/categories" style={{ fontSize: "14px", color: "#444", textDecoration: "none" }}>
               Categories
             </Link>
-            <Link href="/guides" style={{ fontSize: "14px", color: "#555", textDecoration: "none" }}>
+            <Link href="/guides" style={{ fontSize: "14px", color: "#444", textDecoration: "none" }}>
               Guides
             </Link>
           </nav>
@@ -90,18 +90,18 @@ export default function RootLayout({
           marginTop: "80px",
           textAlign: "center",
           fontSize: "13px",
-          color: "#999",
+          color: "#666",
         }}>
           <div style={{ display: "flex", justifyContent: "center", gap: "24px", marginBottom: "12px" }}>
-            <Link href="/convert-pdf" style={{ color: "#999", textDecoration: "none" }}>Convert PDF</Link>
-            <Link href="/categories/core" style={{ color: "#999", textDecoration: "none" }}>Core Tools</Link>
-            <Link href="/categories/security" style={{ color: "#999", textDecoration: "none" }}>Security Tools</Link>
-            <Link href="/categories/utility" style={{ color: "#999", textDecoration: "none" }}>Utility Tools</Link>
-            <Link href="/guides" style={{ color: "#999", textDecoration: "none" }}>Guides</Link>
-            <Link href="/about" style={{ color: "#999", textDecoration: "none" }}>About</Link>
-            <Link href="/contact" style={{ color: "#999", textDecoration: "none" }}>Contact</Link>
-            <Link href="/privacy" style={{ color: "#999", textDecoration: "none" }}>Privacy Policy</Link>
-            <Link href="/terms" style={{ color: "#999", textDecoration: "none" }}>Terms of Use</Link>
+            <Link href="/convert-pdf" style={{ color: "#666", textDecoration: "none" }}>Convert PDF</Link>
+            <Link href="/categories/core" style={{ color: "#666", textDecoration: "none" }}>Core Tools</Link>
+            <Link href="/categories/security" style={{ color: "#666", textDecoration: "none" }}>Security Tools</Link>
+            <Link href="/categories/utility" style={{ color: "#666", textDecoration: "none" }}>Utility Tools</Link>
+            <Link href="/guides" style={{ color: "#666", textDecoration: "none" }}>Guides</Link>
+            <Link href="/about" style={{ color: "#666", textDecoration: "none" }}>About</Link>
+            <Link href="/contact" style={{ color: "#666", textDecoration: "none" }}>Contact</Link>
+            <Link href="/privacy" style={{ color: "#666", textDecoration: "none" }}>Privacy Policy</Link>
+            <Link href="/terms" style={{ color: "#666", textDecoration: "none" }}>Terms of Use</Link>
           </div>
           © {new Date().getFullYear()} Dockitt — Free PDF Tools Online
         </footer>
