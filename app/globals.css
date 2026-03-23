@@ -34,3 +34,12 @@ a {
 a:hover {
   text-decoration: underline;
 }
+
+@media (max-width: 640px) {
+  .desktop-nav {
+    display: none !important;
+  }
+  .hamburger {
+    display: flex !important;
+  }
+}
