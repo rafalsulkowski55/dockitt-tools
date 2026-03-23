@@ -44,6 +44,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-HKZWGRTN86"
           strategy="afterInteractive"
@@ -58,39 +59,45 @@ export default function RootLayout({
         </Script>
       </head>
       <body className={`${geistSans.variable} antialiased`} style={{ margin: 0, background: "#f9fafb" }}>
+
         <header style={{
           borderBottom: "1px solid #e5e7eb",
           background: "#ffffff",
-          padding: "0 24px",
+          padding: "0 16px",
           height: "56px",
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
+          position: "sticky",
+          top: 0,
+          zIndex: 100,
         }}>
-          <Link href="/" style={{ textDecoration: "none", display: "flex", alignItems: "center", gap: "10px" }}>
+          <Link href="/" style={{ textDecoration: "none", display: "flex", alignItems: "center", gap: "8px", flexShrink: 0 }}>
             <Image src="/favicon.svg" alt="Dockitt" width={28} height={28} />
             <span style={{ fontWeight: 800, fontSize: "18px", color: "#111" }}>
               Dockitt
             </span>
           </Link>
-          <nav style={{ display: "flex", gap: "24px" }}>
-            <Link href="/" style={{ fontSize: "14px", color: "#444", textDecoration: "none" }}>All Tools</Link>
-            <Link href="/convert-pdf" style={{ fontSize: "14px", color: "#444", textDecoration: "none" }}>Convert PDF</Link>
-            <Link href="/categories" style={{ fontSize: "14px", color: "#444", textDecoration: "none" }}>Categories</Link>
-            <Link href="/guides" style={{ fontSize: "14px", color: "#444", textDecoration: "none" }}>Guides</Link>
+          <nav style={{ display: "flex", gap: "16px", overflowX: "auto", msOverflowStyle: "none", scrollbarWidth: "none" }}>
+            <Link href="/" style={{ fontSize: "14px", color: "#444", textDecoration: "none", whiteSpace: "nowrap" }}>All Tools</Link>
+            <Link href="/convert-pdf" style={{ fontSize: "14px", color: "#444", textDecoration: "none", whiteSpace: "nowrap" }}>Convert PDF</Link>
+            <Link href="/categories" style={{ fontSize: "14px", color: "#444", textDecoration: "none", whiteSpace: "nowrap" }}>Categories</Link>
+            <Link href="/guides" style={{ fontSize: "14px", color: "#444", textDecoration: "none", whiteSpace: "nowrap" }}>Guides</Link>
           </nav>
         </header>
+
         {children}
+
         <footer style={{
           borderTop: "1px solid #e5e7eb",
           background: "#ffffff",
-          padding: "24px",
+          padding: "24px 16px",
           marginTop: "80px",
           textAlign: "center",
           fontSize: "13px",
           color: "#666",
         }}>
-          <div style={{ display: "flex", justifyContent: "center", gap: "24px", marginBottom: "12px" }}>
+          <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "12px 20px", marginBottom: "12px" }}>
             <Link href="/convert-pdf" style={{ color: "#666", textDecoration: "none" }}>Convert PDF</Link>
             <Link href="/categories/core" style={{ color: "#666", textDecoration: "none" }}>Core Tools</Link>
             <Link href="/categories/security" style={{ color: "#666", textDecoration: "none" }}>Security Tools</Link>
@@ -103,6 +110,7 @@ export default function RootLayout({
           </div>
           © {new Date().getFullYear()} Dockitt — Free PDF Tools Online
         </footer>
+
       </body>
     </html>
   );
