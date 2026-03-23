@@ -18,8 +18,12 @@ import { howToConvertPdfToWord } from './how-to-convert-pdf-to-word'
 import { howToConvertJpgToPdf } from './how-to-convert-jpg-to-pdf'
 import { howToConvertPngToPdf } from './how-to-convert-png-to-pdf'
 import { howToConvertWordToPdf } from './how-to-convert-word-to-pdf'
+import { howToEditPdfPages } from './how-to-edit-pdf-pages'
 
 export const guides = [
+  howToEditPdfPages, 
+  howToCompressPdf,
+  howToMergePdf,
   howToCompressPdf,
   howToMergePdf,
   howToSplitPdf,
