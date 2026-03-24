@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 
 export default function SplitUpload() {
   const [file, setFile] = useState<File | null>(null);
@@ -10,6 +10,8 @@ export default function SplitUpload() {
   const [status, setStatus] = useState<"idle" | "processing" | "done" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState("");
   const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
+  const [progress, setProgress] = useState(0);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const f = e.target.files?.[0] ?? null;
@@ -20,39 +22,57 @@ export default function SplitUpload() {
     setTotalPages(null);
     setFromPage("1");
     setToPage("1");
+    setProgress(0);
+  }
+
+  function handleDrop(e: React.DragEvent<HTMLDivElement>) {
+    e.preventDefault();
+    const f = e.dataTransfer.files?.[0] ?? null;
+    if (f && f.type === "application/pdf") {
+      setFile(f);
+      setStatus("idle");
+      setDownloadUrl(null);
+      setErrorMessage("");
+      setTotalPages(null);
+      setFromPage("1");
+      setToPage("1");
+      setProgress(0);
+    }
+  }
+
+  function handleDragOver(e: React.DragEvent<HTMLDivElement>) {
+    e.preventDefault();
   }
 
   async function handleProcess() {
     if (!file) return;
-
     setStatus("processing");
     setDownloadUrl(null);
     setErrorMessage("");
-
+    setProgress(0);
+    const interval = setInterval(() => {
+      setProgress((p) => (p < 85 ? p + 5 : p));
+    }, 300);
     try {
       const formData = new FormData();
       formData.append("file", file);
       formData.append("fromPage", fromPage);
       formData.append("toPage", toPage);
-
-      const res = await fetch("/api/split-pdf", {
-        method: "POST",
-        body: formData,
-      });
-
+      const res = await fetch("/api/split-pdf", { method: "POST", body: formData });
+      clearInterval(interval);
+      setProgress(100);
       if (!res.ok) {
         const err = await res.json();
         throw new Error(err.error ?? "Unknown error");
       }
-
       const total = parseInt(res.headers.get("X-Total-Pages") ?? "0");
       if (total > 0) setTotalPages(total);
-
       const blob = await res.blob();
       const url = URL.createObjectURL(blob);
       setDownloadUrl(url);
       setStatus("done");
     } catch (err: unknown) {
+      clearInterval(interval);
       const message = err instanceof Error ? err.message : "Unknown error";
       setErrorMessage(message);
       setStatus("error");
@@ -70,72 +90,78 @@ export default function SplitUpload() {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
 
-      {/* File picker */}
-      <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+      <div
+        onDrop={handleDrop}
+        onDragOver={handleDragOver}
+        onClick={() => inputRef.current?.click()}
+        style={{
+          border: "2px dashed #bfdbfe", borderRadius: "12px",
+          padding: "24px", textAlign: "center",
+          background: "#f8faff", cursor: "pointer",
+        }}
+      >
+        <div style={{ fontSize: "13px", color: "#666", marginBottom: "12px" }}>
+          Drag & drop your PDF here or
+        </div>
         <label
           htmlFor="split-upload"
           style={{
             display: "inline-flex", alignItems: "center", justifyContent: "center",
-            padding: "12px 18px", background: "#111111", color: "#ffffff",
-            borderRadius: "10px", fontWeight: 600, cursor: "pointer",
+            padding: "10px 20px", background: "#2563eb", color: "#ffffff",
+            borderRadius: "10px", fontWeight: 600, cursor: "pointer", fontSize: "14px",
           }}
+          onClick={(e) => e.stopPropagation()}
         >
           Choose PDF
         </label>
-        <span style={{ color: "#666666", fontSize: "15px" }}>
-          {file ? file.name : "No file selected"}
-        </span>
         <input
           id="split-upload"
+          ref={inputRef}
           type="file"
           accept=".pdf"
           style={{ display: "none" }}
           onChange={handleFileChange}
         />
+        {file && (
+          <div style={{ marginTop: "12px", fontSize: "14px", color: "#444" }}>
+            📄 {file.name}
+          </div>
+        )}
       </div>
 
-      {/* Page range */}
+      <div style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "12px", color: "#555" }}>
+        <span>🔒</span>
+        Files never leave your device — processed entirely in your browser.
+      </div>
+
       {file && (
         <div style={{ display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap" }}>
           <span style={{ fontSize: "14px", color: "#444" }}>Pages from</span>
           <input
-            type="number"
-            min="1"
-            value={fromPage}
+            type="number" min="1" value={fromPage}
             onChange={(e) => setFromPage(e.target.value)}
-            style={{
-              width: "70px", padding: "8px 12px", border: "1px solid #d1d5db",
-              borderRadius: "8px", fontSize: "14px",
-            }}
+            style={{ width: "70px", padding: "8px 12px", border: "1px solid #d1d5db", borderRadius: "8px", fontSize: "14px" }}
           />
           <span style={{ fontSize: "14px", color: "#444" }}>to</span>
           <input
-            type="number"
-            min="1"
-            value={toPage}
+            type="number" min="1" value={toPage}
             onChange={(e) => setToPage(e.target.value)}
-            style={{
-              width: "70px", padding: "8px 12px", border: "1px solid #d1d5db",
-              borderRadius: "8px", fontSize: "14px",
-            }}
+            style={{ width: "70px", padding: "8px 12px", border: "1px solid #d1d5db", borderRadius: "8px", fontSize: "14px" }}
           />
           {totalPages && (
-            <span style={{ fontSize: "13px", color: "#999" }}>
-              (PDF has {totalPages} pages)
-            </span>
+            <span style={{ fontSize: "13px", color: "#999" }}>(PDF has {totalPages} pages)</span>
           )}
         </div>
       )}
 
-      {/* Process button */}
       <button
         disabled={!file || status === "processing"}
         onClick={handleProcess}
         style={{
-          padding: "12px 18px",
+          padding: "12px 24px",
           background: file && status !== "processing" ? "#2563eb" : "#d1d5db",
           color: "#ffffff", border: "none", borderRadius: "10px",
-          fontWeight: 600,
+          fontWeight: 600, fontSize: "15px",
           cursor: file && status !== "processing" ? "pointer" : "not-allowed",
           width: "fit-content",
         }}
@@ -143,7 +169,21 @@ export default function SplitUpload() {
         {status === "processing" ? "Processing..." : "Split PDF"}
       </button>
 
-      {/* Error */}
+      {status === "processing" && (
+        <div>
+          <div style={{ display: "flex", justifyContent: "space-between", fontSize: "13px", color: "#666", marginBottom: "6px" }}>
+            <span>Processing...</span>
+            <span>{progress}%</span>
+          </div>
+          <div style={{ background: "#e5e7eb", borderRadius: "99px", height: "6px", overflow: "hidden" }}>
+            <div style={{
+              height: "100%", width: `${progress}%`, background: "#2563eb",
+              borderRadius: "99px", transition: "width 0.3s ease",
+            }} />
+          </div>
+        </div>
+      )}
+
       {status === "error" && (
         <div style={{
           padding: "14px 16px", background: "#fef2f2", color: "#dc2626",
@@ -153,7 +193,6 @@ export default function SplitUpload() {
         </div>
       )}
 
-      {/* Success */}
       {status === "done" && (
         <div style={{
           padding: "14px 16px", background: "#eff6ff", color: "#1d4ed8",
@@ -163,13 +202,12 @@ export default function SplitUpload() {
         </div>
       )}
 
-      {/* Download */}
       {status === "done" && downloadUrl && (
         <button
           onClick={handleDownload}
           style={{
-            padding: "12px 18px", background: "#16a34a", color: "#ffffff",
-            border: "none", borderRadius: "10px", fontWeight: 600,
+            padding: "12px 24px", background: "#16a34a", color: "#ffffff",
+            border: "none", borderRadius: "10px", fontWeight: 600, fontSize: "15px",
             cursor: "pointer", width: "fit-content",
           }}
         >
