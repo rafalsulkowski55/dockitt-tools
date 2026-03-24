@@ -102,62 +102,35 @@ function IntroSection({ tool, variant }: {
   if (variant === "A") {
     return (
       <section>
-        <h1 style={{ fontSize: "32px", fontWeight: 700, marginBottom: "12px" }}>
-          {tool.title}
-        </h1>
-        <p style={{ fontSize: "18px", color: "#444", margin: "0 0 12px 0" }}>
-          {tool.description}
-        </p>
-        <p style={{ fontSize: "15px", color: "#555", margin: 0 }}>
-          Upload your file below and get the result in seconds. No sign-up required.
-        </p>
+        <h1 style={{ fontSize: "32px", fontWeight: 700, marginBottom: "12px" }}>{tool.title}</h1>
+        <p style={{ fontSize: "18px", color: "#444", margin: "0 0 12px 0" }}>{tool.description}</p>
+        <p style={{ fontSize: "15px", color: "#555", margin: 0 }}>Upload your file below and get the result in seconds. No sign-up required.</p>
       </section>
     )
   }
-
   if (variant === "B") {
     return (
       <section>
-        <h1 style={{ fontSize: "32px", fontWeight: 700, marginBottom: "12px" }}>
-          {tool.title}
-        </h1>
-        <p style={{ fontSize: "18px", color: "#444", margin: "0 0 12px 0" }}>
-          {tool.description}
-        </p>
-        <p style={{ fontSize: "15px", color: "#555", margin: 0 }}>
-          Works directly in your browser. Free to use with no account needed.
-        </p>
+        <h1 style={{ fontSize: "32px", fontWeight: 700, marginBottom: "12px" }}>{tool.title}</h1>
+        <p style={{ fontSize: "18px", color: "#444", margin: "0 0 12px 0" }}>{tool.description}</p>
+        <p style={{ fontSize: "15px", color: "#555", margin: 0 }}>Works directly in your browser. Free to use with no account needed.</p>
       </section>
     )
   }
-
   if (variant === "C") {
     return (
       <section>
-        <h1 style={{ fontSize: "32px", fontWeight: 700, marginBottom: "12px" }}>
-          {tool.title}
-        </h1>
-        <p style={{ fontSize: "18px", color: "#444", margin: "0 0 12px 0" }}>
-          {tool.description}
-        </p>
-        <p style={{ fontSize: "15px", color: "#555", margin: 0 }}>
-          Processes your file instantly. Nothing is stored on our servers after download.
-        </p>
+        <h1 style={{ fontSize: "32px", fontWeight: 700, marginBottom: "12px" }}>{tool.title}</h1>
+        <p style={{ fontSize: "18px", color: "#444", margin: "0 0 12px 0" }}>{tool.description}</p>
+        <p style={{ fontSize: "15px", color: "#555", margin: 0 }}>Processes your file instantly. Nothing is stored on our servers after download.</p>
       </section>
     )
   }
-
   return (
     <section>
-      <h1 style={{ fontSize: "32px", fontWeight: 700, marginBottom: "12px" }}>
-        {tool.title}
-      </h1>
-      <p style={{ fontSize: "18px", color: "#444", margin: "0 0 12px 0" }}>
-        {tool.description}
-      </p>
-      <p style={{ fontSize: "15px", color: "#555", margin: 0 }}>
-        Free, fast, and private. Your files are deleted immediately after processing.
-      </p>
+      <h1 style={{ fontSize: "32px", fontWeight: 700, marginBottom: "12px" }}>{tool.title}</h1>
+      <p style={{ fontSize: "18px", color: "#444", margin: "0 0 12px 0" }}>{tool.description}</p>
+      <p style={{ fontSize: "15px", color: "#555", margin: 0 }}>Free, fast, and private. Your files are deleted immediately after processing.</p>
     </section>
   )
 }
@@ -171,8 +144,8 @@ export default async function ToolPage({ params }: ToolPageProps) {
   }
 
   const related = getRelatedTools(tool.relatedTools ?? []);
-  const categoryLabel = categoryLabels[tool.category] ?? tool.category
-  const variant = introVariants[slug] ?? "A"
+  const categoryLabel = categoryLabels[tool.category] ?? tool.category;
+  const variant = introVariants[slug] ?? "A";
 
   const schemaApp = {
     "@context": "https://schema.org",
@@ -180,11 +153,7 @@ export default async function ToolPage({ params }: ToolPageProps) {
     "name": tool.name,
     "applicationCategory": "WebApplication",
     "operatingSystem": "Web",
-    "offers": {
-      "@type": "Offer",
-      "price": "0",
-      "priceCurrency": "USD"
-    },
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
     "description": tool.description,
     "url": `https://www.dockitt.com/tools/${slug}`,
   }
@@ -195,23 +164,15 @@ export default async function ToolPage({ params }: ToolPageProps) {
     "mainEntity": tool.faqs.map((faq) => ({
       "@type": "Question",
       "name": faq.question,
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": faq.answer
-      }
+      "acceptedAnswer": { "@type": "Answer", "text": faq.answer }
     }))
   }
 
   return (
     <main style={{ maxWidth: "780px", margin: "0 auto", padding: "40px 20px" }}>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaApp) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaFaq) }}
-      />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaApp) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaFaq) }} />
+
       <div style={{ display: "flex", flexDirection: "column", gap: "40px" }}>
 
         <div>
@@ -232,13 +193,13 @@ export default async function ToolPage({ params }: ToolPageProps) {
           </div>
         </section>
 
-        <section style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+        <section style={{ display: "flex", gap: "10px", flexWrap: "wrap", justifyContent: "center" }}>
           <Link
             href={`/categories/${tool.category}`}
             style={{
               display: "inline-flex", alignItems: "center",
               background: "#ffffff", border: "1px solid #e5e7eb",
-              color: "#444", padding: "6px 14px",
+              color: "#2563eb", padding: "8px 18px",
               borderRadius: "8px", fontSize: "13px",
               textDecoration: "none", fontWeight: 500,
             }}
@@ -249,8 +210,8 @@ export default async function ToolPage({ params }: ToolPageProps) {
             href={`/guides/how-to-${tool.slug}`}
             style={{
               display: "inline-flex", alignItems: "center",
-              background: "#ffffff", border: "1px solid #e5e7eb",
-              color: "#444", padding: "6px 14px",
+              background: "#2563eb", border: "1px solid #2563eb",
+              color: "#ffffff", padding: "8px 18px",
               borderRadius: "8px", fontSize: "13px",
               textDecoration: "none", fontWeight: 500,
             }}
@@ -277,9 +238,7 @@ export default async function ToolPage({ params }: ToolPageProps) {
           <h2 style={{ marginTop: 0, fontSize: "20px" }}>How to use</h2>
           <ol style={{ paddingLeft: "20px", margin: 0 }}>
             {tool.howTo.map((step) => (
-              <li key={step} style={{ marginBottom: "10px", color: "#444" }}>
-                {step}
-              </li>
+              <li key={step} style={{ marginBottom: "10px", color: "#444" }}>{step}</li>
             ))}
           </ol>
         </section>
@@ -292,9 +251,7 @@ export default async function ToolPage({ params }: ToolPageProps) {
           <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
             {tool.faqs.map((faq) => (
               <div key={faq.question}>
-                <h3 style={{ margin: "0 0 8px 0", fontSize: "17px" }}>
-                  {faq.question}
-                </h3>
+                <h3 style={{ margin: "0 0 8px 0", fontSize: "17px" }}>{faq.question}</h3>
                 <p style={{ margin: 0, color: "#444" }}>{faq.answer}</p>
               </div>
             ))}
@@ -319,12 +276,8 @@ export default async function ToolPage({ params }: ToolPageProps) {
                     textDecoration: "none",
                   }}
                 >
-                  <span style={{ fontWeight: 600, color: "#111", fontSize: "15px" }}>
-                    {relatedTool!.name}
-                  </span>
-                  <span style={{ color: "#555", fontSize: "13px", marginTop: "4px" }}>
-                    {relatedTool!.shortDescription}
-                  </span>
+                  <span style={{ fontWeight: 600, color: "#111", fontSize: "15px" }}>{relatedTool!.name}</span>
+                  <span style={{ color: "#555", fontSize: "13px", marginTop: "4px" }}>{relatedTool!.shortDescription}</span>
                 </Link>
               ))}
             </div>
