@@ -18,9 +18,7 @@ import OcrUpload from "./OcrUpload";
 import Link from "next/link";
 
 type ToolPageProps = {
-  params: Promise<{
-    slug: string;
-  }>;
+  params: Promise<{ slug: string }>;
 };
 
 export async function generateMetadata({ params }: ToolPageProps) {
@@ -47,9 +45,7 @@ export async function generateMetadata({ params }: ToolPageProps) {
 }
 
 export async function generateStaticParams() {
-  return getAllTools().map((tool) => ({
-    slug: tool.slug,
-  }));
+  return getAllTools().map((tool) => ({ slug: tool.slug }));
 }
 
 function ToolComponent({ slug }: { slug: string }) {
@@ -79,69 +75,49 @@ const categoryLabels: Record<string, string> = {
 }
 
 const introVariants: Record<string, "A" | "B" | "C" | "D"> = {
-  "compress-pdf": "A",
-  "merge-pdf": "B",
-  "split-pdf": "A",
-  "rotate-pdf": "C",
-  "delete-pdf-pages": "B",
-  "protect-pdf": "D",
-  "unlock-pdf": "A",
-  "watermark-pdf": "D",
-  "sign-pdf": "C",
-  "crop-pdf": "B",
-  "repair-pdf": "A",
-  "ocr-pdf": "C",
-  "extract-pdf-pages": "B",
-  "reorder-pdf-pages": "D",
+  "compress-pdf": "A", "merge-pdf": "B", "split-pdf": "A", "rotate-pdf": "C",
+  "delete-pdf-pages": "B", "protect-pdf": "D", "unlock-pdf": "A",
+  "watermark-pdf": "D", "sign-pdf": "C", "crop-pdf": "B", "repair-pdf": "A",
+  "ocr-pdf": "C", "extract-pdf-pages": "B", "reorder-pdf-pages": "D",
 }
 
 function IntroSection({ tool, variant }: {
   tool: { title: string; description: string; name: string; primaryKeyword: string };
   variant: "A" | "B" | "C" | "D"
 }) {
-  if (variant === "A") {
-    return (
-      <section>
-        <h1 style={{ fontSize: "32px", fontWeight: 700, marginBottom: "12px" }}>{tool.title}</h1>
-        <p style={{ fontSize: "18px", color: "#444", margin: "0 0 12px 0" }}>{tool.description}</p>
-        <p style={{ fontSize: "15px", color: "#555", margin: 0 }}>Upload your file below and get the result in seconds. No sign-up required.</p>
-      </section>
-    )
-  }
-  if (variant === "B") {
-    return (
-      <section>
-        <h1 style={{ fontSize: "32px", fontWeight: 700, marginBottom: "12px" }}>{tool.title}</h1>
-        <p style={{ fontSize: "18px", color: "#444", margin: "0 0 12px 0" }}>{tool.description}</p>
-        <p style={{ fontSize: "15px", color: "#555", margin: 0 }}>Works directly in your browser. Free to use with no account needed.</p>
-      </section>
-    )
-  }
-  if (variant === "C") {
-    return (
-      <section>
-        <h1 style={{ fontSize: "32px", fontWeight: 700, marginBottom: "12px" }}>{tool.title}</h1>
-        <p style={{ fontSize: "18px", color: "#444", margin: "0 0 12px 0" }}>{tool.description}</p>
-        <p style={{ fontSize: "15px", color: "#555", margin: 0 }}>Processes your file instantly. Nothing is stored on our servers after download.</p>
-      </section>
-    )
+  const subtitles = {
+    A: "Upload your file below and get the result in seconds. No sign-up required.",
+    B: "Works directly in your browser. Free to use with no account needed.",
+    C: "Processes your file instantly. Nothing is stored on our servers after download.",
+    D: "Free, fast, and private. Your files are deleted immediately after processing.",
   }
   return (
     <section>
       <h1 style={{ fontSize: "32px", fontWeight: 700, marginBottom: "12px" }}>{tool.title}</h1>
       <p style={{ fontSize: "18px", color: "#444", margin: "0 0 12px 0" }}>{tool.description}</p>
-      <p style={{ fontSize: "15px", color: "#555", margin: 0 }}>Free, fast, and private. Your files are deleted immediately after processing.</p>
+      <p style={{ fontSize: "15px", color: "#555", margin: 0 }}>{subtitles[variant]}</p>
     </section>
   )
+}
+
+const sectionStyle = {
+  background: "#ffffff",
+  border: "1px solid #e5e7eb",
+  borderRadius: "16px",
+  padding: "24px",
+}
+
+const h2Style = {
+  marginTop: 0,
+  fontSize: "20px",
+  borderLeft: "3px solid #2563eb",
+  paddingLeft: "12px",
 }
 
 export default async function ToolPage({ params }: ToolPageProps) {
   const { slug } = await params;
   const tool = getToolBySlug(slug);
-
-  if (!tool) {
-    notFound();
-  }
+  if (!tool) notFound();
 
   const related = getRelatedTools(tool.relatedTools ?? []);
   const categoryLabel = categoryLabels[tool.category] ?? tool.category;
@@ -180,28 +156,20 @@ export default async function ToolPage({ params }: ToolPageProps) {
           <IntroSection tool={tool} variant={variant} />
         </div>
 
-        <section style={{
-          background: "#ffffff", border: "1px solid #e5e7eb",
-          borderRadius: "16px", padding: "24px",
-          boxShadow: "0 1px 2px rgba(0,0,0,0.04)",
-        }}>
-          <div style={{
-            border: "2px dashed #d1d5db", borderRadius: "12px",
-            padding: "32px", background: "#fafafa",
-          }}>
+        <section style={{ ...sectionStyle, boxShadow: "0 1px 2px rgba(0,0,0,0.04)" }}>
+          <div style={{ border: "2px dashed #bfdbfe", borderRadius: "12px", padding: "32px", background: "#f8faff" }}>
             <ToolComponent slug={slug} />
           </div>
         </section>
 
-        <section style={{ display: "flex", gap: "10px", flexWrap: "wrap", justifyContent: "center" }}>
+        <section style={{ display: "flex", gap: "10px" }}>
           <Link
             href={`/categories/${tool.category}`}
             style={{
-              display: "inline-flex", alignItems: "center",
-              background: "#ffffff", border: "1px solid #e5e7eb",
-              color: "#2563eb", padding: "8px 18px",
-              borderRadius: "8px", fontSize: "13px",
-              textDecoration: "none", fontWeight: 500,
+              display: "flex", alignItems: "center", justifyContent: "center",
+              flex: 1, background: "#ffffff", border: "1px solid #2563eb",
+              color: "#2563eb", padding: "10px 18px", borderRadius: "8px",
+              fontSize: "13px", textDecoration: "none", fontWeight: 500,
             }}
           >
             ← {categoryLabel}
@@ -209,11 +177,10 @@ export default async function ToolPage({ params }: ToolPageProps) {
           <Link
             href={`/guides/how-to-${tool.slug}`}
             style={{
-              display: "inline-flex", alignItems: "center",
-              background: "#2563eb", border: "1px solid #2563eb",
-              color: "#ffffff", padding: "8px 18px",
-              borderRadius: "8px", fontSize: "13px",
-              textDecoration: "none", fontWeight: 500,
+              display: "flex", alignItems: "center", justifyContent: "center",
+              flex: 1, background: "#2563eb", border: "1px solid #2563eb",
+              color: "#ffffff", padding: "10px 18px", borderRadius: "8px",
+              fontSize: "13px", textDecoration: "none", fontWeight: 500,
             }}
           >
             📖 How to {tool.name} →
@@ -221,21 +188,15 @@ export default async function ToolPage({ params }: ToolPageProps) {
         </section>
 
         {tool.longDescription && (
-          <section style={{
-            background: "#ffffff", border: "1px solid #e5e7eb",
-            borderRadius: "16px", padding: "24px",
-          }}>
+          <section style={sectionStyle}>
             <p style={{ fontSize: "15px", color: "#444", lineHeight: "1.8", margin: 0 }}>
               {tool.longDescription}
             </p>
           </section>
         )}
 
-        <section style={{
-          background: "#ffffff", border: "1px solid #e5e7eb",
-          borderRadius: "16px", padding: "24px",
-        }}>
-          <h2 style={{ marginTop: 0, fontSize: "20px" }}>How to use</h2>
+        <section style={sectionStyle}>
+          <h2 style={h2Style}>How to use</h2>
           <ol style={{ paddingLeft: "20px", margin: 0 }}>
             {tool.howTo.map((step) => (
               <li key={step} style={{ marginBottom: "10px", color: "#444" }}>{step}</li>
@@ -243,11 +204,8 @@ export default async function ToolPage({ params }: ToolPageProps) {
           </ol>
         </section>
 
-        <section style={{
-          background: "#ffffff", border: "1px solid #e5e7eb",
-          borderRadius: "16px", padding: "24px",
-        }}>
-          <h2 style={{ marginTop: 0, fontSize: "20px" }}>FAQ</h2>
+        <section style={sectionStyle}>
+          <h2 style={h2Style}>FAQ</h2>
           <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
             {tool.faqs.map((faq) => (
               <div key={faq.question}>
@@ -259,11 +217,8 @@ export default async function ToolPage({ params }: ToolPageProps) {
         </section>
 
         {related.length > 0 && (
-          <section style={{
-            background: "#ffffff", border: "1px solid #e5e7eb",
-            borderRadius: "16px", padding: "24px",
-          }}>
-            <h2 style={{ marginTop: 0, fontSize: "20px" }}>Related Tools</h2>
+          <section style={sectionStyle}>
+            <h2 style={h2Style}>Related Tools</h2>
             <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
               {related.map((relatedTool) => (
                 <Link
@@ -276,7 +231,7 @@ export default async function ToolPage({ params }: ToolPageProps) {
                     textDecoration: "none",
                   }}
                 >
-                  <span style={{ fontWeight: 600, color: "#111", fontSize: "15px" }}>{relatedTool!.name}</span>
+                  <span style={{ fontWeight: 600, color: "#2563eb", fontSize: "15px" }}>{relatedTool!.name}</span>
                   <span style={{ color: "#555", fontSize: "13px", marginTop: "4px" }}>{relatedTool!.shortDescription}</span>
                 </Link>
               ))}

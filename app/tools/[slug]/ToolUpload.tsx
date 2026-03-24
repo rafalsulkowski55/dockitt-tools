@@ -51,39 +51,27 @@ export default function ToolUpload() {
 
   async function handleProcess() {
     if (!file) return;
-
     setStatus("processing");
     setResultInfo(null);
     setProgress(0);
-
     const interval = setInterval(() => {
       setProgress((p) => (p < 85 ? p + 5 : p));
     }, 300);
-
     try {
       const formData = new FormData();
       formData.append("file", file);
-
-      const res = await fetch("/api/compress-pdf", {
-        method: "POST",
-        body: formData,
-      });
-
+      const res = await fetch("/api/compress-pdf", { method: "POST", body: formData });
       clearInterval(interval);
       setProgress(100);
-
       if (!res.ok) {
         const err = await res.json();
         throw new Error(err.error ?? "Unknown error");
       }
-
       const blob = await res.blob();
       const url = URL.createObjectURL(blob);
-
       const originalSize = parseInt(res.headers.get("X-Original-Size") ?? "0");
       const compressedSize = parseInt(res.headers.get("X-Compressed-Size") ?? "0");
       const reduction = parseInt(res.headers.get("X-Reduction-Percent") ?? "0");
-
       setResultInfo({ originalSize, compressedSize, reduction, url });
       setStatus("done");
     } catch (err) {
@@ -108,11 +96,11 @@ export default function ToolUpload() {
         onDrop={handleDrop}
         onDragOver={handleDragOver}
         style={{
-          border: "2px dashed #d1d5db",
+          border: "2px dashed #bfdbfe",
           borderRadius: "12px",
           padding: "24px",
           textAlign: "center",
-          background: "#f9fafb",
+          background: "#f8faff",
           cursor: "pointer",
         }}
         onClick={() => inputRef.current?.click()}
@@ -124,7 +112,7 @@ export default function ToolUpload() {
           htmlFor="pdf-upload"
           style={{
             display: "inline-flex", alignItems: "center", justifyContent: "center",
-            padding: "10px 18px", background: "#111111", color: "#ffffff",
+            padding: "10px 20px", background: "#2563eb", color: "#ffffff",
             borderRadius: "10px", fontWeight: 600, cursor: "pointer",
             fontSize: "14px",
           }}
@@ -147,8 +135,8 @@ export default function ToolUpload() {
         )}
       </div>
 
-      <div style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "12px", color: "#666" }}>
-        <span style={{ color: "#16a34a" }}>🔒</span>
+      <div style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "12px", color: "#555" }}>
+        <span>🔒</span>
         Files never leave your device — processed entirely in your browser.
       </div>
 
@@ -156,10 +144,10 @@ export default function ToolUpload() {
         disabled={!file || status === "processing"}
         onClick={handleProcess}
         style={{
-          padding: "12px 18px",
+          padding: "12px 24px",
           background: file && status !== "processing" ? "#2563eb" : "#d1d5db",
           color: "#ffffff", border: "none", borderRadius: "10px",
-          fontWeight: 600,
+          fontWeight: 600, fontSize: "15px",
           cursor: file && status !== "processing" ? "pointer" : "not-allowed",
           width: "fit-content",
         }}
@@ -175,11 +163,8 @@ export default function ToolUpload() {
           </div>
           <div style={{ background: "#e5e7eb", borderRadius: "99px", height: "6px", overflow: "hidden" }}>
             <div style={{
-              height: "100%",
-              width: `${progress}%`,
-              background: "#2563eb",
-              borderRadius: "99px",
-              transition: "width 0.3s ease",
+              height: "100%", width: `${progress}%`, background: "#2563eb",
+              borderRadius: "99px", transition: "width 0.3s ease",
             }} />
           </div>
         </div>
@@ -210,8 +195,8 @@ export default function ToolUpload() {
         <button
           onClick={handleDownload}
           style={{
-            padding: "12px 18px", background: "#16a34a", color: "#ffffff",
-            border: "none", borderRadius: "10px", fontWeight: 600,
+            padding: "12px 24px", background: "#16a34a", color: "#ffffff",
+            border: "none", borderRadius: "10px", fontWeight: 600, fontSize: "15px",
             cursor: "pointer", width: "fit-content",
           }}
         >
