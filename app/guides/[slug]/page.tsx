@@ -16,6 +16,7 @@ type GuideSection = {
 
 type GuideWithOptionalSections = {
   sections?: GuideSection[]
+  steps?: string[]
 }
 
 export async function generateMetadata({ params }: GuidePageProps) {
@@ -65,7 +66,6 @@ export default async function GuidePage({ params }: GuidePageProps) {
     guideWithSections.sections && guideWithSections.sections.length > 0
       ? guideWithSections.sections.flatMap((section, sectionIndex) => {
           const sectionSteps = section.steps ?? []
-
           if (sectionSteps.length > 0) {
             return sectionSteps.map((step, stepIndex) => ({
               '@type': 'HowToStep',
@@ -73,18 +73,11 @@ export default async function GuidePage({ params }: GuidePageProps) {
               text: step,
             }))
           }
-
           return section.intro
-            ? [
-                {
-                  '@type': 'HowToStep',
-                  position: sectionIndex + 1,
-                  text: section.intro,
-                },
-              ]
+            ? [{ '@type': 'HowToStep', position: sectionIndex + 1, text: section.intro }]
             : []
         })
-      : guide.steps.map((step, i) => ({
+      : (guideWithSections.steps ?? []).map((step, i) => ({
           '@type': 'HowToStep',
           position: i + 1,
           text: step,
@@ -122,14 +115,10 @@ export default async function GuidePage({ params }: GuidePageProps) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaFaq) }}
       />
 
-      <nav style={{ fontSize: '13px', color: '#999', marginBottom: '24px' }}>
-        <Link href="/" style={{ color: '#999' }}>
-          Home
-        </Link>
+      <nav style={{ fontSize: '13px', color: '#666', marginBottom: '24px' }}>
+        <Link href="/" style={{ color: '#666' }}>Home</Link>
         {' / '}
-        <Link href="/guides" style={{ color: '#999' }}>
-          Guides
-        </Link>
+        <Link href="/guides" style={{ color: '#666' }}>Guides</Link>
         {' / '}
         <span>{guide.title}</span>
       </nav>
@@ -149,37 +138,27 @@ export default async function GuidePage({ params }: GuidePageProps) {
               <h2 style={{ fontSize: '18px', fontWeight: 700, marginBottom: '16px' }}>
                 {section.title}
               </h2>
-
               {section.intro ? (
                 <p style={{ color: '#555', lineHeight: 1.7, marginBottom: '16px' }}>
                   {section.intro}
                 </p>
               ) : null}
-
               {section.items && section.items.length > 0 ? (
                 <ul style={{ paddingLeft: '20px', lineHeight: 1.8, marginBottom: '16px' }}>
                   {section.items.map((item, j) => (
-                    <li key={j} style={{ color: '#444', marginBottom: '4px' }}>
-                      {item}
-                    </li>
+                    <li key={j} style={{ color: '#444', marginBottom: '4px' }}>{item}</li>
                   ))}
                 </ul>
               ) : null}
-
               {section.steps && section.steps.length > 0 ? (
                 <ol style={{ paddingLeft: '20px', lineHeight: 1.8, marginBottom: '16px' }}>
                   {section.steps.map((step, j) => (
-                    <li key={j} style={{ color: '#444', marginBottom: '4px' }}>
-                      {step}
-                    </li>
+                    <li key={j} style={{ color: '#444', marginBottom: '4px' }}>{step}</li>
                   ))}
                 </ol>
               ) : null}
-
               {section.outro ? (
-                <p style={{ color: '#555', lineHeight: 1.7, margin: 0 }}>
-                  {section.outro}
-                </p>
+                <p style={{ color: '#555', lineHeight: 1.7, margin: 0 }}>{section.outro}</p>
               ) : null}
             </div>
           ))}
@@ -190,10 +169,8 @@ export default async function GuidePage({ params }: GuidePageProps) {
             Step-by-step instructions
           </h2>
           <ol style={{ paddingLeft: '20px', lineHeight: 1.8 }}>
-            {guide.steps.map((step, i) => (
-              <li key={i} style={{ color: '#444', marginBottom: '4px' }}>
-                {step}
-              </li>
+            {(guideWithSections.steps ?? []).map((step, i) => (
+              <li key={i} style={{ color: '#444', marginBottom: '4px' }}>{step}</li>
             ))}
           </ol>
         </div>
@@ -205,9 +182,7 @@ export default async function GuidePage({ params }: GuidePageProps) {
         </h2>
         {guide.commonProblems.map((item, i) => (
           <div key={i} style={{ marginBottom: '16px' }}>
-            <p style={{ fontWeight: 600, color: '#111', marginBottom: '4px' }}>
-              {item.problem}
-            </p>
+            <p style={{ fontWeight: 600, color: '#111', marginBottom: '4px' }}>{item.problem}</p>
             <p style={{ color: '#555', margin: 0 }}>{item.solution}</p>
           </div>
         ))}
@@ -217,9 +192,7 @@ export default async function GuidePage({ params }: GuidePageProps) {
         <h2 style={{ fontSize: '18px', fontWeight: 700, marginBottom: '16px' }}>FAQ</h2>
         {guide.faqs.map((faq, i) => (
           <div key={i} style={{ marginBottom: '16px' }}>
-            <p style={{ fontWeight: 600, color: '#111', marginBottom: '4px' }}>
-              {faq.question}
-            </p>
+            <p style={{ fontWeight: 600, color: '#111', marginBottom: '4px' }}>{faq.question}</p>
             <p style={{ color: '#555', margin: 0 }}>{faq.answer}</p>
           </div>
         ))}
