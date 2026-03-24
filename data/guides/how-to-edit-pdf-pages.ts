@@ -7,11 +7,28 @@ export const howToEditPdfPages = {
     'Learn how to edit PDF pages online — rotate, delete, reorder, extract and crop pages easily without installing any software.',
 
   intro:
-    'Editing PDF pages can be frustrating — especially when pages are upside down, in the wrong order, or contain unwanted content. In this guide, you\'ll learn how to rotate, delete, reorder, extract and crop PDF pages directly in your browser.',
+    'Editing PDF pages can be frustrating — especially when pages are upside down, in the wrong order, or contain unwanted content.',
+
+  introList: [
+    'Rotate PDF pages',
+    'Delete unwanted pages',
+    'Reorder pages',
+    'Extract specific pages',
+    'Crop margins and whitespace',
+  ],
+
+  introOutro: 'All directly in your browser — no software required.',
+
+  toolLinks: [
+    { name: 'Rotate PDF', slug: 'rotate-pdf' },
+    { name: 'Delete Pages', slug: 'delete-pdf-pages' },
+    { name: 'Reorder Pages', slug: 'reorder-pdf-pages' },
+  ],
 
   sections: [
     {
       title: 'When do you need to edit PDF pages?',
+      intro: 'You may need to edit a PDF if:',
       items: [
         'Pages are upside down after scanning',
         'The document contains extra or blank pages',
@@ -79,41 +96,52 @@ export const howToEditPdfPages = {
 
   commonProblems: [
     {
-      problem: 'PDF pages are upside down after scanning.',
-      solution: 'Use the rotate tool to fix page orientation. This is common for scanned documents.',
+      problem: 'Pages rotate but don\'t save correctly.',
+      solution: 'Make sure you download the updated file — changes are not saved automatically.',
     },
     {
-      problem: 'The PDF contains unwanted or blank pages.',
-      solution: 'Use the delete pages tool to remove unnecessary pages from your document.',
+      problem: 'PDF layout breaks after editing.',
+      solution: 'Some PDFs contain complex formatting that may shift slightly after editing.',
     },
     {
-      problem: 'Pages are in the wrong order.',
-      solution: 'Use the reorder tool to rearrange pages by dragging them into the correct order.',
+      problem: 'File is too large to edit.',
+      solution: 'Try compressing the PDF first before editing.',
     },
-    {
-      problem: 'The file is too large to edit easily.',
-      solution: 'Compress the PDF first to reduce file size before editing.',
-    },
+  ],
+
+  relatedTools: [
+    { name: 'Compress PDF', slug: 'compress-pdf', description: 'Reduce file size before editing' },
+    { name: 'Merge PDF', slug: 'merge-pdf', description: 'Combine files before organizing pages' },
+    { name: 'Split PDF', slug: 'split-pdf', description: 'Separate pages into multiple files' },
   ],
 
   faqs: [
     {
       question: 'Can I edit PDF pages without software?',
-      answer: 'Yes, you can edit PDF pages directly in your browser using online tools — no installation required.',
+      answer: 'Yes — you can edit PDF pages directly in your browser using online tools.',
     },
     {
       question: 'Does editing a PDF reduce quality?',
-      answer: 'Basic operations like rotating, deleting or reordering pages do not affect quality.',
+      answer: 'No — basic operations like rotate or reorder do not affect quality.',
     },
     {
-      question: 'Can I extract only specific pages from a PDF?',
-      answer: 'Yes, you can select and extract specific pages into a new PDF file.',
+      question: 'Can I edit scanned PDFs?',
+      answer: 'Yes, but for text changes you may need OCR.',
     },
     {
       question: 'Is it safe to upload PDF files?',
-      answer: 'Files are processed securely and are not stored after processing.',
+      answer: 'Files are processed securely and not stored after processing.',
     },
   ],
 
   relatedTool: 'rotate-pdf',
+  ctaText: 'Edit your PDF pages in seconds — no installation required.',
+
+  ctaLinks: [
+    { name: 'Rotate PDF', slug: 'rotate-pdf', description: 'Fix sideways or upside down pages' },
+    { name: 'Delete Pages', slug: 'delete-pdf-pages', description: 'Remove unwanted or blank pages' },
+    { name: 'Reorder Pages', slug: 'reorder-pdf-pages', description: 'Rearrange pages into correct order' },
+    { name: 'Extract Pages', slug: 'extract-pdf-pages', description: 'Get only the pages you need' },
+    { name: 'Crop PDF', slug: 'crop-pdf', description: 'Remove margins and whitespace' },
+  ],
 }
