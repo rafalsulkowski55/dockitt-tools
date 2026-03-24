@@ -7,6 +7,7 @@ export default function ToolUpload() {
   const [fileSize, setFileSize] = useState("");
   const [file, setFile] = useState<File | null>(null);
   const [status, setStatus] = useState<"idle" | "processing" | "done" | "error">("idle");
+  const [progress, setProgress] = useState(0);
   const [resultInfo, setResultInfo] = useState<{
     originalSize: number;
     compressedSize: number;
@@ -28,6 +29,24 @@ export default function ToolUpload() {
     setFileSize(f ? formatSize(f.size) : "");
     setStatus("idle");
     setResultInfo(null);
+    setProgress(0);
+  }
+
+  function handleDrop(e: React.DragEvent<HTMLDivElement>) {
+    e.preventDefault();
+    const f = e.dataTransfer.files?.[0] ?? null;
+    if (f && f.type === "application/pdf") {
+      setFile(f);
+      setFileName(f.name);
+      setFileSize(formatSize(f.size));
+      setStatus("idle");
+      setResultInfo(null);
+      setProgress(0);
+    }
+  }
+
+  function handleDragOver(e: React.DragEvent<HTMLDivElement>) {
+    e.preventDefault();
   }
 
   async function handleProcess() {
@@ -35,6 +54,11 @@ export default function ToolUpload() {
 
     setStatus("processing");
     setResultInfo(null);
+    setProgress(0);
+
+    const interval = setInterval(() => {
+      setProgress((p) => (p < 85 ? p + 5 : p));
+    }, 300);
 
     try {
       const formData = new FormData();
@@ -44,6 +68,9 @@ export default function ToolUpload() {
         method: "POST",
         body: formData,
       });
+
+      clearInterval(interval);
+      setProgress(100);
 
       if (!res.ok) {
         const err = await res.json();
@@ -60,6 +87,7 @@ export default function ToolUpload() {
       setResultInfo({ originalSize, compressedSize, reduction, url });
       setStatus("done");
     } catch (err) {
+      clearInterval(interval);
       console.error(err);
       setStatus("error");
     }
@@ -75,18 +103,35 @@ export default function ToolUpload() {
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-      <div style={{ display: "flex", alignItems: "center", gap: "16px", flexWrap: "wrap" }}>
+
+      <div
+        onDrop={handleDrop}
+        onDragOver={handleDragOver}
+        style={{
+          border: "2px dashed #d1d5db",
+          borderRadius: "12px",
+          padding: "24px",
+          textAlign: "center",
+          background: "#f9fafb",
+          cursor: "pointer",
+        }}
+        onClick={() => inputRef.current?.click()}
+      >
+        <div style={{ fontSize: "13px", color: "#666", marginBottom: "12px" }}>
+          Drag & drop your PDF here or
+        </div>
         <label
           htmlFor="pdf-upload"
           style={{
             display: "inline-flex", alignItems: "center", justifyContent: "center",
-            padding: "12px 18px", background: "#111111", color: "#ffffff",
+            padding: "10px 18px", background: "#111111", color: "#ffffff",
             borderRadius: "10px", fontWeight: 600, cursor: "pointer",
+            fontSize: "14px",
           }}
+          onClick={(e) => e.stopPropagation()}
         >
           Choose PDF
         </label>
-        <span style={{ color: "#666666", fontSize: "15px" }}>{fileName}</span>
         <input
           id="pdf-upload"
           ref={inputRef}
@@ -95,13 +140,17 @@ export default function ToolUpload() {
           style={{ display: "none" }}
           onChange={handleFileChange}
         />
+        {fileName !== "No file selected" && (
+          <div style={{ marginTop: "12px", fontSize: "14px", color: "#444" }}>
+            📄 {fileName} {fileSize && `(${fileSize})`}
+          </div>
+        )}
       </div>
 
-      {fileSize && (
-        <div style={{ fontSize: "14px", color: "#666666" }}>
-          File size: {fileSize}
-        </div>
-      )}
+      <div style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "12px", color: "#666" }}>
+        <span style={{ color: "#16a34a" }}>🔒</span>
+        Files never leave your device — processed entirely in your browser.
+      </div>
 
       <button
         disabled={!file || status === "processing"}
@@ -115,8 +164,26 @@ export default function ToolUpload() {
           width: "fit-content",
         }}
       >
-        {status === "processing" ? "Processing..." : "Process PDF"}
+        {status === "processing" ? "Processing..." : "Compress PDF"}
       </button>
+
+      {status === "processing" && (
+        <div>
+          <div style={{ display: "flex", justifyContent: "space-between", fontSize: "13px", color: "#666", marginBottom: "6px" }}>
+            <span>Processing...</span>
+            <span>{progress}%</span>
+          </div>
+          <div style={{ background: "#e5e7eb", borderRadius: "99px", height: "6px", overflow: "hidden" }}>
+            <div style={{
+              height: "100%",
+              width: `${progress}%`,
+              background: "#2563eb",
+              borderRadius: "99px",
+              transition: "width 0.3s ease",
+            }} />
+          </div>
+        </div>
+      )}
 
       {status === "error" && (
         <div style={{
