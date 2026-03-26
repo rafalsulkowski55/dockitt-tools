@@ -1,40 +1,57 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 
 export default function RotateUpload() {
   const [file, setFile] = useState<File | null>(null);
   const [angle, setAngle] = useState<string>("90");
   const [status, setStatus] = useState<"idle" | "processing" | "done" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState("");
+  const [progress, setProgress] = useState(0);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const f = e.target.files?.[0] ?? null;
     setFile(f);
     setStatus("idle");
     setErrorMessage("");
+    setProgress(0);
+  }
+
+  function handleDrop(e: React.DragEvent<HTMLDivElement>) {
+    e.preventDefault();
+    const f = e.dataTransfer.files?.[0] ?? null;
+    if (f && f.type === "application/pdf") {
+      setFile(f);
+      setStatus("idle");
+      setErrorMessage("");
+      setProgress(0);
+    }
+  }
+
+  function handleDragOver(e: React.DragEvent<HTMLDivElement>) {
+    e.preventDefault();
   }
 
   async function handleProcess() {
     if (!file) return;
     setStatus("processing");
     setErrorMessage("");
-
+    setProgress(0);
+    const interval = setInterval(() => {
+      setProgress((p) => (p < 85 ? p + 5 : p));
+    }, 300);
     try {
       const formData = new FormData();
       formData.append("file", file);
       formData.append("angle", angle);
-
-      const res = await fetch("/api/rotate-pdf", {
-        method: "POST",
-        body: formData,
-      });
-
+      const res = await fetch("/api/rotate-pdf", { method: "POST", body: formData });
+      clearInterval(interval);
+      setProgress(100);
       if (!res.ok) {
         const err = await res.json();
         throw new Error(err.error ?? "Unknown error");
       }
-
       const blob = await res.blob();
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
@@ -43,6 +60,7 @@ export default function RotateUpload() {
       a.click();
       setStatus("done");
     } catch (err: unknown) {
+      clearInterval(interval);
       const message = err instanceof Error ? err.message : "Unknown error";
       setErrorMessage(message);
       setStatus("error");
@@ -52,27 +70,48 @@ export default function RotateUpload() {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
 
-      <div style={{ display: "flex", alignItems: "center", gap: "16px", flexWrap: "wrap" }}>
+      <div
+        onDrop={handleDrop}
+        onDragOver={handleDragOver}
+        onClick={() => inputRef.current?.click()}
+        style={{
+          border: "2px dashed #bfdbfe", borderRadius: "12px",
+          padding: "24px", textAlign: "center",
+          background: "#f8faff", cursor: "pointer",
+        }}
+      >
+        <div style={{ fontSize: "13px", color: "#666", marginBottom: "12px" }}>
+          Drag & drop your PDF here or
+        </div>
         <label
           htmlFor="rotate-upload"
           style={{
             display: "inline-flex", alignItems: "center", justifyContent: "center",
-            padding: "12px 18px", background: "#111111", color: "#ffffff",
-            borderRadius: "10px", fontWeight: 600, cursor: "pointer",
+            padding: "10px 20px", background: "#2563eb", color: "#ffffff",
+            borderRadius: "10px", fontWeight: 600, cursor: "pointer", fontSize: "14px",
           }}
+          onClick={(e) => e.stopPropagation()}
         >
           Choose PDF
         </label>
-        <span style={{ color: "#666666", fontSize: "15px" }}>
-          {file ? file.name : "No file selected"}
-        </span>
         <input
           id="rotate-upload"
+          ref={inputRef}
           type="file"
           accept=".pdf"
           style={{ display: "none" }}
           onChange={handleFileChange}
         />
+        {file && (
+          <div style={{ marginTop: "12px", fontSize: "14px", color: "#444" }}>
+            📄 {file.name}
+          </div>
+        )}
+      </div>
+
+      <div style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "12px", color: "#555" }}>
+        <span>🔒</span>
+        Files never leave your device — processed entirely in your browser.
       </div>
 
       {file && (
@@ -83,15 +122,11 @@ export default function RotateUpload() {
               key={a}
               onClick={() => setAngle(a)}
               style={{
-                padding: "8px 16px",
-                borderRadius: "8px",
-                border: "1px solid",
-                borderColor: angle === a ? "#111111" : "#e5e7eb",
-                background: angle === a ? "#111111" : "#f9fafb",
+                padding: "8px 16px", borderRadius: "8px", border: "1px solid",
+                borderColor: angle === a ? "#2563eb" : "#e5e7eb",
+                background: angle === a ? "#2563eb" : "#f9fafb",
                 color: angle === a ? "#ffffff" : "#333333",
-                fontWeight: 500,
-                cursor: "pointer",
-                fontSize: "14px",
+                fontWeight: 500, cursor: "pointer", fontSize: "14px",
               }}
             >
               {a}°
@@ -104,16 +139,31 @@ export default function RotateUpload() {
         disabled={!file || status === "processing"}
         onClick={handleProcess}
         style={{
-          padding: "12px 18px",
+          padding: "12px 24px",
           background: file && status !== "processing" ? "#2563eb" : "#d1d5db",
           color: "#ffffff", border: "none", borderRadius: "10px",
-          fontWeight: 600,
+          fontWeight: 600, fontSize: "15px",
           cursor: file && status !== "processing" ? "pointer" : "not-allowed",
           width: "fit-content",
         }}
       >
         {status === "processing" ? "Processing..." : "Rotate PDF"}
       </button>
+
+      {status === "processing" && (
+        <div>
+          <div style={{ display: "flex", justifyContent: "space-between", fontSize: "13px", color: "#666", marginBottom: "6px" }}>
+            <span>Processing...</span>
+            <span>{progress}%</span>
+          </div>
+          <div style={{ background: "#e5e7eb", borderRadius: "99px", height: "6px", overflow: "hidden" }}>
+            <div style={{
+              height: "100%", width: `${progress}%`, background: "#2563eb",
+              borderRadius: "99px", transition: "width 0.3s ease",
+            }} />
+          </div>
+        </div>
+      )}
 
       {status === "error" && (
         <div style={{
