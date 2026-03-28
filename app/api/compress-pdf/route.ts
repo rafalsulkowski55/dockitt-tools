@@ -7,10 +7,20 @@ export const maxDuration = 30;
 export async function POST(req: NextRequest) {
   try {
     const formData = await req.formData();
+    const file = formData.get("file") as File;
+    const preset = formData.get("preset") as string ?? "email";
+
+    if (!file) {
+      return NextResponse.json({ error: "No file provided" }, { status: 400 });
+    }
+
+    const railwayForm = new FormData();
+    railwayForm.append("file", file);
+    railwayForm.append("preset", preset);
 
     const response = await fetch(`${RAILWAY_API_URL}/compress-pdf`, {
       method: 'POST',
-      body: formData,
+      body: railwayForm,
     });
 
     if (!response.ok) {
@@ -31,6 +41,7 @@ export async function POST(req: NextRequest) {
         'X-Original-Size': originalSize,
         'X-Compressed-Size': compressedSize,
         'X-Reduction-Percent': reduction,
+        'Access-Control-Expose-Headers': 'X-Original-Size, X-Compressed-Size, X-Reduction-Percent',
       },
     });
   } catch (error) {
