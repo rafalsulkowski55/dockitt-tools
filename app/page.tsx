@@ -36,6 +36,17 @@ const WHY_ITEMS = [
   { icon: "🔒", title: "Privacy focused", text: "Files are never stored or shared. Processed and gone." },
 ];
 
+const QUICK_TOOLS = [
+  { slug: "compress-pdf", label: "Compress", icon: "📦" },
+  { slug: "merge-pdf", label: "Merge", icon: "🔗" },
+  { slug: "split-pdf", label: "Split", icon: "✂️" },
+  { slug: "pdf-to-word", label: "PDF → Word", icon: "📝" },
+  { slug: "word-to-pdf", label: "Word → PDF", icon: "📄" },
+  { slug: "protect-pdf", label: "Protect", icon: "🔐" },
+  { slug: "rotate-pdf", label: "Rotate", icon: "🔄" },
+  { slug: "ocr-pdf", label: "OCR", icon: "🔍" },
+];
+
 export default function Home() {
   const allTools = getAllTools();
 
@@ -47,101 +58,101 @@ export default function Home() {
   return (
     <main style={{ background: "#f9fafb" }}>
 
-      {/* HERO */}
-      <section style={{ maxWidth: "720px", margin: "0 auto", padding: "72px 24px 64px", textAlign: "center" }}>
+      {/* ── HERO ── */}
+      <section style={{ maxWidth: "760px", margin: "0 auto", padding: "56px 24px 48px", textAlign: "center" }}>
         <div style={{
           display: "inline-flex", alignItems: "center", gap: "6px",
           background: "#eff6ff", color: "#2563eb",
           fontSize: "12px", fontWeight: 500, padding: "4px 14px",
-          borderRadius: "100px", marginBottom: "28px",
+          borderRadius: "100px", marginBottom: "24px",
           border: "1px solid #bfdbfe",
         }}>
           🔒 Free · No signup · Files stay on your device
         </div>
 
         <h1 style={{
-          fontSize: "clamp(28px, 5vw, 48px)", fontWeight: 700,
+          fontSize: "clamp(26px, 5vw, 46px)", fontWeight: 700,
           lineHeight: 1.18, color: "#0f0f0f",
-          letterSpacing: "-0.02em", marginBottom: "16px",
+          letterSpacing: "-0.02em", marginBottom: "14px",
         }}>
           All-in-one PDF tools.<br />
           <span style={{ color: "#2563eb" }}>Fast, simple, and free.</span>
         </h1>
 
         <p style={{
-          fontSize: "17px", color: "#4b5563",
-          maxWidth: "460px", margin: "0 auto 40px", lineHeight: 1.65,
+          fontSize: "16px", color: "#4b5563",
+          maxWidth: "440px", margin: "0 auto 32px", lineHeight: 1.6,
         }}>
           Compress, merge, split and convert PDFs in seconds — no signup required.
         </p>
 
+        {/* Tool picker */}
         <div style={{
-          border: "2px dashed #bfdbfe", background: "#eff6ff",
-          borderRadius: "16px", padding: "48px 24px", marginBottom: "20px",
+          border: "1px solid #e5e7eb",
+          background: "#fff",
+          borderRadius: "16px",
+          padding: "24px",
+          marginBottom: "16px",
+          textAlign: "left",
         }}>
+          <p style={{ fontSize: "12px", fontWeight: 600, color: "#9ca3af", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "14px" }}>
+            Choose what you want to do:
+          </p>
           <div style={{
-            width: "48px", height: "48px", background: "#fff", borderRadius: "12px",
-            margin: "0 auto 14px", display: "flex", alignItems: "center",
-            justifyContent: "center", fontSize: "22px",
-            boxShadow: "0 2px 8px rgba(37,99,235,0.12)",
-          }}>📄</div>
-          <p style={{ fontSize: "15px", color: "#374151", marginBottom: "4px", fontWeight: 500 }}>
-            Drag &amp; drop your PDF here
-          </p>
-          <p style={{ fontSize: "13px", color: "#9ca3af", margin: 0 }}>
-            or choose a tool below · PDF files up to 50MB
-          </p>
-        </div>
-
-        <div style={{ display: "flex", gap: "12px", justifyContent: "center", flexWrap: "wrap" }}>
-          <Link href="/tools/compress-pdf" style={{
-            display: "inline-flex", alignItems: "center", gap: "8px",
-            background: "#2563eb", color: "#fff",
-            padding: "12px 28px", borderRadius: "8px",
-            fontSize: "15px", fontWeight: 500, textDecoration: "none",
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fill, minmax(130px, 1fr))",
+            gap: "8px",
           }}>
-            ↑ Upload PDF
-          </Link>
-          <Link href="/categories/core" style={{
-            display: "inline-flex", alignItems: "center", gap: "6px",
-            color: "#4b5563", fontSize: "15px", textDecoration: "none",
-            padding: "12px 20px", borderRadius: "8px",
-            border: "1px solid #e5e7eb", background: "#fff",
-          }}>
-            See all tools →
-          </Link>
+            {QUICK_TOOLS.map((t) => (
+              <Link key={t.slug} href={`/tools/${t.slug}`} style={{
+                display: "flex", alignItems: "center", gap: "8px",
+                padding: "10px 12px", borderRadius: "8px",
+                border: "1px solid #e5e7eb", background: "#f9fafb",
+                textDecoration: "none", color: "#111",
+                fontSize: "13px", fontWeight: 500,
+                transition: "all 0.15s",
+              }}>
+                <span style={{ fontSize: "16px" }}>{t.icon}</span>
+                {t.label}
+              </Link>
+            ))}
+          </div>
+          <div style={{ borderTop: "1px solid #e5e7eb", marginTop: "16px", paddingTop: "14px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+            <p style={{ fontSize: "13px", color: "#9ca3af", margin: 0 }}>
+              🔒 Files never leave your device
+            </p>
+            <Link href="/categories/core" style={{ fontSize: "13px", color: "#2563eb", textDecoration: "none", fontWeight: 500 }}>
+              See all 20 tools →
+            </Link>
+          </div>
         </div>
-
-        <p style={{ fontSize: "12px", color: "#9ca3af", marginTop: "16px" }}>
-          🔒 Files are processed locally and never uploaded to any server
-        </p>
       </section>
 
       <hr style={{ border: "none", borderTop: "1px solid #e5e7eb", margin: 0 }} />
 
-      {/* POPULAR TOOLS */}
-      <section style={{ maxWidth: "960px", margin: "0 auto", padding: "64px 24px" }}>
-        <p style={{ fontSize: "11px", fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", color: "#2563eb", marginBottom: "10px" }}>Tools</p>
-        <h2 style={{ fontSize: "clamp(20px, 3vw, 28px)", fontWeight: 700, color: "#0f0f0f", letterSpacing: "-0.015em", marginBottom: "8px", borderLeft: "3px solid #2563eb", paddingLeft: "12px" }}>
+      {/* ── POPULAR TOOLS ── */}
+      <section style={{ maxWidth: "960px", margin: "0 auto", padding: "44px 24px" }}>
+        <p style={{ fontSize: "11px", fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", color: "#2563eb", marginBottom: "8px" }}>Tools</p>
+        <h2 style={{ fontSize: "clamp(18px, 3vw, 26px)", fontWeight: 700, color: "#0f0f0f", letterSpacing: "-0.015em", marginBottom: "6px", borderLeft: "3px solid #2563eb", paddingLeft: "12px" }}>
           Popular PDF tools
         </h2>
-        <p style={{ fontSize: "15px", color: "#4b5563", marginBottom: "32px" }}>
+        <p style={{ fontSize: "14px", color: "#4b5563", marginBottom: "24px" }}>
           Everything you need to work with PDF files — no installation required.{" "}
           <Link href="/convert-pdf" style={{ color: "#2563eb", textDecoration: "none" }}>Convert PDF →</Link>
         </p>
 
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(170px, 1fr))", gap: "12px" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(170px, 1fr))", gap: "10px" }}>
           {popularTools.map((tool) => (
             <Link key={tool.slug} href={`/tools/${tool.slug}`} style={{ textDecoration: "none" }}>
               <div style={{
                 background: "#fff", border: "1px solid #e5e7eb", borderRadius: "12px",
-                padding: "20px 16px", display: "flex", flexDirection: "column", gap: "10px",
+                padding: "18px 14px", display: "flex", flexDirection: "column", gap: "10px",
               }}>
-                <div style={{ width: "36px", height: "36px", borderRadius: "9px", background: tool.bg, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "18px" }}>
+                <div style={{ width: "34px", height: "34px", borderRadius: "8px", background: tool.bg, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "17px" }}>
                   {tool.icon}
                 </div>
                 <div>
-                  <p style={{ fontSize: "13px", fontWeight: 600, color: "#111", marginBottom: "4px" }}>{tool.name}</p>
+                  <p style={{ fontSize: "13px", fontWeight: 600, color: "#111", marginBottom: "3px" }}>{tool.name}</p>
                   <p style={{ fontSize: "12px", color: "#9ca3af", lineHeight: 1.4, margin: 0 }}>{tool.shortDescription}</p>
                 </div>
               </div>
@@ -152,26 +163,31 @@ export default function Home() {
 
       <hr style={{ border: "none", borderTop: "1px solid #e5e7eb", margin: 0 }} />
 
-      {/* HOW IT WORKS */}
-      <section style={{ maxWidth: "960px", margin: "0 auto", padding: "64px 24px" }}>
-        <p style={{ fontSize: "11px", fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", color: "#2563eb", marginBottom: "10px" }}>How it works</p>
-        <h2 style={{ fontSize: "clamp(20px, 3vw, 28px)", fontWeight: 700, color: "#0f0f0f", letterSpacing: "-0.015em", marginBottom: "8px", borderLeft: "3px solid #2563eb", paddingLeft: "12px" }}>
+      {/* ── HOW IT WORKS ── */}
+      <section style={{ maxWidth: "960px", margin: "0 auto", padding: "44px 24px" }}>
+        <p style={{ fontSize: "11px", fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", color: "#2563eb", marginBottom: "8px" }}>How it works</p>
+        <h2 style={{ fontSize: "clamp(18px, 3vw, 26px)", fontWeight: 700, color: "#0f0f0f", letterSpacing: "-0.015em", marginBottom: "6px", borderLeft: "3px solid #2563eb", paddingLeft: "12px" }}>
           Three steps to done
         </h2>
-        <p style={{ fontSize: "15px", color: "#4b5563", marginBottom: "40px" }}>No account, no software, no waiting.</p>
+        <p style={{ fontSize: "14px", color: "#4b5563", marginBottom: "28px" }}>No account, no software, no waiting.</p>
 
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: "24px" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "16px" }}>
           {[
-            { num: "01", icon: "📂", title: "Upload your file", text: "Drag & drop or click to select your PDF. Files stay on your device." },
-            { num: "02", icon: "⚙️", title: "Process instantly", text: "Your file is processed in seconds, directly in the browser." },
-            { num: "03", icon: "⬇️", title: "Download result", text: "Get your processed file immediately — no email, no waiting." },
+            { num: "01", icon: "📂", title: "Upload your file", text: "Drag & drop or click to select your PDF. Your file stays on your device and is never sent to a server." },
+            { num: "02", icon: "⚙️", title: "Process instantly", text: "Choose what you want to do — compress, merge, split, convert. Processing starts immediately in your browser." },
+            { num: "03", icon: "⬇️", title: "Download result", text: "Get your processed file right away. No email required, no waiting — just click download and you're done." },
           ].map((step) => (
-            <div key={step.num} style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-              <div style={{ width: "32px", height: "32px", borderRadius: "8px", background: "#2563eb", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "12px", fontWeight: 700 }}>
-                {step.num}
+            <div key={step.num} style={{
+              background: "#fff", border: "1px solid #e5e7eb", borderRadius: "12px",
+              padding: "20px", display: "flex", flexDirection: "column", gap: "12px",
+            }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                <div style={{ width: "28px", height: "28px", borderRadius: "7px", background: "#2563eb", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "11px", fontWeight: 700, flexShrink: 0 }}>
+                  {step.num}
+                </div>
+                <span style={{ fontSize: "22px" }}>{step.icon}</span>
               </div>
-              <div style={{ fontSize: "26px" }}>{step.icon}</div>
-              <p style={{ fontSize: "15px", fontWeight: 600, color: "#111", margin: 0 }}>{step.title}</p>
+              <p style={{ fontSize: "14px", fontWeight: 600, color: "#111", margin: 0 }}>{step.title}</p>
               <p style={{ fontSize: "13px", color: "#4b5563", lineHeight: 1.55, margin: 0 }}>{step.text}</p>
             </div>
           ))}
@@ -180,20 +196,20 @@ export default function Home() {
 
       <hr style={{ border: "none", borderTop: "1px solid #e5e7eb", margin: 0 }} />
 
-      {/* WHY DOCKITT */}
-      <section style={{ maxWidth: "960px", margin: "0 auto", padding: "64px 24px" }}>
-        <p style={{ fontSize: "11px", fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", color: "#2563eb", marginBottom: "10px" }}>Why Dockitt</p>
-        <h2 style={{ fontSize: "clamp(20px, 3vw, 28px)", fontWeight: 700, color: "#0f0f0f", letterSpacing: "-0.015em", marginBottom: "8px", borderLeft: "3px solid #2563eb", paddingLeft: "12px" }}>
+      {/* ── WHY DOCKITT ── */}
+      <section style={{ maxWidth: "960px", margin: "0 auto", padding: "44px 24px" }}>
+        <p style={{ fontSize: "11px", fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", color: "#2563eb", marginBottom: "8px" }}>Why Dockitt</p>
+        <h2 style={{ fontSize: "clamp(18px, 3vw, 26px)", fontWeight: 700, color: "#0f0f0f", letterSpacing: "-0.015em", marginBottom: "6px", borderLeft: "3px solid #2563eb", paddingLeft: "12px" }}>
           Built for people who just want it to work
         </h2>
-        <p style={{ fontSize: "15px", color: "#4b5563", marginBottom: "36px" }}>No distractions. No bloat. Just PDF tools that do the job.</p>
+        <p style={{ fontSize: "14px", color: "#4b5563", marginBottom: "24px" }}>No distractions. No bloat. Just PDF tools that do the job.</p>
 
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))", gap: "12px" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: "10px" }}>
           {WHY_ITEMS.map((item) => (
-            <div key={item.title} style={{ display: "flex", alignItems: "flex-start", gap: "12px", background: "#f9fafb", borderRadius: "10px", padding: "18px 16px", border: "1px solid #e5e7eb" }}>
+            <div key={item.title} style={{ display: "flex", alignItems: "flex-start", gap: "12px", background: "#fff", borderRadius: "10px", padding: "16px", border: "1px solid #e5e7eb" }}>
               <span style={{ fontSize: "20px", flexShrink: 0 }}>{item.icon}</span>
               <div>
-                <p style={{ fontSize: "14px", fontWeight: 600, color: "#111", marginBottom: "4px" }}>{item.title}</p>
+                <p style={{ fontSize: "14px", fontWeight: 600, color: "#111", marginBottom: "3px" }}>{item.title}</p>
                 <p style={{ fontSize: "13px", color: "#4b5563", margin: 0, lineHeight: 1.5 }}>{item.text}</p>
               </div>
             </div>
@@ -203,19 +219,19 @@ export default function Home() {
 
       <hr style={{ border: "none", borderTop: "1px solid #e5e7eb", margin: 0 }} />
 
-      {/* USE CASES */}
-      <section style={{ maxWidth: "960px", margin: "0 auto", padding: "64px 24px" }}>
-        <p style={{ fontSize: "11px", fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", color: "#2563eb", marginBottom: "10px" }}>Use cases</p>
-        <h2 style={{ fontSize: "clamp(20px, 3vw, 28px)", fontWeight: 700, color: "#0f0f0f", letterSpacing: "-0.015em", marginBottom: "8px", borderLeft: "3px solid #2563eb", paddingLeft: "12px" }}>
+      {/* ── USE CASES ── */}
+      <section style={{ maxWidth: "960px", margin: "0 auto", padding: "44px 24px" }}>
+        <p style={{ fontSize: "11px", fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", color: "#2563eb", marginBottom: "8px" }}>Use cases</p>
+        <h2 style={{ fontSize: "clamp(18px, 3vw, 26px)", fontWeight: 700, color: "#0f0f0f", letterSpacing: "-0.015em", marginBottom: "6px", borderLeft: "3px solid #2563eb", paddingLeft: "12px" }}>
           What people use Dockitt for
         </h2>
-        <p style={{ fontSize: "15px", color: "#4b5563", marginBottom: "32px" }}>Common tasks, handled quickly.</p>
+        <p style={{ fontSize: "14px", color: "#4b5563", marginBottom: "24px" }}>Common tasks, handled quickly.</p>
 
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))", gap: "8px" }}>
           {USE_CASES.map((uc) => (
             <Link key={uc.label} href={uc.href} style={{
               display: "flex", alignItems: "center", gap: "8px",
-              padding: "12px 14px", borderRadius: "8px",
+              padding: "11px 14px", borderRadius: "8px",
               border: "1px solid #e5e7eb", background: "#fff",
               textDecoration: "none", color: "#4b5563", fontSize: "13px",
             }}>
@@ -228,9 +244,9 @@ export default function Home() {
 
       <hr style={{ border: "none", borderTop: "1px solid #e5e7eb", margin: 0 }} />
 
-      {/* SEO DESCRIPTION */}
-      <section style={{ maxWidth: "960px", margin: "0 auto", padding: "64px 24px" }}>
-        <div style={{ background: "#f9fafb", border: "1px solid #e5e7eb", borderLeft: "3px solid #2563eb", borderRadius: "12px", padding: "28px 32px" }}>
+      {/* ── SEO DESCRIPTION ── */}
+      <section style={{ maxWidth: "960px", margin: "0 auto", padding: "44px 24px" }}>
+        <div style={{ background: "#fff", border: "1px solid #e5e7eb", borderLeft: "3px solid #2563eb", borderRadius: "12px", padding: "24px 28px" }}>
           <p style={{ fontSize: "15px", color: "#4b5563", lineHeight: 1.75, margin: 0 }}>
             <strong style={{ color: "#111" }}>Dockitt</strong> is a simple online tool that helps you work with PDF files quickly and easily.
             You can compress, merge, split and convert PDFs without installing anything.
@@ -241,20 +257,20 @@ export default function Home() {
         </div>
       </section>
 
-      {/* FINAL CTA */}
-      <section style={{ textAlign: "center", padding: "72px 24px", background: "#f3f4f6", borderTop: "1px solid #e5e7eb" }}>
-        <h2 style={{ fontSize: "clamp(20px, 3.5vw, 30px)", fontWeight: 700, color: "#0f0f0f", letterSpacing: "-0.015em", marginBottom: "10px" }}>
+      {/* ── FINAL CTA ── */}
+      <section style={{ textAlign: "center", padding: "56px 24px", background: "#f3f4f6", borderTop: "1px solid #e5e7eb" }}>
+        <h2 style={{ fontSize: "clamp(18px, 3.5vw, 28px)", fontWeight: 700, color: "#0f0f0f", letterSpacing: "-0.015em", marginBottom: "8px" }}>
           Start working with your PDF now
         </h2>
-        <p style={{ fontSize: "15px", color: "#4b5563", marginBottom: "28px" }}>Free, instant, no signup required.</p>
-        <Link href="/tools/compress-pdf" style={{
-          display: "inline-flex", alignItems: "center", gap: "8px",
-          background: "#2563eb", color: "#fff",
-          padding: "13px 32px", borderRadius: "8px",
-          fontSize: "15px", fontWeight: 500, textDecoration: "none",
-        }}>
-          ↑ Upload PDF
-        </Link>
+        <p style={{ fontSize: "15px", color: "#4b5563", marginBottom: "24px" }}>Free, instant, no signup required.</p>
+        <div style={{ display: "flex", gap: "10px", justifyContent: "center", flexWrap: "wrap" }}>
+          <Link href="/tools/compress-pdf" style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "#2563eb", color: "#fff", padding: "12px 28px", borderRadius: "8px", fontSize: "15px", fontWeight: 500, textDecoration: "none" }}>
+            ↑ Upload PDF
+          </Link>
+          <Link href="/categories/core" style={{ display: "inline-flex", alignItems: "center", gap: "6px", color: "#4b5563", fontSize: "15px", textDecoration: "none", padding: "12px 20px", borderRadius: "8px", border: "1px solid #d1d5db", background: "#fff" }}>
+            See all tools →
+          </Link>
+        </div>
       </section>
 
     </main>
