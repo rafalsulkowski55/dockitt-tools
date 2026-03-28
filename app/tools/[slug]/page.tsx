@@ -91,9 +91,10 @@ const introVariants: Record<string, "A" | "B" | "C" | "D"> = {
   "ocr-pdf": "C", "extract-pdf-pages": "B", "reorder-pdf-pages": "D",
 }
 
-function IntroSection({ tool, variant }: {
+function IntroSection({ tool, variant, slug }: {
   tool: { title: string; description: string; name: string; primaryKeyword: string };
-  variant: "A" | "B" | "C" | "D"
+  variant: "A" | "B" | "C" | "D";
+  slug: string;
 }) {
   const subtitles = {
     A: "Upload your file below and get the result in seconds. No sign-up required.",
@@ -101,6 +102,20 @@ function IntroSection({ tool, variant }: {
     C: "Processes your file instantly. Nothing is stored on our servers after download.",
     D: "Free, fast, and private. Your files are deleted immediately after processing.",
   }
+
+  if (slug === "compress-pdf") {
+    return (
+      <section>
+        <h1 style={{ fontSize: "32px", fontWeight: 700, marginBottom: "12px" }}>
+          Reduce PDF file size for email, forms and uploads
+        </h1>
+        <p style={{ fontSize: "18px", color: "#444", margin: "0 0 12px 0" }}>
+          Make large PDF files smaller so you can send them by email or upload them without size errors. No signup required.
+        </p>
+      </section>
+    )
+  }
+
   return (
     <section>
       <h1 style={{ fontSize: "32px", fontWeight: 700, marginBottom: "12px" }}>{tool.title}</h1>
@@ -163,7 +178,7 @@ export default async function ToolPage({ params }: ToolPageProps) {
 
         <div>
           <Breadcrumbs toolName={tool.name} />
-          <IntroSection tool={tool} variant={variant} />
+          <IntroSection tool={tool} variant={variant} slug={slug} />
         </div>
 
         <section style={{ ...sectionStyle, boxShadow: "0 1px 2px rgba(0,0,0,0.04)" }}>

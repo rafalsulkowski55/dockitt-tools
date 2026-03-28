@@ -1,15 +1,25 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import Link from "next/link";
 import { ToolTracking } from "@/lib/analytics";
 
 const TOOL_NAME = "compress-pdf";
 const PROCESSING_TYPE = "server" as const;
 
+type Preset = "email" | "small" | "quality";
+
+const PRESETS: { id: Preset; label: string; subtext: string }[] = [
+  { id: "email", label: "Email", subtext: "Balanced quality" },
+  { id: "small", label: "Small file", subtext: "Maximum compression" },
+  { id: "quality", label: "High quality", subtext: "Minimal compression" },
+];
+
 export default function ToolUpload() {
   const [fileName, setFileName] = useState("No file selected");
   const [fileSize, setFileSize] = useState("");
   const [file, setFile] = useState<File | null>(null);
+  const [preset, setPreset] = useState<Preset>("email");
   const [status, setStatus] = useState<"idle" | "processing" | "done" | "error">("idle");
   const [progress, setProgress] = useState(0);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -29,6 +39,18 @@ export default function ToolUpload() {
     if (bytes < 1024) return `${bytes} B`;
     if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
     return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
+  }
+
+  function getResultHeadline(reduction: number) {
+    if (reduction >= 70) return `${reduction}% smaller 🎉`;
+    if (reduction >= 30) return `${reduction}% smaller`;
+    return "Reduced file size while preserving quality";
+  }
+
+  function getSuccessMessage(compressedSize: number) {
+    if (compressedSize < 1024 * 1024) return "✓ Ready to send via email";
+    if (compressedSize < 5 * 1024 * 1024) return "✓ Fits most upload limits";
+    return "✓ File size reduced successfully";
   }
 
   async function generatePreview(f: File) {
@@ -85,6 +107,17 @@ export default function ToolUpload() {
     e.preventDefault();
   }
 
+  function handleReset() {
+    setFile(null);
+    setFileName("No file selected");
+    setFileSize("");
+    setStatus("idle");
+    setResultInfo(null);
+    setProgress(0);
+    setPreviewUrl(null);
+    setPreset("email");
+  }
+
   async function handleProcess() {
     if (!file) return;
     setStatus("processing");
@@ -97,6 +130,7 @@ export default function ToolUpload() {
     try {
       const formData = new FormData();
       formData.append("file", file);
+      formData.append("preset", preset);
       const res = await fetch("/api/compress-pdf", { method: "POST", body: formData });
       clearInterval(interval);
       setProgress(100);
@@ -131,16 +165,17 @@ export default function ToolUpload() {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
 
+      {/* Microcopy */}
+      <p style={{ fontSize: "13px", color: "#6b7280", margin: 0 }}>
+        Upload your PDF and choose how much you want to reduce its size.
+      </p>
+
       {/* Drag & drop */}
       <div
         onDrop={handleDrop}
         onDragOver={handleDragOver}
         onClick={() => inputRef.current?.click()}
-        style={{
-          border: "2px dashed #bfdbfe", borderRadius: "12px",
-          padding: "24px", textAlign: "center",
-          background: "#f8faff", cursor: "pointer",
-        }}
+        style={{ border: "2px dashed #bfdbfe", borderRadius: "12px", padding: "24px", textAlign: "center", background: "#f8faff", cursor: "pointer" }}
       >
         {previewUrl ? (
           <div style={{ display: "flex", alignItems: "center", gap: "16px", textAlign: "left" }}>
@@ -157,18 +192,32 @@ export default function ToolUpload() {
             <label htmlFor="pdf-upload" style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", padding: "10px 20px", background: "#2563eb", color: "#ffffff", borderRadius: "10px", fontWeight: 600, cursor: "pointer", fontSize: "14px" }} onClick={(e) => e.stopPropagation()}>
               Choose PDF
             </label>
-            {fileName !== "No file selected" && (
-              <div style={{ marginTop: "12px", fontSize: "14px", color: "#444" }}>📄 {fileName} {fileSize && `(${fileSize})`}</div>
-            )}
           </>
         )}
         <input id="pdf-upload" ref={inputRef} type="file" accept=".pdf" style={{ display: "none" }} onChange={handleFileChange} />
       </div>
 
-      {/* Privacy note — tylko raz */}
-      <div style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "12px", color: "#6b7280" }}>
-        <span>🔐</span>
-        Processed securely on our server. Files are deleted immediately after processing.
+      {/* Presets */}
+      <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+        <p style={{ fontSize: "13px", color: "#4b5563", margin: 0, fontWeight: 500 }}>Compression level:</p>
+        <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+          {PRESETS.map((p) => (
+            <button
+              key={p.id}
+              onClick={() => setPreset(p.id)}
+              style={{
+                display: "flex", flexDirection: "column", alignItems: "flex-start",
+                padding: "10px 16px", borderRadius: "8px", border: "1px solid",
+                borderColor: preset === p.id ? "#2563eb" : "#e5e7eb",
+                background: preset === p.id ? "#2563eb" : "#fff",
+                cursor: "pointer", transition: "all 0.15s",
+              }}
+            >
+              <span style={{ fontSize: "13px", fontWeight: 600, color: preset === p.id ? "#fff" : "#111" }}>{p.label}</span>
+              <span style={{ fontSize: "11px", color: preset === p.id ? "#bfdbfe" : "#9ca3af" }}>{p.subtext}</span>
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* Compress button */}
@@ -211,21 +260,14 @@ export default function ToolUpload() {
       {status === "done" && resultInfo && (
         <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
 
-          {/* Result card */}
           <div style={{ background: "#eff6ff", border: "1px solid #bfdbfe", borderRadius: "10px", padding: "20px" }}>
-
-            {/* Main result */}
             <p style={{ fontSize: "24px", fontWeight: 700, color: "#2563eb", margin: "0 0 6px" }}>
-              {resultInfo.reduction > 0 ? `${resultInfo.reduction}% smaller 🎉` : "File processed ✅"}
+              {getResultHeadline(resultInfo.reduction)}
             </p>
-
-            {/* Size comparison */}
-            <p style={{ fontSize: "15px", color: "#4b5563", margin: "0 0 10px" }}>
+            <p style={{ fontSize: "15px", color: "#4b5563", margin: "0 0 12px" }}>
               {formatSize(resultInfo.originalSize)} → {formatSize(resultInfo.compressedSize)}
             </p>
-
-            {/* Before / After block */}
-            <div style={{ display: "flex", gap: "12px", marginBottom: "12px" }}>
+            <div style={{ display: "flex", gap: "10px", marginBottom: "12px" }}>
               <div style={{ flex: 1, background: "#f9fafb", border: "1px solid #e5e7eb", borderRadius: "8px", padding: "10px 14px" }}>
                 <p style={{ fontSize: "11px", color: "#9ca3af", margin: "0 0 2px", textTransform: "uppercase", letterSpacing: "0.05em" }}>Before</p>
                 <p style={{ fontSize: "15px", fontWeight: 600, color: "#374151", margin: 0 }}>{formatSize(resultInfo.originalSize)}</p>
@@ -235,24 +277,37 @@ export default function ToolUpload() {
                 <p style={{ fontSize: "15px", fontWeight: 600, color: "#15803d", margin: 0 }}>{formatSize(resultInfo.compressedSize)}</p>
               </div>
             </div>
-
-            {/* Problem closing microcopy */}
             <p style={{ fontSize: "13px", color: "#16a34a", margin: 0 }}>
-              ✓ Your PDF is now ready to send or upload without size issues
+              {getSuccessMessage(resultInfo.compressedSize)}
             </p>
           </div>
 
           {/* Download button */}
           <button
             onClick={handleDownload}
-            style={{
-              padding: "14px 28px", background: "#16a34a", color: "#ffffff",
-              border: "none", borderRadius: "10px", fontWeight: 600, fontSize: "15px",
-              cursor: "pointer", width: "fit-content",
-            }}
+            style={{ padding: "14px 28px", background: "#16a34a", color: "#ffffff", border: "none", borderRadius: "10px", fontWeight: 600, fontSize: "15px", cursor: "pointer", width: "fit-content" }}
           >
             ⬇ Download compressed PDF
           </button>
+
+          {/* Next steps */}
+          <div style={{ background: "#f9fafb", border: "1px solid #e5e7eb", borderRadius: "10px", padding: "16px" }}>
+            <p style={{ fontSize: "13px", fontWeight: 600, color: "#111", margin: "0 0 10px" }}>Next steps</p>
+            <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+              <button
+                onClick={handleReset}
+                style={{ display: "flex", alignItems: "center", gap: "8px", background: "none", border: "none", cursor: "pointer", padding: 0, fontSize: "13px", color: "#2563eb", fontWeight: 500, textAlign: "left" }}
+              >
+                → Compress another PDF
+              </button>
+              <Link href="/tools/merge-pdf" style={{ fontSize: "13px", color: "#2563eb", textDecoration: "none", fontWeight: 500 }}>
+                → Merge PDF files
+              </Link>
+              <Link href="/tools/protect-pdf" style={{ fontSize: "13px", color: "#2563eb", textDecoration: "none", fontWeight: 500 }}>
+                → Password protect your PDF
+              </Link>
+            </div>
+          </div>
 
         </div>
       )}
