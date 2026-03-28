@@ -178,7 +178,7 @@ export default function Home() {
         </h2>
         <p style={{ fontSize: "14px", color: "#4b5563", marginBottom: "28px" }}>No account, no software, no waiting.</p>
 
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "16px" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: "16px" }}>
           {[
             { num: "01", icon: "📂", title: "Upload your file", text: "Drag & drop or click to select your PDF. Your file stays on your device and is never sent to a server." },
             { num: "02", icon: "⚙️", title: "Process instantly", text: "Choose what you want to do — compress, merge, split, convert. Processing starts immediately in your browser." },
@@ -270,13 +270,10 @@ export default function Home() {
           Start working with your PDF now
         </h2>
         <p style={{ fontSize: "15px", color: "#4b5563", marginBottom: "24px" }}>No signup required. Works in your browser.</p>
-        <div style={{ display: "flex", gap: "10px", justifyContent: "center", flexWrap: "wrap" }}>
+        <div style={{ display: "flex", justifyContent: "center" }}>
           <a href="#tool-picker" style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "#2563eb", color: "#fff", padding: "12px 28px", borderRadius: "8px", fontSize: "15px", fontWeight: 500, textDecoration: "none" }}>
             ↑ Choose a tool
           </a>
-          <Link href="/categories" style={{ display: "inline-flex", alignItems: "center", gap: "6px", color: "#4b5563", fontSize: "15px", textDecoration: "none", padding: "12px 20px", borderRadius: "8px", border: "1px solid #d1d5db", background: "#fff" }}>
-            See all tools →
-          </Link>
         </div>
       </section>
 
