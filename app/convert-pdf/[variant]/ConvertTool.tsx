@@ -1,7 +1,10 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { ConvertVariant } from "@/data/convert/variants";
+import { ToolTracking } from "@/lib/analytics";
+
+const SERVER_SIDE_VARIANTS = new Set(["pdf-to-word", "word-to-pdf"]);
 
 type Props = {
   variant: ConvertVariant;
@@ -16,12 +19,19 @@ export default function ConvertTool({ variant }: Props) {
   const [dragOver, setDragOver] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
+  const processingType = SERVER_SIDE_VARIANTS.has(variant.slug) ? "server" : "browser";
+
+  useEffect(() => {
+    ToolTracking.viewTool(variant.slug, processingType);
+  }, [variant.slug, processingType]);
+
   function handleFiles(selected: File[]) {
     setFiles(selected);
     setStatus("idle");
     setErrorMessage("");
     setResultUrls([]);
     setProgress(0);
+    if (selected.length > 0) ToolTracking.uploadStarted(variant.slug, processingType);
   }
 
   function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -59,6 +69,7 @@ export default function ConvertTool({ variant }: Props) {
 
     setResultUrls(urls);
     setStatus("done");
+    ToolTracking.processSuccess(variant.slug, processingType);
   }
 
   async function convertViaApi() {
@@ -80,10 +91,13 @@ export default function ConvertTool({ variant }: Props) {
     a.download = `converted.${variant.outputFormat}`;
     a.click();
     setStatus("done");
+    ToolTracking.processSuccess(variant.slug, processingType);
+    ToolTracking.downloadClicked(variant.slug, processingType);
   }
 
   async function handleConvert() {
     if (files.length === 0) return;
+    ToolTracking.processStarted(variant.slug, processingType);
     setStatus("processing");
     setErrorMessage("");
     setResultUrls([]);
@@ -111,6 +125,7 @@ export default function ConvertTool({ variant }: Props) {
   }
 
   function downloadImage(url: string, index: number) {
+    ToolTracking.downloadClicked(variant.slug, processingType);
     const a = document.createElement("a");
     a.href = url;
     a.download = `page-${index + 1}.${variant.outputFormat}`;
@@ -126,18 +141,12 @@ export default function ConvertTool({ variant }: Props) {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
 
-      {/* Drag & drop zona */}
       <div
         onClick={() => inputRef.current?.click()}
         onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
         onDragLeave={() => setDragOver(false)}
         onDrop={handleDrop}
-        style={{
-          border: `2px dashed ${dragOver ? "#2563eb" : "#bfdbfe"}`,
-          background: dragOver ? "#e0eeff" : "#f8faff",
-          borderRadius: "12px", padding: "32px 24px",
-          textAlign: "center", cursor: "pointer", transition: "all 0.15s",
-        }}
+        style={{ border: `2px dashed ${dragOver ? "#2563eb" : "#bfdbfe"}`, background: dragOver ? "#e0eeff" : "#f8faff", borderRadius: "12px", padding: "32px 24px", textAlign: "center", cursor: "pointer", transition: "all 0.15s" }}
       >
         <div style={{ fontSize: "28px", marginBottom: "8px" }}>📄</div>
         {files.length > 0 ? (
@@ -146,77 +155,42 @@ export default function ConvertTool({ variant }: Props) {
           </p>
         ) : (
           <>
-            <p style={{ fontSize: "14px", color: "#374151", fontWeight: 500, margin: "0 0 4px" }}>
-              Drag & drop your file here
-            </p>
+            <p style={{ fontSize: "14px", color: "#374151", fontWeight: 500, margin: "0 0 4px" }}>Drag & drop your file here</p>
             <p style={{ fontSize: "13px", color: "#9ca3af", margin: 0 }}>or click to browse</p>
           </>
         )}
-        <input
-          ref={inputRef}
-          id="convert-upload"
-          type="file"
-          accept={variant.accept}
-          multiple={variant.inputFormat !== "pdf"}
-          style={{ display: "none" }}
-          onChange={handleFileChange}
-        />
+        <input ref={inputRef} id="convert-upload" type="file" accept={variant.accept} multiple={variant.inputFormat !== "pdf"} style={{ display: "none" }} onChange={handleFileChange} />
       </div>
 
-      {/* Choose file button */}
-      <button
-        onClick={() => inputRef.current?.click()}
-        style={{
-          padding: "11px 20px", background: "#2563eb", color: "#fff",
-          border: "none", borderRadius: "8px", fontWeight: 500,
-          fontSize: "14px", cursor: "pointer", width: "fit-content",
-        }}
-      >
+      <button onClick={() => inputRef.current?.click()} style={{ padding: "11px 20px", background: "#2563eb", color: "#fff", border: "none", borderRadius: "8px", fontWeight: 500, fontSize: "14px", cursor: "pointer", width: "fit-content" }}>
         {variant.inputLabel}
       </button>
 
-      {/* Privacy note */}
       <p style={{ fontSize: "12px", color: "#9ca3af", margin: 0 }}>
-        🔒 Processed securely and deleted immediately
+        {processingType === "server"
+          ? "🔐 Processed on our secure server. Files are deleted immediately after processing."
+          : "🔒 Processed entirely in your browser. Files never leave your device."}
       </p>
 
-      {/* Convert button */}
-      <button
-        disabled={!isReady}
-        onClick={handleConvert}
-        style={{
-          padding: "12px 20px",
-          background: isReady ? "#2563eb" : "#d1d5db",
-          color: "#fff", border: "none", borderRadius: "8px",
-          fontWeight: 500, fontSize: "14px",
-          cursor: isReady ? "pointer" : "not-allowed",
-          width: "fit-content",
-        }}
-      >
+      <button disabled={!isReady} onClick={handleConvert} style={{ padding: "12px 20px", background: isReady ? "#2563eb" : "#d1d5db", color: "#fff", border: "none", borderRadius: "8px", fontWeight: 500, fontSize: "14px", cursor: isReady ? "pointer" : "not-allowed", width: "fit-content" }}>
         {status === "processing" ? "Converting..." : `Convert to ${variant.outputFormat.toUpperCase()}`}
       </button>
 
-      {/* Progress bar */}
       {status === "processing" && (
         <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
           <div style={{ background: "#e5e7eb", borderRadius: "100px", height: "6px", overflow: "hidden" }}>
-            <div style={{
-              height: "100%", borderRadius: "100px", background: "#2563eb",
-              width: `${progress}%`, transition: "width 0.3s ease",
-            }} />
+            <div style={{ height: "100%", borderRadius: "100px", background: "#2563eb", width: `${progress}%`, transition: "width 0.3s ease" }} />
           </div>
           <p style={{ fontSize: "12px", color: "#6b7280", margin: 0 }}>{Math.round(progress)}%</p>
         </div>
       )}
 
-      {/* Error */}
       {status === "error" && (
         <div style={{ padding: "14px 16px", background: "#fef2f2", color: "#dc2626", border: "1px solid #fecaca", borderRadius: "10px", fontSize: "14px" }}>
           {errorMessage || "Something went wrong. Please try again."}
         </div>
       )}
 
-      {/* Success — image results */}
       {status === "done" && resultUrls.length > 0 && (
         <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
           <div style={{ padding: "14px 16px", background: "#eff6ff", color: "#2563eb", border: "1px solid #bfdbfe", borderRadius: "10px", fontSize: "14px" }}>
@@ -237,7 +211,6 @@ export default function ConvertTool({ variant }: Props) {
         </div>
       )}
 
-      {/* Success — file download */}
       {status === "done" && resultUrls.length === 0 && (
         <div style={{ padding: "14px 16px", background: "#eff6ff", color: "#2563eb", border: "1px solid #bfdbfe", borderRadius: "10px", fontSize: "14px" }}>
           ✅ Conversion complete. Your file has been downloaded.
