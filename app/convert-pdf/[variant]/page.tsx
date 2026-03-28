@@ -4,9 +4,7 @@ import ConvertTool from "./ConvertTool";
 import Link from "next/link";
 
 type ConvertPageProps = {
-  params: Promise<{
-    variant: string;
-  }>;
+  params: Promise<{ variant: string }>;
 };
 
 export async function generateMetadata({ params }: ConvertPageProps) {
@@ -20,55 +18,50 @@ export async function generateMetadata({ params }: ConvertPageProps) {
 }
 
 export async function generateStaticParams() {
-  return getAllConvertVariants().map((v) => ({
-    variant: v.slug,
-  }));
+  return getAllConvertVariants().map((v) => ({ variant: v.slug }));
 }
 
 export default async function ConvertPage({ params }: ConvertPageProps) {
   const { variant } = await params;
   const v = getConvertVariant(variant);
   const all = getAllConvertVariants();
-
-  if (!v) {
-    notFound();
-  }
+  if (!v) notFound();
 
   return (
     <main style={{ maxWidth: "780px", margin: "0 auto", padding: "40px 20px" }}>
-      <div style={{ display: "flex", flexDirection: "column", gap: "40px" }}>
+      <div style={{ display: "flex", flexDirection: "column", gap: "32px" }}>
 
         {/* Breadcrumbs */}
         <nav>
           <ol style={{
             display: "flex", alignItems: "center", gap: "8px",
             listStyle: "none", margin: 0, padding: 0,
-            fontSize: "14px", color: "#999",
+            fontSize: "14px", color: "#9ca3af",
           }}>
-            <li><Link href="/" style={{ color: "#999", textDecoration: "none" }}>Home</Link></li>
-            <li style={{ color: "#ccc" }}>›</li>
-            <li><Link href="/convert-pdf" style={{ color: "#999", textDecoration: "none" }}>Convert PDF</Link></li>
-            <li style={{ color: "#ccc" }}>›</li>
-            <li style={{ color: "#333" }}>{v.name}</li>
+            <li><Link href="/" style={{ color: "#2563eb", textDecoration: "none" }}>Home</Link></li>
+            <li style={{ color: "#d1d5db" }}>›</li>
+            <li><Link href="/convert-pdf" style={{ color: "#9ca3af", textDecoration: "none" }}>Convert PDF</Link></li>
+            <li style={{ color: "#d1d5db" }}>›</li>
+            <li style={{ color: "#111" }}>{v.name}</li>
           </ol>
         </nav>
 
         {/* Header */}
         <section>
-          <h1 style={{ fontSize: "32px", fontWeight: 700, marginBottom: "12px" }}>
+          <h1 style={{ fontSize: "clamp(22px, 4vw, 32px)", fontWeight: 700, marginBottom: "10px", color: "#0f0f0f", letterSpacing: "-0.015em" }}>
             {v.title}
           </h1>
-          <p style={{ fontSize: "18px", color: "#555", margin: 0 }}>
+          <p style={{ fontSize: "16px", color: "#4b5563", margin: 0, lineHeight: 1.6 }}>
             {v.description}
           </p>
         </section>
 
-        {/* Variant menu */}
+        {/* Variant switcher */}
         <section style={{
-          background: "#ffffff", border: "1px solid #e5e7eb",
-          borderRadius: "16px", padding: "16px",
+          background: "#fff", border: "1px solid #e5e7eb",
+          borderRadius: "12px", padding: "16px",
         }}>
-          <p style={{ fontSize: "13px", color: "#999", margin: "0 0 12px 0" }}>
+          <p style={{ fontSize: "11px", fontWeight: 600, color: "#9ca3af", textTransform: "uppercase", letterSpacing: "0.06em", margin: "0 0 12px 0" }}>
             Select conversion type:
           </p>
           <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
@@ -77,15 +70,12 @@ export default async function ConvertPage({ params }: ConvertPageProps) {
                 key={item.slug}
                 href={`/convert-pdf/${item.slug}`}
                 style={{
-                  padding: "8px 14px",
-                  borderRadius: "8px",
-                  fontSize: "14px",
-                  fontWeight: 500,
-                  textDecoration: "none",
-                  background: item.slug === variant ? "#111111" : "#f3f4f6",
-                  color: item.slug === variant ? "#ffffff" : "#333333",
+                  padding: "8px 14px", borderRadius: "8px",
+                  fontSize: "13px", fontWeight: 500, textDecoration: "none",
+                  background: item.slug === variant ? "#2563eb" : "#f9fafb",
+                  color: item.slug === variant ? "#fff" : "#374151",
                   border: "1px solid",
-                  borderColor: item.slug === variant ? "#111111" : "#e5e7eb",
+                  borderColor: item.slug === variant ? "#2563eb" : "#e5e7eb",
                 }}
               >
                 {item.name}
@@ -96,58 +86,51 @@ export default async function ConvertPage({ params }: ConvertPageProps) {
 
         {/* Tool */}
         <section style={{
-          background: "#ffffff", border: "1px solid #e5e7eb",
-          borderRadius: "16px", padding: "24px",
-          boxShadow: "0 1px 2px rgba(0,0,0,0.04)",
+          background: "#fff", border: "1px solid #e5e7eb",
+          borderRadius: "12px", padding: "24px",
         }}>
-          <div style={{
-            border: "2px dashed #d1d5db", borderRadius: "12px",
-            padding: "32px", background: "#fafafa",
-          }}>
-            <ConvertTool variant={v} />
-          </div>
+          <ConvertTool variant={v} />
         </section>
 
         {/* Long description */}
-        <section style={{
-            background: "#ffffff", border: "1px solid #e5e7eb",
-            borderRadius: "16px", padding: "24px",
-            }}>
-                <p style={{ fontSize: "15px", color: "#555", lineHeight: "1.8", margin: 0 }}>
-                    {v.longDescription}
-                    </p>
-                    </section>
+        {v.longDescription && (
+          <section style={{
+            background: "#fff", border: "1px solid #e5e7eb",
+            borderLeft: "3px solid #2563eb",
+            borderRadius: "12px", padding: "24px",
+          }}>
+            <p style={{ fontSize: "15px", color: "#4b5563", lineHeight: 1.8, margin: 0 }}>
+              {v.longDescription}
+            </p>
+          </section>
+        )}
 
-{/* How to use */}
-<section style={{
-  background: "#ffffff", border: "1px solid #e5e7eb",
-  borderRadius: "16px", padding: "24px",
-}}>
-  <h2 style={{ marginTop: 0, fontSize: "20px" }}>How to use</h2>
-  <ol style={{ paddingLeft: "20px", margin: 0 }}>
-    {v.howTo.map((step) => (
-      <li key={step} style={{ marginBottom: "10px", color: "#444" }}>
-        {step}
-      </li>
-    ))}
-  </ol>
-</section>
-
-{/* FAQ */}
+        {/* How to use */}
+        <section style={{ background: "#fff", border: "1px solid #e5e7eb", borderRadius: "12px", padding: "24px" }}>
+          <h2 style={{ marginTop: 0, fontSize: "18px", fontWeight: 700, color: "#0f0f0f", borderLeft: "3px solid #2563eb", paddingLeft: "12px", marginBottom: "16px" }}>
+            How to use
+          </h2>
+          <ol style={{ paddingLeft: "20px", margin: 0, display: "flex", flexDirection: "column", gap: "8px" }}>
+            {v.howTo.map((step) => (
+              <li key={step} style={{ color: "#4b5563", fontSize: "14px", lineHeight: 1.6 }}>
+                {step}
+              </li>
+            ))}
+          </ol>
+        </section>
 
         {/* FAQ */}
-        <section style={{
-          background: "#ffffff", border: "1px solid #e5e7eb",
-          borderRadius: "16px", padding: "24px",
-        }}>
-          <h2 style={{ marginTop: 0, fontSize: "20px" }}>FAQ</h2>
+        <section style={{ background: "#fff", border: "1px solid #e5e7eb", borderRadius: "12px", padding: "24px" }}>
+          <h2 style={{ marginTop: 0, fontSize: "18px", fontWeight: 700, color: "#0f0f0f", borderLeft: "3px solid #2563eb", paddingLeft: "12px", marginBottom: "20px" }}>
+            FAQ
+          </h2>
           <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
             {v.faqs.map((faq) => (
               <div key={faq.question}>
-                <h3 style={{ margin: "0 0 8px 0", fontSize: "17px" }}>
+                <h3 style={{ margin: "0 0 6px 0", fontSize: "15px", fontWeight: 600, color: "#111" }}>
                   {faq.question}
                 </h3>
-                <p style={{ margin: 0, color: "#555" }}>{faq.answer}</p>
+                <p style={{ margin: 0, color: "#4b5563", fontSize: "14px", lineHeight: 1.6 }}>{faq.answer}</p>
               </div>
             ))}
           </div>
