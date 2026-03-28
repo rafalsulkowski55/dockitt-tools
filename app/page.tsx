@@ -81,14 +81,14 @@ export default function Home() {
           letterSpacing: "-0.02em", marginBottom: "14px",
         }}>
           All-in-one PDF tools.<br />
-          <span style={{ color: "#2563eb" }}>Fast, simple, and free.</span>
+          <span style={{ color: "#2563eb" }}>Fast, simple, and safe.</span>
         </h1>
 
         <p style={{
           fontSize: "16px", color: "#4b5563",
           maxWidth: "440px", margin: "0 auto 32px", lineHeight: 1.6,
         }}>
-          Compress, merge, split and convert PDFs in seconds — no signup required.
+          Compress, merge, split and convert PDFs in seconds, no signup required.
         </p>
 
         {/* Tool picker */}
@@ -141,7 +141,7 @@ export default function Home() {
           Popular PDF tools
         </h2>
         <p style={{ fontSize: "14px", color: "#4b5563", marginBottom: "24px" }}>
-          Everything you need to work with PDF files — no installation required.{" "}
+          Everything you need to work with PDF files, no installation required.{" "}
           <Link href="/convert-pdf" style={{ color: "#2563eb", textDecoration: "none" }}>Convert PDF →</Link>
         </p>
 
@@ -257,7 +257,7 @@ export default function Home() {
           <p style={{ fontSize: "15px", color: "#4b5563", lineHeight: 1.75, margin: 0 }}>
             <strong style={{ color: "#111" }}>Dockitt</strong> is a simple online tool that helps you work with PDF files quickly and easily.
             You can compress, merge, split and convert PDFs without installing anything.
-            All tools run directly in your browser — your files never leave your device.
+            All tools run directly in your browser, your files never leave your device.
             Whether you need to shrink a PDF for email, combine multiple documents, or convert a file to Word,
             Dockitt handles it in seconds, for free.
           </p>
