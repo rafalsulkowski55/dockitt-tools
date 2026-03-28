@@ -9,9 +9,12 @@ export default function SignUpload() {
   const [isSigned, setIsSigned] = useState(false);
   const [signaturePos, setSignaturePos] = useState<{ x: number; y: number } | null>(null);
   const [pdfScale, setPdfScale] = useState(1);
+  const [progress, setProgress] = useState(0);
+  const [dragOver, setDragOver] = useState(false);
 
   const signatureCanvasRef = useRef<HTMLCanvasElement>(null);
   const previewCanvasRef = useRef<HTMLCanvasElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
   const isDrawing = useRef(false);
   const lastPos = useRef<{ x: number; y: number } | null>(null);
 
@@ -26,15 +29,14 @@ export default function SignUpload() {
     ctx.lineJoin = "round";
   }, []);
 
-  async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const f = e.target.files?.[0] ?? null;
+  async function handleFile(f: File) {
     setFile(f);
     setStatus("idle");
     setErrorMessage("");
     setSignaturePos(null);
     setIsSigned(false);
+    setProgress(0);
     clearSignature();
-    if (!f) return;
 
     const pdfjsLib = await import("pdfjs-dist");
     pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js`;
@@ -60,6 +62,18 @@ export default function SignUpload() {
     }).promise;
   }
 
+  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const f = e.target.files?.[0];
+    if (f) handleFile(f);
+  }
+
+  function handleDrop(e: React.DragEvent) {
+    e.preventDefault();
+    setDragOver(false);
+    const f = e.dataTransfer.files?.[0];
+    if (f && f.type === "application/pdf") handleFile(f);
+  }
+
   function getCanvasPos(e: React.MouseEvent<HTMLCanvasElement>, canvas: HTMLCanvasElement) {
     const rect = canvas.getBoundingClientRect();
     const scaleX = canvas.width / rect.width;
@@ -73,8 +87,7 @@ export default function SignUpload() {
   function handlePreviewClick(e: React.MouseEvent<HTMLCanvasElement>) {
     const canvas = previewCanvasRef.current;
     if (!canvas) return;
-    const pos = getCanvasPos(e, canvas);
-    setSignaturePos(pos);
+    setSignaturePos(getCanvasPos(e, canvas));
   }
 
   function startDrawing(e: React.MouseEvent<HTMLCanvasElement>) {
@@ -108,17 +121,13 @@ export default function SignUpload() {
     lastPos.current = null;
     const canvas = signatureCanvasRef.current;
     if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-    ctx.beginPath();
+    canvas.getContext("2d")?.beginPath();
   }
 
   function clearSignature() {
     const canvas = signatureCanvasRef.current;
     if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    canvas.getContext("2d")?.clearRect(0, 0, canvas.width, canvas.height);
     setIsSigned(false);
   }
 
@@ -126,6 +135,11 @@ export default function SignUpload() {
     if (!file || !isSigned) return;
     setStatus("processing");
     setErrorMessage("");
+    setProgress(0);
+
+    const interval = setInterval(() => {
+      setProgress((p) => (p < 85 ? p + Math.random() * 12 : p));
+    }, 300);
 
     try {
       const sigCanvas = signatureCanvasRef.current;
@@ -157,11 +171,14 @@ export default function SignUpload() {
         body: formData,
       });
 
+      clearInterval(interval);
+
       if (!res.ok) {
         const err = await res.json();
         throw new Error(err.error ?? "Unknown error");
       }
 
+      setProgress(100);
       const blob = await res.blob();
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
@@ -170,31 +187,48 @@ export default function SignUpload() {
       a.click();
       setStatus("done");
     } catch (err: unknown) {
+      clearInterval(interval);
       const message = err instanceof Error ? err.message : "Unknown error";
       setErrorMessage(message);
       setStatus("error");
+      setProgress(0);
     }
   }
 
-  return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
+  const isReady = file && isSigned && status !== "processing";
 
-      <div style={{ display: "flex", alignItems: "center", gap: "16px", flexWrap: "wrap" }}>
-        <label
-          htmlFor="sign-upload"
-          style={{
-            display: "inline-flex", alignItems: "center", justifyContent: "center",
-            padding: "12px 18px", background: "#111111", color: "#ffffff",
-            borderRadius: "10px", fontWeight: 600, cursor: "pointer",
-          }}
-        >
-          Choose PDF
-        </label>
-        <span style={{ color: "#666666", fontSize: "15px" }}>
-          {file ? file.name : "No file selected"}
-        </span>
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+
+      {/* Drag & drop zona */}
+      <div
+        onClick={() => inputRef.current?.click()}
+        onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+        onDragLeave={() => setDragOver(false)}
+        onDrop={handleDrop}
+        style={{
+          border: `2px dashed ${dragOver ? "#2563eb" : "#bfdbfe"}`,
+          background: dragOver ? "#e0eeff" : "#f8faff",
+          borderRadius: "12px",
+          padding: "32px 24px",
+          textAlign: "center",
+          cursor: "pointer",
+          transition: "all 0.15s",
+        }}
+      >
+        <div style={{ fontSize: "28px", marginBottom: "8px" }}>📄</div>
+        {file ? (
+          <p style={{ fontSize: "14px", color: "#111", fontWeight: 500, margin: 0 }}>{file.name}</p>
+        ) : (
+          <>
+            <p style={{ fontSize: "14px", color: "#374151", fontWeight: 500, margin: "0 0 4px" }}>
+              Drag & drop your PDF here
+            </p>
+            <p style={{ fontSize: "13px", color: "#9ca3af", margin: 0 }}>or click to browse</p>
+          </>
+        )}
         <input
-          id="sign-upload"
+          ref={inputRef}
           type="file"
           accept=".pdf"
           style={{ display: "none" }}
@@ -202,17 +236,35 @@ export default function SignUpload() {
         />
       </div>
 
+      {/* Choose PDF button */}
+      <button
+        onClick={() => inputRef.current?.click()}
+        style={{
+          padding: "11px 20px", background: "#2563eb", color: "#fff",
+          border: "none", borderRadius: "8px", fontWeight: 500,
+          fontSize: "14px", cursor: "pointer", width: "fit-content",
+        }}
+      >
+        Choose PDF
+      </button>
+
+      {/* Privacy note */}
+      <p style={{ fontSize: "12px", color: "#9ca3af", margin: 0 }}>
+        🔒 Files never leave your device — processed securely and deleted immediately
+      </p>
+
+      {/* Step 1 — PDF preview */}
       {file && (
         <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-          <span style={{ fontSize: "14px", color: "#444", fontWeight: 600 }}>
-            Step 1 — Click on the document where you want to place your signature:
+          <span style={{ fontSize: "14px", color: "#111", fontWeight: 600 }}>
+            Step 1 — Click where you want to place your signature:
           </span>
           <div style={{ position: "relative", display: "inline-block", maxWidth: "100%" }}>
             <canvas
               ref={previewCanvasRef}
               onClick={handlePreviewClick}
               style={{
-                border: "1px solid #d1d5db",
+                border: "1px solid #bfdbfe",
                 borderRadius: "8px",
                 cursor: "crosshair",
                 display: "block",
@@ -224,31 +276,25 @@ export default function SignUpload() {
                 position: "absolute",
                 left: `${(signaturePos.x / (previewCanvasRef.current?.width ?? 1)) * 100}%`,
                 top: `${(signaturePos.y / (previewCanvasRef.current?.height ?? 1)) * 100}%`,
-                width: "120px",
-                height: "48px",
+                width: "120px", height: "48px",
                 border: "2px dashed #2563eb",
                 borderRadius: "4px",
                 background: "rgba(37,99,235,0.08)",
                 pointerEvents: "none",
                 transform: "translate(-4px, -4px)",
-              }}/>
+              }} />
             )}
           </div>
-          {signaturePos ? (
-            <span style={{ fontSize: "13px", color: "#16a34a" }}>
-              ✓ Position set — click elsewhere to move it
-            </span>
-          ) : (
-            <span style={{ fontSize: "13px", color: "#999" }}>
-              Click anywhere on the document to set position
-            </span>
-          )}
+          <span style={{ fontSize: "13px", color: signaturePos ? "#16a34a" : "#9ca3af" }}>
+            {signaturePos ? "✓ Position set — click elsewhere to move it" : "Click anywhere on the document to set position"}
+          </span>
         </div>
       )}
 
+      {/* Step 2 — Signature canvas */}
       {file && (
         <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-          <span style={{ fontSize: "14px", color: "#444", fontWeight: 600 }}>
+          <span style={{ fontSize: "14px", color: "#111", fontWeight: 600 }}>
             Step 2 — Draw your signature:
           </span>
           <canvas
@@ -260,10 +306,10 @@ export default function SignUpload() {
             onMouseUp={stopDrawing}
             onMouseLeave={stopDrawing}
             style={{
-              border: "1px solid #d1d5db",
+              border: "2px dashed #bfdbfe",
               borderRadius: "8px",
               cursor: "crosshair",
-              background: "#f9fafb",
+              background: "#f8faff",
               maxWidth: "100%",
               display: "block",
             }}
@@ -273,8 +319,7 @@ export default function SignUpload() {
             style={{
               padding: "8px 14px", background: "#f9fafb",
               border: "1px solid #e5e7eb", borderRadius: "8px",
-              fontSize: "13px", cursor: "pointer", width: "fit-content",
-              color: "#555",
+              fontSize: "13px", cursor: "pointer", width: "fit-content", color: "#555",
             }}
           >
             Clear
@@ -282,36 +327,46 @@ export default function SignUpload() {
         </div>
       )}
 
+      {/* Action button */}
       <button
-        disabled={!file || !isSigned || status === "processing"}
+        disabled={!isReady}
         onClick={handleProcess}
         style={{
-          padding: "12px 18px",
-          background: file && isSigned && status !== "processing" ? "#2563eb" : "#d1d5db",
-          color: "#ffffff", border: "none", borderRadius: "10px",
-          fontWeight: 600,
-          cursor: file && isSigned && status !== "processing" ? "pointer" : "not-allowed",
+          padding: "12px 20px",
+          background: isReady ? "#2563eb" : "#d1d5db",
+          color: "#fff", border: "none", borderRadius: "8px",
+          fontWeight: 500, fontSize: "14px",
+          cursor: isReady ? "pointer" : "not-allowed",
           width: "fit-content",
         }}
       >
-        {status === "processing" ? "Processing..." : "Sign PDF"}
+        {status === "processing" ? "Signing..." : "Sign PDF"}
       </button>
 
+      {/* Progress bar */}
+      {status === "processing" && (
+        <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+          <div style={{ background: "#e5e7eb", borderRadius: "100px", height: "6px", overflow: "hidden" }}>
+            <div style={{
+              height: "100%", borderRadius: "100px", background: "#2563eb",
+              width: `${progress}%`, transition: "width 0.3s ease",
+            }} />
+          </div>
+          <p style={{ fontSize: "12px", color: "#6b7280", margin: 0 }}>{Math.round(progress)}%</p>
+        </div>
+      )}
+
+      {/* Error */}
       {status === "error" && (
-        <div style={{
-          padding: "14px 16px", background: "#fef2f2", color: "#dc2626",
-          border: "1px solid #fecaca", borderRadius: "10px", fontSize: "14px",
-        }}>
+        <div style={{ padding: "14px 16px", background: "#fef2f2", color: "#dc2626", border: "1px solid #fecaca", borderRadius: "10px", fontSize: "14px" }}>
           {errorMessage || "Something went wrong. Please try again."}
         </div>
       )}
 
+      {/* Success */}
       {status === "done" && (
-        <div style={{
-          padding: "14px 16px", background: "#eff6ff", color: "#1d4ed8",
-          border: "1px solid #bfdbfe", borderRadius: "10px", fontSize: "14px",
-        }}>
-          Done. Your signed PDF has been downloaded.
+        <div style={{ padding: "14px 16px", background: "#eff6ff", color: "#2563eb", border: "1px solid #bfdbfe", borderRadius: "10px", fontSize: "14px" }}>
+          ✅ PDF signed and downloaded successfully.
         </div>
       )}
 
