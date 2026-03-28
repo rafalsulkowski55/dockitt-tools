@@ -56,9 +56,11 @@ export async function POST(req: NextRequest) {
 
     // pdf to word — Railway
     if (variant === "pdf-to-word") {
+      const railwayForm = new FormData();
+      railwayForm.append("file", files[0]);
       const response = await fetch(`${RAILWAY_API_URL}/pdf-to-word`, {
         method: 'POST',
-        body: formData,
+        body: railwayForm,
       });
       if (!response.ok) {
         const error = await response.json().catch(() => ({ error: 'Server error' }));
@@ -75,9 +77,11 @@ export async function POST(req: NextRequest) {
 
     // word to pdf — Railway
     if (variant === "word-to-pdf") {
+      const railwayForm = new FormData();
+      railwayForm.append("file", files[0]);
       const response = await fetch(`${RAILWAY_API_URL}/word-to-pdf`, {
         method: 'POST',
-        body: formData,
+        body: railwayForm,
       });
       if (!response.ok) {
         const error = await response.json().catch(() => ({ error: 'Server error' }));
