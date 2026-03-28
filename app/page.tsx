@@ -72,7 +72,7 @@ export default function Home() {
           borderRadius: "100px", marginBottom: "24px",
           border: "1px solid #bfdbfe",
         }}>
-          🔒 Free · No signup · Files stay on your device
+          🔒 No signup · Works in your browser · Files stay private
         </div>
 
         <h1 style={{
@@ -125,7 +125,7 @@ export default function Home() {
             <p style={{ fontSize: "13px", color: "#9ca3af", margin: 0 }}>
               🔒 Files never leave your device
             </p>
-            <Link href="/categories/core" style={{ fontSize: "13px", color: "#2563eb", textDecoration: "none", fontWeight: 500 }}>
+            <Link href="/categories" style={{ fontSize: "13px", color: "#2563eb", textDecoration: "none", fontWeight: 500 }}>
               See all 20 tools →
             </Link>
           </div>
@@ -269,12 +269,12 @@ export default function Home() {
         <h2 style={{ fontSize: "clamp(18px, 3.5vw, 28px)", fontWeight: 700, color: "#0f0f0f", letterSpacing: "-0.015em", marginBottom: "8px" }}>
           Start working with your PDF now
         </h2>
-        <p style={{ fontSize: "15px", color: "#4b5563", marginBottom: "24px" }}>Free, instant, no signup required.</p>
+        <p style={{ fontSize: "15px", color: "#4b5563", marginBottom: "24px" }}>No signup required. Works in your browser.</p>
         <div style={{ display: "flex", gap: "10px", justifyContent: "center", flexWrap: "wrap" }}>
           <a href="#tool-picker" style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "#2563eb", color: "#fff", padding: "12px 28px", borderRadius: "8px", fontSize: "15px", fontWeight: 500, textDecoration: "none" }}>
             ↑ Choose a tool
           </a>
-          <Link href="/categories/core" style={{ display: "inline-flex", alignItems: "center", gap: "6px", color: "#4b5563", fontSize: "15px", textDecoration: "none", padding: "12px 20px", borderRadius: "8px", border: "1px solid #d1d5db", background: "#fff" }}>
+          <Link href="/categories" style={{ display: "inline-flex", alignItems: "center", gap: "6px", color: "#4b5563", fontSize: "15px", textDecoration: "none", padding: "12px 20px", borderRadius: "8px", border: "1px solid #d1d5db", background: "#fff" }}>
             See all tools →
           </Link>
         </div>
