@@ -271,9 +271,9 @@ export default function Home() {
         </h2>
         <p style={{ fontSize: "15px", color: "#4b5563", marginBottom: "24px" }}>No signup required. Works in your browser.</p>
         <div style={{ display: "flex", justifyContent: "center" }}>
-          <a href="#tool-picker" style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "#2563eb", color: "#fff", padding: "12px 28px", borderRadius: "8px", fontSize: "15px", fontWeight: 500, textDecoration: "none" }}>
-            ↑ Choose a tool
-          </a>
+          <Link href="/categories" style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "#2563eb", color: "#fff", padding: "12px 28px", borderRadius: "8px", fontSize: "15px", fontWeight: 500, textDecoration: "none" }}>
+            See all tools →
+          </Link>
         </div>
       </section>
 
