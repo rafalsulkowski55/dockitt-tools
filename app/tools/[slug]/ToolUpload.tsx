@@ -8,6 +8,7 @@ export default function ToolUpload() {
   const [file, setFile] = useState<File | null>(null);
   const [status, setStatus] = useState<"idle" | "processing" | "done" | "error">("idle");
   const [progress, setProgress] = useState(0);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [resultInfo, setResultInfo] = useState<{
     originalSize: number;
     compressedSize: number;
@@ -22,7 +23,26 @@ export default function ToolUpload() {
     return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
   }
 
-  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+  async function generatePreview(f: File) {
+    try {
+      const pdfjsLib = await import("pdfjs-dist");
+      pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js`;
+      const arrayBuffer = await f.arrayBuffer();
+      const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+      const page = await pdf.getPage(1);
+      const viewport = page.getViewport({ scale: 0.4 });
+      const canvas = document.createElement("canvas");
+      canvas.width = viewport.width;
+      canvas.height = viewport.height;
+      const ctx = canvas.getContext("2d")!;
+      await page.render({ canvasContext: ctx as unknown as CanvasRenderingContext2D, viewport }).promise;
+      setPreviewUrl(canvas.toDataURL());
+    } catch {
+      setPreviewUrl(null);
+    }
+  }
+
+  async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const f = e.target.files?.[0] ?? null;
     setFile(f);
     setFileName(f ? f.name : "No file selected");
@@ -30,6 +50,8 @@ export default function ToolUpload() {
     setStatus("idle");
     setResultInfo(null);
     setProgress(0);
+    setPreviewUrl(null);
+    if (f) generatePreview(f);
   }
 
   function handleDrop(e: React.DragEvent<HTMLDivElement>) {
@@ -42,6 +64,8 @@ export default function ToolUpload() {
       setStatus("idle");
       setResultInfo(null);
       setProgress(0);
+      setPreviewUrl(null);
+      generatePreview(f);
     }
   }
 
@@ -105,21 +129,53 @@ export default function ToolUpload() {
         }}
         onClick={() => inputRef.current?.click()}
       >
-        <div style={{ fontSize: "13px", color: "#666", marginBottom: "12px" }}>
-          Drag & drop your PDF here or
-        </div>
-        <label
-          htmlFor="pdf-upload"
-          style={{
-            display: "inline-flex", alignItems: "center", justifyContent: "center",
-            padding: "10px 20px", background: "#2563eb", color: "#ffffff",
-            borderRadius: "10px", fontWeight: 600, cursor: "pointer",
-            fontSize: "14px",
-          }}
-          onClick={(e) => e.stopPropagation()}
-        >
-          Choose PDF
-        </label>
+        {previewUrl ? (
+          <div style={{ display: "flex", alignItems: "center", gap: "16px", textAlign: "left" }}>
+            <img
+              src={previewUrl}
+              alt="PDF preview"
+              style={{
+                height: "80px", width: "auto",
+                borderRadius: "6px",
+                border: "1px solid #bfdbfe",
+                boxShadow: "0 2px 6px rgba(37,99,235,0.1)",
+                flexShrink: 0,
+              }}
+            />
+            <div>
+              <p style={{ fontSize: "14px", fontWeight: 600, color: "#111", margin: "0 0 4px" }}>
+                {fileName}
+              </p>
+              <p style={{ fontSize: "12px", color: "#9ca3af", margin: 0 }}>{fileSize}</p>
+              <p style={{ fontSize: "12px", color: "#2563eb", margin: "4px 0 0" }}>
+                Click to change file
+              </p>
+            </div>
+          </div>
+        ) : (
+          <>
+            <div style={{ fontSize: "13px", color: "#666", marginBottom: "12px" }}>
+              Drag & drop your PDF here or
+            </div>
+            <label
+              htmlFor="pdf-upload"
+              style={{
+                display: "inline-flex", alignItems: "center", justifyContent: "center",
+                padding: "10px 20px", background: "#2563eb", color: "#ffffff",
+                borderRadius: "10px", fontWeight: 600, cursor: "pointer",
+                fontSize: "14px",
+              }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              Choose PDF
+            </label>
+            {fileName !== "No file selected" && (
+              <div style={{ marginTop: "12px", fontSize: "14px", color: "#444" }}>
+                📄 {fileName} {fileSize && `(${fileSize})`}
+              </div>
+            )}
+          </>
+        )}
         <input
           id="pdf-upload"
           ref={inputRef}
@@ -128,11 +184,6 @@ export default function ToolUpload() {
           style={{ display: "none" }}
           onChange={handleFileChange}
         />
-        {fileName !== "No file selected" && (
-          <div style={{ marginTop: "12px", fontSize: "14px", color: "#444" }}>
-            📄 {fileName} {fileSize && `(${fileSize})`}
-          </div>
-        )}
       </div>
 
       <div style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "12px", color: "#555" }}>
