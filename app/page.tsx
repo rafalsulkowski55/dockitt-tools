@@ -87,7 +87,7 @@ export default function Home() {
         </p>
 
         {/* Tool picker */}
-        <div style={{
+        <div id="tool-picker" style={{
           border: "1px solid #e5e7eb",
           background: "#fff",
           borderRadius: "16px",
@@ -110,7 +110,6 @@ export default function Home() {
                 border: "1px solid #e5e7eb", background: "#f9fafb",
                 textDecoration: "none", color: "#111",
                 fontSize: "13px", fontWeight: 500,
-                transition: "all 0.15s",
               }}>
                 <span style={{ fontSize: "16px" }}>{t.icon}</span>
                 {t.label}
@@ -204,7 +203,7 @@ export default function Home() {
         </h2>
         <p style={{ fontSize: "14px", color: "#4b5563", marginBottom: "24px" }}>No distractions. No bloat. Just PDF tools that do the job.</p>
 
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: "10px" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "10px" }}>
           {WHY_ITEMS.map((item) => (
             <div key={item.title} style={{ display: "flex", alignItems: "flex-start", gap: "12px", background: "#fff", borderRadius: "10px", padding: "16px", border: "1px solid #e5e7eb" }}>
               <span style={{ fontSize: "20px", flexShrink: 0 }}>{item.icon}</span>
@@ -264,9 +263,9 @@ export default function Home() {
         </h2>
         <p style={{ fontSize: "15px", color: "#4b5563", marginBottom: "24px" }}>Free, instant, no signup required.</p>
         <div style={{ display: "flex", gap: "10px", justifyContent: "center", flexWrap: "wrap" }}>
-          <Link href="/tools/compress-pdf" style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "#2563eb", color: "#fff", padding: "12px 28px", borderRadius: "8px", fontSize: "15px", fontWeight: 500, textDecoration: "none" }}>
-            ↑ Upload PDF
-          </Link>
+          <a href="#tool-picker" style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "#2563eb", color: "#fff", padding: "12px 28px", borderRadius: "8px", fontSize: "15px", fontWeight: 500, textDecoration: "none" }}>
+            ↑ Choose a tool
+          </a>
           <Link href="/categories/core" style={{ display: "inline-flex", alignItems: "center", gap: "6px", color: "#4b5563", fontSize: "15px", textDecoration: "none", padding: "12px 20px", borderRadius: "8px", border: "1px solid #d1d5db", background: "#fff" }}>
             See all tools →
           </Link>
