@@ -14,11 +14,16 @@ const POPULAR_TOOLS = [
   { slug: "word-to-pdf", icon: "📄", bg: "#eff6ff" },
 ];
 
+const POPULAR_TOOL_HREFS: Record<string, string> = {
+  "pdf-to-word": "/convert-pdf/pdf-to-word",
+  "word-to-pdf": "/convert-pdf/word-to-pdf",
+};
+
 const USE_CASES = [
   { label: "Compress PDF for email", href: "/tools/compress-pdf" },
   { label: "Reduce PDF size without losing quality", href: "/tools/compress-pdf" },
   { label: "Merge PDF files online", href: "/tools/merge-pdf" },
-  { label: "Convert PDF to Word", href: "/tools/pdf-to-word" },
+  { label: "Convert PDF to Word", href: "/convert-pdf/pdf-to-word" },
   { label: "Split PDF by page range", href: "/tools/split-pdf" },
   { label: "Add password to PDF", href: "/tools/protect-pdf" },
   { label: "Make scanned PDF searchable", href: "/tools/ocr-pdf" },
@@ -37,14 +42,14 @@ const WHY_ITEMS = [
 ];
 
 const QUICK_TOOLS = [
-  { slug: "compress-pdf", label: "Compress", icon: "📦" },
-  { slug: "merge-pdf", label: "Merge", icon: "🔗" },
-  { slug: "split-pdf", label: "Split", icon: "✂️" },
-  { slug: "pdf-to-word", label: "PDF → Word", icon: "📝" },
-  { slug: "word-to-pdf", label: "Word → PDF", icon: "📄" },
-  { slug: "protect-pdf", label: "Protect", icon: "🔐" },
-  { slug: "rotate-pdf", label: "Rotate", icon: "🔄" },
-  { slug: "ocr-pdf", label: "OCR", icon: "🔍" },
+  { slug: "compress-pdf", label: "Compress", icon: "📦", href: "/tools/compress-pdf" },
+  { slug: "merge-pdf", label: "Merge", icon: "🔗", href: "/tools/merge-pdf" },
+  { slug: "split-pdf", label: "Split", icon: "✂️", href: "/tools/split-pdf" },
+  { slug: "pdf-to-word", label: "PDF → Word", icon: "📝", href: "/convert-pdf/pdf-to-word" },
+  { slug: "word-to-pdf", label: "Word → PDF", icon: "📄", href: "/convert-pdf/word-to-pdf" },
+  { slug: "protect-pdf", label: "Protect", icon: "🔐", href: "/tools/protect-pdf" },
+  { slug: "rotate-pdf", label: "Rotate", icon: "🔄", href: "/tools/rotate-pdf" },
+  { slug: "ocr-pdf", label: "OCR", icon: "🔍", href: "/tools/ocr-pdf" },
 ];
 
 export default function Home() {
@@ -104,7 +109,7 @@ export default function Home() {
             gap: "8px",
           }}>
             {QUICK_TOOLS.map((t) => (
-              <Link key={t.slug} href={`/tools/${t.slug}`} style={{
+              <Link key={t.slug} href={t.href} style={{
                 display: "flex", alignItems: "center", gap: "8px",
                 padding: "10px 12px", borderRadius: "8px",
                 border: "1px solid #e5e7eb", background: "#f9fafb",
@@ -141,22 +146,25 @@ export default function Home() {
         </p>
 
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(170px, 1fr))", gap: "10px" }}>
-          {popularTools.map((tool) => (
-            <Link key={tool.slug} href={`/tools/${tool.slug}`} style={{ textDecoration: "none" }}>
-              <div style={{
-                background: "#fff", border: "1px solid #e5e7eb", borderRadius: "12px",
-                padding: "18px 14px", display: "flex", flexDirection: "column", gap: "10px",
-              }}>
-                <div style={{ width: "34px", height: "34px", borderRadius: "8px", background: tool.bg, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "17px" }}>
-                  {tool.icon}
+          {popularTools.map((tool) => {
+            const href = POPULAR_TOOL_HREFS[tool.slug] ?? `/tools/${tool.slug}`;
+            return (
+              <Link key={tool.slug} href={href} style={{ textDecoration: "none" }}>
+                <div style={{
+                  background: "#fff", border: "1px solid #e5e7eb", borderRadius: "12px",
+                  padding: "18px 14px", display: "flex", flexDirection: "column", gap: "10px",
+                }}>
+                  <div style={{ width: "34px", height: "34px", borderRadius: "8px", background: tool.bg, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "17px" }}>
+                    {tool.icon}
+                  </div>
+                  <div>
+                    <p style={{ fontSize: "13px", fontWeight: 600, color: "#111", marginBottom: "3px" }}>{tool.name}</p>
+                    <p style={{ fontSize: "12px", color: "#9ca3af", lineHeight: 1.4, margin: 0 }}>{tool.shortDescription}</p>
+                  </div>
                 </div>
-                <div>
-                  <p style={{ fontSize: "13px", fontWeight: 600, color: "#111", marginBottom: "3px" }}>{tool.name}</p>
-                  <p style={{ fontSize: "12px", color: "#9ca3af", lineHeight: 1.4, margin: 0 }}>{tool.shortDescription}</p>
-                </div>
-              </div>
-            </Link>
-          ))}
+              </Link>
+            );
+          })}
         </div>
       </section>
 
