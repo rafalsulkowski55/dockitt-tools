@@ -1,6 +1,10 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import { ToolTracking } from "@/lib/analytics";
+
+const TOOL_NAME = "crop-pdf";
+const PROCESSING_TYPE = "browser" as const;
 
 type CropBox = { x: number; y: number; width: number; height: number };
 
@@ -27,6 +31,10 @@ export default function CropUpload() {
   const canvasSizeRef = useRef({ width: 0, height: 0 });
   const cropBoxRef = useRef<CropBox | null>(null);
   const allCropsRef = useRef<Record<number, CropBox>>({});
+
+  useEffect(() => {
+    ToolTracking.viewTool(TOOL_NAME, PROCESSING_TYPE);
+  }, []);
 
   useEffect(() => {
     cropBoxRef.current = cropBox;
@@ -59,16 +67,10 @@ export default function CropUpload() {
     ctx.stroke();
     const hs = 10;
     ctx.fillStyle = "#2563eb";
-    const corners = [
-      { x: box.x, y: box.y }, { x: box.x + box.width, y: box.y },
-      { x: box.x, y: box.y + box.height }, { x: box.x + box.width, y: box.y + box.height },
-    ];
-    corners.forEach(c => ctx.fillRect(c.x - hs / 2, c.y - hs / 2, hs, hs));
-    const edges = [
-      { x: box.x + box.width / 2, y: box.y }, { x: box.x + box.width / 2, y: box.y + box.height },
-      { x: box.x, y: box.y + box.height / 2 }, { x: box.x + box.width, y: box.y + box.height / 2 },
-    ];
-    edges.forEach(e => ctx.fillRect(e.x - hs / 2, e.y - hs / 2, hs, hs));
+    [{ x: box.x, y: box.y }, { x: box.x + box.width, y: box.y }, { x: box.x, y: box.y + box.height }, { x: box.x + box.width, y: box.y + box.height }]
+      .forEach(c => ctx.fillRect(c.x - hs / 2, c.y - hs / 2, hs, hs));
+    [{ x: box.x + box.width / 2, y: box.y }, { x: box.x + box.width / 2, y: box.y + box.height }, { x: box.x, y: box.y + box.height / 2 }, { x: box.x + box.width, y: box.y + box.height / 2 }]
+      .forEach(e => ctx.fillRect(e.x - hs / 2, e.y - hs / 2, hs, hs));
   }
 
   async function renderPage(pageNum: number) {
@@ -106,6 +108,7 @@ export default function CropUpload() {
     setCurrentPage(1);
     setProgress(0);
     allCropsRef.current = {};
+    ToolTracking.uploadStarted(TOOL_NAME, PROCESSING_TYPE);
     const pdfjsLib = await import("pdfjs-dist");
     pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js`;
     const arrayBuffer = await f.arrayBuffer();
@@ -137,9 +140,7 @@ export default function CropUpload() {
     const overlay = overlayCanvasRef.current;
     if (!overlay) return { x: 0, y: 0 };
     const rect = overlay.getBoundingClientRect();
-    const scaleX = overlay.width / rect.width;
-    const scaleY = overlay.height / rect.height;
-    return { x: (e.clientX - rect.left) * scaleX, y: (e.clientY - rect.top) * scaleY };
+    return { x: (e.clientX - rect.left) * (overlay.width / rect.width), y: (e.clientY - rect.top) * (overlay.height / rect.height) };
   }
 
   function getHandle(pos: { x: number; y: number }, box: CropBox): string | null {
@@ -224,6 +225,7 @@ export default function CropUpload() {
   async function handleProcess() {
     if (!file || !cropBoxRef.current) return;
     if (cropBoxRef.current) allCropsRef.current[currentPage] = cropBoxRef.current;
+    ToolTracking.processStarted(TOOL_NAME, PROCESSING_TYPE);
     setStatus("processing");
     setErrorMessage("");
     setProgress(0);
@@ -263,6 +265,8 @@ export default function CropUpload() {
       a.download = `cropped-${file.name}`;
       a.click();
       setStatus("done");
+      ToolTracking.processSuccess(TOOL_NAME, PROCESSING_TYPE);
+      ToolTracking.downloadClicked(TOOL_NAME, PROCESSING_TYPE);
     } catch (err: unknown) {
       clearInterval(interval);
       setErrorMessage(err instanceof Error ? err.message : "Unknown error");
@@ -276,18 +280,12 @@ export default function CropUpload() {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
 
-      {/* Drag & drop zona */}
       <div
         onClick={() => inputRef.current?.click()}
         onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
         onDragLeave={() => setDragOver(false)}
         onDrop={handleDrop}
-        style={{
-          border: `2px dashed ${dragOver ? "#2563eb" : "#bfdbfe"}`,
-          background: dragOver ? "#e0eeff" : "#f8faff",
-          borderRadius: "12px", padding: "32px 24px",
-          textAlign: "center", cursor: "pointer", transition: "all 0.15s",
-        }}
+        style={{ border: `2px dashed ${dragOver ? "#2563eb" : "#bfdbfe"}`, background: dragOver ? "#e0eeff" : "#f8faff", borderRadius: "12px", padding: "32px 24px", textAlign: "center", cursor: "pointer", transition: "all 0.15s" }}
       >
         <div style={{ fontSize: "28px", marginBottom: "8px" }}>📄</div>
         {file ? (
@@ -301,74 +299,39 @@ export default function CropUpload() {
         <input ref={inputRef} type="file" accept=".pdf" style={{ display: "none" }} onChange={handleFileChange} />
       </div>
 
-      {/* Choose PDF button */}
-      <button
-        onClick={() => inputRef.current?.click()}
-        style={{ padding: "11px 20px", background: "#2563eb", color: "#fff", border: "none", borderRadius: "8px", fontWeight: 500, fontSize: "14px", cursor: "pointer", width: "fit-content" }}
-      >
+      <button onClick={() => inputRef.current?.click()} style={{ padding: "11px 20px", background: "#2563eb", color: "#fff", border: "none", borderRadius: "8px", fontWeight: 500, fontSize: "14px", cursor: "pointer", width: "fit-content" }}>
         Choose PDF
       </button>
 
-      {/* Privacy note */}
       <p style={{ fontSize: "12px", color: "#9ca3af", margin: 0 }}>
-        🔒 Processed securely and deleted immediately
+        🔒 Processed entirely in your browser. Files never leave your device.
       </p>
 
-      {/* Page navigation */}
       {file && totalPages > 1 && (
         <div style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap" }}>
-          <button onClick={() => goToPage(Math.max(1, currentPage - 1))} disabled={currentPage === 1}
-            style={{ padding: "8px 14px", borderRadius: "8px", border: "1px solid #e5e7eb", background: "#fff", cursor: currentPage === 1 ? "not-allowed" : "pointer", fontSize: "14px" }}>
-            ← Prev
-          </button>
+          <button onClick={() => goToPage(Math.max(1, currentPage - 1))} disabled={currentPage === 1} style={{ padding: "8px 14px", borderRadius: "8px", border: "1px solid #e5e7eb", background: "#fff", cursor: currentPage === 1 ? "not-allowed" : "pointer", fontSize: "14px" }}>← Prev</button>
           <span style={{ fontSize: "14px", color: "#555" }}>Page {currentPage} of {totalPages}</span>
-          <button onClick={() => goToPage(Math.min(totalPages, currentPage + 1))} disabled={currentPage === totalPages}
-            style={{ padding: "8px 14px", borderRadius: "8px", border: "1px solid #e5e7eb", background: "#fff", cursor: currentPage === totalPages ? "not-allowed" : "pointer", fontSize: "14px" }}>
-            Next →
-          </button>
-          <button onClick={applyToAllPages}
-            style={{ padding: "8px 14px", borderRadius: "8px", border: "1px solid #2563eb", background: appliedToAll ? "#16a34a" : "#eff6ff", color: appliedToAll ? "#fff" : "#2563eb", cursor: "pointer", fontSize: "13px", transition: "all 0.2s" }}>
+          <button onClick={() => goToPage(Math.min(totalPages, currentPage + 1))} disabled={currentPage === totalPages} style={{ padding: "8px 14px", borderRadius: "8px", border: "1px solid #e5e7eb", background: "#fff", cursor: currentPage === totalPages ? "not-allowed" : "pointer", fontSize: "14px" }}>Next →</button>
+          <button onClick={applyToAllPages} style={{ padding: "8px 14px", borderRadius: "8px", border: "1px solid #2563eb", background: appliedToAll ? "#16a34a" : "#eff6ff", color: appliedToAll ? "#fff" : "#2563eb", cursor: "pointer", fontSize: "13px", transition: "all 0.2s" }}>
             {appliedToAll ? "✓ Applied to all pages" : "Apply to all pages"}
           </button>
         </div>
       )}
 
-      {/* Canvas */}
       {file && totalPages > 0 && (
         <>
           <div style={{ position: "relative", display: "inline-block", maxWidth: "100%", borderRadius: "8px", overflow: "hidden", border: "1px solid #bfdbfe" }}>
             <canvas ref={previewCanvasRef} style={{ display: "block", maxWidth: "100%" }} />
-            <canvas
-              ref={overlayCanvasRef}
-              onMouseDown={handleMouseDown}
-              onMouseMove={handleMouseMove}
-              onMouseUp={handleMouseUp}
-              onMouseLeave={handleMouseUp}
-              style={{ position: "absolute", top: 0, left: 0, maxWidth: "100%", cursor: "default" }}
-            />
+            <canvas ref={overlayCanvasRef} onMouseDown={handleMouseDown} onMouseMove={handleMouseMove} onMouseUp={handleMouseUp} onMouseLeave={handleMouseUp} style={{ position: "absolute", top: 0, left: 0, maxWidth: "100%", cursor: "default" }} />
           </div>
-          <p style={{ fontSize: "13px", color: "#6b7280", margin: 0 }}>
-            Drag the crop box or its handles to adjust. The dark area will be removed.
-          </p>
+          <p style={{ fontSize: "13px", color: "#6b7280", margin: 0 }}>Drag the crop box or its handles to adjust. The dark area will be removed.</p>
         </>
       )}
 
-      {/* Action button */}
-      <button
-        disabled={!isReady}
-        onClick={handleProcess}
-        style={{
-          padding: "12px 20px",
-          background: isReady ? "#2563eb" : "#d1d5db",
-          color: "#fff", border: "none", borderRadius: "8px",
-          fontWeight: 500, fontSize: "14px",
-          cursor: isReady ? "pointer" : "not-allowed", width: "fit-content",
-        }}
-      >
+      <button disabled={!isReady} onClick={handleProcess} style={{ padding: "12px 20px", background: isReady ? "#2563eb" : "#d1d5db", color: "#fff", border: "none", borderRadius: "8px", fontWeight: 500, fontSize: "14px", cursor: isReady ? "pointer" : "not-allowed", width: "fit-content" }}>
         {status === "processing" ? "Cropping..." : "Crop PDF"}
       </button>
 
-      {/* Progress bar */}
       {status === "processing" && (
         <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
           <div style={{ background: "#e5e7eb", borderRadius: "100px", height: "6px", overflow: "hidden" }}>
@@ -378,14 +341,12 @@ export default function CropUpload() {
         </div>
       )}
 
-      {/* Error */}
       {status === "error" && (
         <div style={{ padding: "14px 16px", background: "#fef2f2", color: "#dc2626", border: "1px solid #fecaca", borderRadius: "10px", fontSize: "14px" }}>
           {errorMessage || "Something went wrong. Please try again."}
         </div>
       )}
 
-      {/* Success */}
       {status === "done" && (
         <div style={{ padding: "14px 16px", background: "#eff6ff", color: "#2563eb", border: "1px solid #bfdbfe", borderRadius: "10px", fontSize: "14px" }}>
           ✅ PDF cropped and downloaded successfully.

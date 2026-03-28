@@ -1,6 +1,10 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
+import { ToolTracking } from "@/lib/analytics";
+
+const TOOL_NAME = "watermark-pdf";
+const PROCESSING_TYPE = "browser" as const;
 
 export default function WatermarkUpload() {
   const [file, setFile] = useState<File | null>(null);
@@ -11,11 +15,16 @@ export default function WatermarkUpload() {
   const [dragOver, setDragOver] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
+  useEffect(() => {
+    ToolTracking.viewTool(TOOL_NAME, PROCESSING_TYPE);
+  }, []);
+
   function handleFile(f: File) {
     setFile(f);
     setStatus("idle");
     setErrorMessage("");
     setProgress(0);
+    ToolTracking.uploadStarted(TOOL_NAME, PROCESSING_TYPE);
   }
 
   function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -32,6 +41,7 @@ export default function WatermarkUpload() {
 
   async function handleProcess() {
     if (!file || !text.trim()) return;
+    ToolTracking.processStarted(TOOL_NAME, PROCESSING_TYPE);
     setStatus("processing");
     setErrorMessage("");
     setProgress(0);
@@ -65,6 +75,8 @@ export default function WatermarkUpload() {
       a.download = `watermarked-${file.name}`;
       a.click();
       setStatus("done");
+      ToolTracking.processSuccess(TOOL_NAME, PROCESSING_TYPE);
+      ToolTracking.downloadClicked(TOOL_NAME, PROCESSING_TYPE);
     } catch (err: unknown) {
       clearInterval(interval);
       const message = err instanceof Error ? err.message : "Unknown error";
@@ -79,7 +91,6 @@ export default function WatermarkUpload() {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
 
-      {/* Drag & drop zona */}
       <div
         onClick={() => inputRef.current?.click()}
         onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
@@ -115,7 +126,6 @@ export default function WatermarkUpload() {
         />
       </div>
 
-      {/* Choose PDF button */}
       <button
         onClick={() => inputRef.current?.click()}
         style={{
@@ -127,12 +137,10 @@ export default function WatermarkUpload() {
         Choose PDF
       </button>
 
-      {/* Privacy note */}
       <p style={{ fontSize: "12px", color: "#9ca3af", margin: 0 }}>
-        🔒 Processed securely and deleted immediately
+        🔒 Processed entirely in your browser. Files never leave your device.
       </p>
 
-      {/* Watermark text input */}
       <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
         <label style={{ fontSize: "13px", color: "#4b5563" }}>Watermark text:</label>
         <input
@@ -148,7 +156,6 @@ export default function WatermarkUpload() {
         />
       </div>
 
-      {/* Action button */}
       <button
         disabled={!isReady}
         onClick={handleProcess}
@@ -164,29 +171,24 @@ export default function WatermarkUpload() {
         {status === "processing" ? "Adding watermark..." : "Add Watermark"}
       </button>
 
-      {/* Progress bar */}
       {status === "processing" && (
         <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
           <div style={{ background: "#e5e7eb", borderRadius: "100px", height: "6px", overflow: "hidden" }}>
             <div style={{
-              height: "100%", borderRadius: "100px",
-              background: "#2563eb",
-              width: `${progress}%`,
-              transition: "width 0.3s ease",
+              height: "100%", borderRadius: "100px", background: "#2563eb",
+              width: `${progress}%`, transition: "width 0.3s ease",
             }} />
           </div>
           <p style={{ fontSize: "12px", color: "#6b7280", margin: 0 }}>{Math.round(progress)}%</p>
         </div>
       )}
 
-      {/* Error */}
       {status === "error" && (
         <div style={{ padding: "14px 16px", background: "#fef2f2", color: "#dc2626", border: "1px solid #fecaca", borderRadius: "10px", fontSize: "14px" }}>
           {errorMessage || "Something went wrong. Please try again."}
         </div>
       )}
 
-      {/* Success */}
       {status === "done" && (
         <div style={{ padding: "14px 16px", background: "#eff6ff", color: "#2563eb", border: "1px solid #bfdbfe", borderRadius: "10px", fontSize: "14px" }}>
           ✅ Watermark added and PDF downloaded successfully.

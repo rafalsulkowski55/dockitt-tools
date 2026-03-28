@@ -1,6 +1,10 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
+import { ToolTracking } from "@/lib/analytics";
+
+const TOOL_NAME = "split-pdf";
+const PROCESSING_TYPE = "browser" as const;
 
 export default function SplitUpload() {
   const [file, setFile] = useState<File | null>(null);
@@ -13,6 +17,10 @@ export default function SplitUpload() {
   const [progress, setProgress] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
 
+  useEffect(() => {
+    ToolTracking.viewTool(TOOL_NAME, PROCESSING_TYPE);
+  }, []);
+
   function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const f = e.target.files?.[0] ?? null;
     setFile(f);
@@ -23,6 +31,7 @@ export default function SplitUpload() {
     setFromPage("1");
     setToPage("1");
     setProgress(0);
+    if (f) ToolTracking.uploadStarted(TOOL_NAME, PROCESSING_TYPE);
   }
 
   function handleDrop(e: React.DragEvent<HTMLDivElement>) {
@@ -37,6 +46,7 @@ export default function SplitUpload() {
       setFromPage("1");
       setToPage("1");
       setProgress(0);
+      ToolTracking.uploadStarted(TOOL_NAME, PROCESSING_TYPE);
     }
   }
 
@@ -46,6 +56,7 @@ export default function SplitUpload() {
 
   async function handleProcess() {
     if (!file) return;
+    ToolTracking.processStarted(TOOL_NAME, PROCESSING_TYPE);
     setStatus("processing");
     setDownloadUrl(null);
     setErrorMessage("");
@@ -71,6 +82,7 @@ export default function SplitUpload() {
       const url = URL.createObjectURL(blob);
       setDownloadUrl(url);
       setStatus("done");
+      ToolTracking.processSuccess(TOOL_NAME, PROCESSING_TYPE);
     } catch (err: unknown) {
       clearInterval(interval);
       const message = err instanceof Error ? err.message : "Unknown error";
@@ -81,6 +93,7 @@ export default function SplitUpload() {
 
   function handleDownload() {
     if (!downloadUrl) return;
+    ToolTracking.downloadClicked(TOOL_NAME, PROCESSING_TYPE);
     const a = document.createElement("a");
     a.href = downloadUrl;
     a.download = `split-pages-${fromPage}-${toPage}.pdf`;
@@ -131,7 +144,7 @@ export default function SplitUpload() {
 
       <div style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "12px", color: "#555" }}>
         <span>🔒</span>
-        Processed entirely in your browser.
+        Processed entirely in your browser. Files never leave your device.
       </div>
 
       {file && (

@@ -1,6 +1,10 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
+import { ToolTracking } from "@/lib/analytics";
+
+const TOOL_NAME = "merge-pdf";
+const PROCESSING_TYPE = "browser" as const;
 
 export default function MergeUpload() {
   const [files, setFiles] = useState<File[]>([]);
@@ -8,6 +12,10 @@ export default function MergeUpload() {
   const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    ToolTracking.viewTool(TOOL_NAME, PROCESSING_TYPE);
+  }, []);
 
   function formatSize(bytes: number) {
     if (bytes < 1024) return `${bytes} B`;
@@ -20,6 +28,7 @@ export default function MergeUpload() {
     setFiles((prev) => [...prev, ...selected]);
     setStatus("idle");
     setDownloadUrl(null);
+    if (selected.length > 0) ToolTracking.uploadStarted(TOOL_NAME, PROCESSING_TYPE);
     e.target.value = "";
   }
 
@@ -29,6 +38,7 @@ export default function MergeUpload() {
     setFiles((prev) => [...prev, ...dropped]);
     setStatus("idle");
     setDownloadUrl(null);
+    if (dropped.length > 0) ToolTracking.uploadStarted(TOOL_NAME, PROCESSING_TYPE);
   }
 
   function handleDragOver(e: React.DragEvent<HTMLDivElement>) {
@@ -43,6 +53,7 @@ export default function MergeUpload() {
 
   async function handleProcess() {
     if (files.length < 2) return;
+    ToolTracking.processStarted(TOOL_NAME, PROCESSING_TYPE);
     setStatus("processing");
     setDownloadUrl(null);
     setProgress(0);
@@ -63,6 +74,7 @@ export default function MergeUpload() {
       const url = URL.createObjectURL(blob);
       setDownloadUrl(url);
       setStatus("done");
+      ToolTracking.processSuccess(TOOL_NAME, PROCESSING_TYPE);
     } catch (err) {
       clearInterval(interval);
       console.error(err);
@@ -72,6 +84,7 @@ export default function MergeUpload() {
 
   function handleDownload() {
     if (!downloadUrl) return;
+    ToolTracking.downloadClicked(TOOL_NAME, PROCESSING_TYPE);
     const a = document.createElement("a");
     a.href = downloadUrl;
     a.download = "merged.pdf";
@@ -123,7 +136,7 @@ export default function MergeUpload() {
 
       <div style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "12px", color: "#555" }}>
         <span>🔒</span>
-        Processed entirely in your browser.
+        Processed entirely in your browser. Files never leave your device.
       </div>
 
       {files.length > 0 && (

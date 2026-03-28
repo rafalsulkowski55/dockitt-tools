@@ -1,6 +1,10 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
+import { ToolTracking } from "@/lib/analytics";
+
+const TOOL_NAME = "delete-pdf-pages";
+const PROCESSING_TYPE = "browser" as const;
 
 export default function DeletePagesUpload() {
   const [file, setFile] = useState<File | null>(null);
@@ -11,6 +15,10 @@ export default function DeletePagesUpload() {
   const [progress, setProgress] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
 
+  useEffect(() => {
+    ToolTracking.viewTool(TOOL_NAME, PROCESSING_TYPE);
+  }, []);
+
   function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const f = e.target.files?.[0] ?? null;
     setFile(f);
@@ -19,6 +27,7 @@ export default function DeletePagesUpload() {
     setTotalPages(null);
     setPages("");
     setProgress(0);
+    if (f) ToolTracking.uploadStarted(TOOL_NAME, PROCESSING_TYPE);
   }
 
   function handleDrop(e: React.DragEvent<HTMLDivElement>) {
@@ -31,6 +40,7 @@ export default function DeletePagesUpload() {
       setTotalPages(null);
       setPages("");
       setProgress(0);
+      ToolTracking.uploadStarted(TOOL_NAME, PROCESSING_TYPE);
     }
   }
 
@@ -40,6 +50,7 @@ export default function DeletePagesUpload() {
 
   async function handleProcess() {
     if (!file) return;
+    ToolTracking.processStarted(TOOL_NAME, PROCESSING_TYPE);
     setStatus("processing");
     setErrorMessage("");
     setProgress(0);
@@ -66,6 +77,8 @@ export default function DeletePagesUpload() {
       a.download = `deleted-pages-${file.name}`;
       a.click();
       setStatus("done");
+      ToolTracking.processSuccess(TOOL_NAME, PROCESSING_TYPE);
+      ToolTracking.downloadClicked(TOOL_NAME, PROCESSING_TYPE);
     } catch (err: unknown) {
       clearInterval(interval);
       const message = err instanceof Error ? err.message : "Unknown error";
@@ -118,7 +131,7 @@ export default function DeletePagesUpload() {
 
       <div style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "12px", color: "#555" }}>
         <span>🔒</span>
-        Processed entirely in your browser.
+        Processed entirely in your browser. Files never leave your device.
       </div>
 
       {file && (
@@ -186,7 +199,7 @@ export default function DeletePagesUpload() {
           padding: "14px 16px", background: "#eff6ff", color: "#1d4ed8",
           border: "1px solid #bfdbfe", borderRadius: "10px", fontSize: "14px",
         }}>
-          Done. The selected pages have been removed.
+          ✅ Done. The selected pages have been removed.
         </div>
       )}
 
