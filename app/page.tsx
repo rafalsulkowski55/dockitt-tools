@@ -64,12 +64,12 @@ export default function Home() {
     <main style={{ background: "#f9fafb" }}>
 
       {/* ── HERO ── */}
-      <section style={{ maxWidth: "760px", margin: "0 auto", padding: "32px 24px 48px", textAlign: "center" }}>
+      <section style={{ maxWidth: "760px", margin: "0 auto", padding: "8px 24px 48px", textAlign: "center" }}>
         <div style={{
           display: "inline-flex", alignItems: "center", gap: "6px",
           background: "#eff6ff", color: "#2563eb",
           fontSize: "12px", fontWeight: 500, padding: "4px 14px",
-          borderRadius: "100px", marginBottom: "24px",
+          borderRadius: "100px", marginBottom: "16px",
           border: "1px solid #bfdbfe",
         }}>
           🔒 No signup · Works in your browser · Files stay private
