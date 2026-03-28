@@ -64,7 +64,7 @@ export default function Home() {
     <main style={{ background: "#f9fafb" }}>
 
       {/* ── HERO ── */}
-      <section style={{ maxWidth: "760px", margin: "0 auto", padding: "56px 24px 48px", textAlign: "center" }}>
+      <section style={{ maxWidth: "760px", margin: "0 auto", padding: "32px 24px 48px", textAlign: "center" }}>
         <div style={{
           display: "inline-flex", alignItems: "center", gap: "6px",
           background: "#eff6ff", color: "#2563eb",
