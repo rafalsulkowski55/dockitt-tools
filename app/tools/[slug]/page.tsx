@@ -48,6 +48,16 @@ export async function generateStaticParams() {
   return getAllTools().map((tool) => ({ slug: tool.slug }));
 }
 
+const SERVER_SIDE_TOOLS = new Set([
+  "compress-pdf",
+  "protect-pdf",
+  "unlock-pdf",
+  "repair-pdf",
+  "ocr-pdf",
+  "pdf-to-word",
+  "word-to-pdf",
+]);
+
 function ToolComponent({ slug }: { slug: string }) {
   switch (slug) {
     case "compress-pdf": return <ToolUpload />;
@@ -157,6 +167,31 @@ export default async function ToolPage({ params }: ToolPageProps) {
         </div>
 
         <section style={{ ...sectionStyle, boxShadow: "0 1px 2px rgba(0,0,0,0.04)" }}>
+          {SERVER_SIDE_TOOLS.has(slug) ? (
+            <div style={{
+              display: "flex", alignItems: "flex-start", gap: "10px",
+              background: "#fffbeb", border: "1px solid #fde68a",
+              borderRadius: "8px", padding: "12px 14px",
+              marginBottom: "16px", fontSize: "13px", color: "#92400e",
+            }}>
+              <span style={{ flexShrink: 0 }}>🔐</span>
+              <span>
+                <strong>Processed on our secure server.</strong> Your file is sent over an encrypted connection, converted, and deleted immediately. It is never stored or shared.
+              </span>
+            </div>
+          ) : (
+            <div style={{
+              display: "flex", alignItems: "flex-start", gap: "10px",
+              background: "#f0fdf4", border: "1px solid #bbf7d0",
+              borderRadius: "8px", padding: "12px 14px",
+              marginBottom: "16px", fontSize: "13px", color: "#14532d",
+            }}>
+              <span style={{ flexShrink: 0 }}>✅</span>
+              <span>
+                <strong>Processed entirely in your browser.</strong> Your file never leaves your device — no upload, no server, complete privacy.
+              </span>
+            </div>
+          )}
           <div style={{ border: "2px dashed #bfdbfe", borderRadius: "12px", padding: "32px", background: "#f8faff" }}>
             <ToolComponent slug={slug} />
           </div>

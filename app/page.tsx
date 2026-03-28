@@ -123,7 +123,7 @@ export default function Home() {
           </div>
           <div style={{ borderTop: "1px solid #e5e7eb", marginTop: "16px", paddingTop: "14px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
             <p style={{ fontSize: "13px", color: "#9ca3af", margin: 0 }}>
-              🔒 Files never leave your device
+              🔒 Browser tools run locally · Server tools delete files instantly
             </p>
             <Link href="/categories" style={{ fontSize: "13px", color: "#2563eb", textDecoration: "none", fontWeight: 500 }}>
               See all 20 tools →
@@ -257,9 +257,9 @@ export default function Home() {
           <p style={{ fontSize: "15px", color: "#4b5563", lineHeight: 1.75, margin: 0 }}>
             <strong style={{ color: "#111" }}>Dockitt</strong> is a simple online tool that helps you work with PDF files quickly and easily.
             You can compress, merge, split and convert PDFs without installing anything.
-            All tools run directly in your browser, your files never leave your device.
+            Most tools run directly in your browser. For tools that require server processing such as compression, OCR, and PDF to Word files are sent over an encrypted connection and deleted immediately after processing.
             Whether you need to shrink a PDF for email, combine multiple documents, or convert a file to Word,
-            Dockitt handles it in seconds, for free.
+            Dockitt handles it in second.
           </p>
         </div>
       </section>

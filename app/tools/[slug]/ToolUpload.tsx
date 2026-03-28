@@ -188,7 +188,7 @@ export default function ToolUpload() {
 
       <div style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "12px", color: "#555" }}>
         <span>🔒</span>
-        Files never leave your device — processed entirely in your browser.
+        Processed entirely in your browser.
       </div>
 
       <button

@@ -129,7 +129,7 @@ export default function ProtectUpload() {
 
       {/* Privacy note */}
       <p style={{ fontSize: "12px", color: "#9ca3af", margin: 0 }}>
-        🔒 Files never leave your device — processed securely and deleted immediately
+        🔒 Processed securely and deleted immediately
       </p>
 
       {/* Password input */}
