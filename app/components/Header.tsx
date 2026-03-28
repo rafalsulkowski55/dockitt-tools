@@ -29,9 +29,9 @@ export default function Header() {
 
         {/* Desktop nav */}
         <nav style={{ display: "flex", gap: "24px" }} className="desktop-nav">
-          <Link href="/" style={{ fontSize: "14px", color: "#444", textDecoration: "none" }}>All Tools</Link>
+          <Link href="/" style={{ fontSize: "14px", color: "#444", textDecoration: "none" }}>Home</Link>
           <Link href="/convert-pdf" style={{ fontSize: "14px", color: "#444", textDecoration: "none" }}>Convert PDF</Link>
-          <Link href="/categories" style={{ fontSize: "14px", color: "#444", textDecoration: "none" }}>Categories</Link>
+          <Link href="/categories" style={{ fontSize: "14px", color: "#444", textDecoration: "none" }}>All Tools</Link>
           <Link href="/guides" style={{ fontSize: "14px", color: "#444", textDecoration: "none" }}>Guides</Link>
         </nav>
 
@@ -65,9 +65,9 @@ export default function Header() {
           borderTop: "1px solid #e5e7eb",
           padding: "8px 0",
         }} className="mobile-nav">
-          <Link href="/" onClick={() => setMenuOpen(false)} style={{ padding: "12px 16px", fontSize: "15px", color: "#111", textDecoration: "none" }}>All Tools</Link>
+          <Link href="/" onClick={() => setMenuOpen(false)} style={{ padding: "12px 16px", fontSize: "15px", color: "#111", textDecoration: "none" }}>Home</Link>
           <Link href="/convert-pdf" onClick={() => setMenuOpen(false)} style={{ padding: "12px 16px", fontSize: "15px", color: "#111", textDecoration: "none" }}>Convert PDF</Link>
-          <Link href="/categories" onClick={() => setMenuOpen(false)} style={{ padding: "12px 16px", fontSize: "15px", color: "#111", textDecoration: "none" }}>Categories</Link>
+          <Link href="/categories" onClick={() => setMenuOpen(false)} style={{ padding: "12px 16px", fontSize: "15px", color: "#111", textDecoration: "none" }}>All Tools</Link>
           <Link href="/guides" onClick={() => setMenuOpen(false)} style={{ padding: "12px 16px", fontSize: "15px", color: "#111", textDecoration: "none" }}>Guides</Link>
         </nav>
       )}
