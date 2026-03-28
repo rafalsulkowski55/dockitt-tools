@@ -1,6 +1,10 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
+import { ToolTracking } from "@/lib/analytics";
+
+const TOOL_NAME = "compress-pdf";
+const PROCESSING_TYPE = "server" as const;
 
 export default function ToolUpload() {
   const [fileName, setFileName] = useState("No file selected");
@@ -16,6 +20,10 @@ export default function ToolUpload() {
     url: string;
   } | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    ToolTracking.viewTool(TOOL_NAME, PROCESSING_TYPE);
+  }, []);
 
   function formatSize(bytes: number) {
     if (bytes < 1024) return `${bytes} B`;
@@ -51,7 +59,10 @@ export default function ToolUpload() {
     setResultInfo(null);
     setProgress(0);
     setPreviewUrl(null);
-    if (f) generatePreview(f);
+    if (f) {
+      ToolTracking.uploadStarted(TOOL_NAME, PROCESSING_TYPE);
+      generatePreview(f);
+    }
   }
 
   function handleDrop(e: React.DragEvent<HTMLDivElement>) {
@@ -65,6 +76,7 @@ export default function ToolUpload() {
       setResultInfo(null);
       setProgress(0);
       setPreviewUrl(null);
+      ToolTracking.uploadStarted(TOOL_NAME, PROCESSING_TYPE);
       generatePreview(f);
     }
   }
@@ -78,6 +90,7 @@ export default function ToolUpload() {
     setStatus("processing");
     setResultInfo(null);
     setProgress(0);
+    ToolTracking.processStarted(TOOL_NAME, PROCESSING_TYPE);
     const interval = setInterval(() => {
       setProgress((p) => (p < 85 ? p + 5 : p));
     }, 300);
@@ -98,6 +111,7 @@ export default function ToolUpload() {
       const reduction = parseInt(res.headers.get("X-Reduction-Percent") ?? "0");
       setResultInfo({ originalSize, compressedSize, reduction, url });
       setStatus("done");
+      ToolTracking.processSuccess(TOOL_NAME, PROCESSING_TYPE);
     } catch (err) {
       clearInterval(interval);
       console.error(err);
@@ -107,6 +121,7 @@ export default function ToolUpload() {
 
   function handleDownload() {
     if (!resultInfo) return;
+    ToolTracking.downloadClicked(TOOL_NAME, PROCESSING_TYPE);
     const a = document.createElement("a");
     a.href = resultInfo.url;
     a.download = `compressed-${file?.name ?? "file.pdf"}`;
@@ -188,7 +203,7 @@ export default function ToolUpload() {
 
       <div style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "12px", color: "#555" }}>
         <span>🔒</span>
-        Processed entirely in your browser.
+        Processed on our secure server. Files are deleted immediately after processing.
       </div>
 
       <button
