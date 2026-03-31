@@ -6,8 +6,10 @@ import { ToolTracking } from "@/lib/analytics";
 
 const TOOL_NAME = "compress-pdf";
 const PROCESSING_TYPE = "server" as const;
+const MAX_FILE_SIZE = 10 * 1024 * 1024;
 
 type Preset = "email" | "small" | "quality";
+type Status = "idle" | "validating" | "uploading" | "processing" | "done" | "error";
 
 const PRESETS: { id: Preset; label: string; subtext: string }[] = [
   { id: "email", label: "Email", subtext: "Balanced quality" },
@@ -20,14 +22,15 @@ export default function ToolUpload() {
   const [fileSize, setFileSize] = useState("");
   const [file, setFile] = useState<File | null>(null);
   const [preset, setPreset] = useState<Preset>("email");
-  const [status, setStatus] = useState<"idle" | "processing" | "done" | "error">("idle");
+  const [status, setStatus] = useState<Status>("idle");
   const [progress, setProgress] = useState(0);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState("");
   const [resultInfo, setResultInfo] = useState<{
     originalSize: number;
     compressedSize: number;
     reduction: number;
-    url: string;
+    downloadUrl: string;
   } | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -72,35 +75,42 @@ export default function ToolUpload() {
     }
   }
 
-  async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const f = e.target.files?.[0] ?? null;
-    setFile(f);
-    setFileName(f ? f.name : "No file selected");
-    setFileSize(f ? formatSize(f.size) : "");
-    setStatus("idle");
+  function handleFileSelect(f: File) {
+    setStatus("validating");
+    setErrorMessage("");
     setResultInfo(null);
     setProgress(0);
     setPreviewUrl(null);
-    if (f) {
-      ToolTracking.uploadStarted(TOOL_NAME, PROCESSING_TYPE);
-      generatePreview(f);
+
+    if (f.type !== "application/pdf") {
+      setErrorMessage("Please upload a PDF file.");
+      setStatus("error");
+      return;
     }
+
+    if (f.size > MAX_FILE_SIZE) {
+      setErrorMessage(`File too large. Maximum size is ${formatSize(MAX_FILE_SIZE)}.`);
+      setStatus("error");
+      return;
+    }
+
+    setFile(f);
+    setFileName(f.name);
+    setFileSize(formatSize(f.size));
+    setStatus("idle");
+    ToolTracking.uploadStarted(TOOL_NAME, PROCESSING_TYPE);
+    generatePreview(f);
+  }
+
+  async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const f = e.target.files?.[0] ?? null;
+    if (f) handleFileSelect(f);
   }
 
   function handleDrop(e: React.DragEvent<HTMLDivElement>) {
     e.preventDefault();
     const f = e.dataTransfer.files?.[0] ?? null;
-    if (f && f.type === "application/pdf") {
-      setFile(f);
-      setFileName(f.name);
-      setFileSize(formatSize(f.size));
-      setStatus("idle");
-      setResultInfo(null);
-      setProgress(0);
-      setPreviewUrl(null);
-      ToolTracking.uploadStarted(TOOL_NAME, PROCESSING_TYPE);
-      generatePreview(f);
-    }
+    if (f) handleFileSelect(f);
   }
 
   function handleDragOver(e: React.DragEvent<HTMLDivElement>) {
@@ -115,40 +125,85 @@ export default function ToolUpload() {
     setResultInfo(null);
     setProgress(0);
     setPreviewUrl(null);
+    setErrorMessage("");
     setPreset("email");
   }
 
   async function handleProcess() {
     if (!file) return;
-    setStatus("processing");
+    setStatus("validating");
+    setErrorMessage("");
     setResultInfo(null);
     setProgress(0);
     ToolTracking.processStarted(TOOL_NAME, PROCESSING_TYPE);
-    const interval = setInterval(() => {
-      setProgress((p) => (p < 85 ? p + 5 : p));
-    }, 300);
+
     try {
-      const formData = new FormData();
-      formData.append("file", file);
-      formData.append("preset", preset);
-      const res = await fetch("/api/compress-pdf", { method: "POST", body: formData });
-      clearInterval(interval);
-      setProgress(100);
-      if (!res.ok) {
-        const err = await res.json();
-        throw new Error(err.error ?? "Unknown error");
+      // Krok 1 — pobierz signed upload URL
+      const createRes = await fetch("/api/uploads/create", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          filename: file.name,
+          mimeType: file.type,
+          sizeBytes: file.size,
+          toolSlug: TOOL_NAME,
+        }),
+      });
+
+      if (!createRes.ok) {
+        const err = await createRes.json();
+        throw new Error(err.error ?? "Failed to create upload URL");
       }
-      const blob = await res.blob();
-      const url = URL.createObjectURL(blob);
-      const originalSize = parseInt(res.headers.get("X-Original-Size") ?? "0");
-      const compressedSize = parseInt(res.headers.get("X-Compressed-Size") ?? "0");
-      const reduction = parseInt(res.headers.get("X-Reduction-Percent") ?? "0");
-      setResultInfo({ originalSize, compressedSize, reduction, url });
+
+      const { uploadUrl, storageKey } = await createRes.json();
+
+      // Krok 2 — upload bezpośrednio do R2
+      setStatus("uploading");
+      setProgress(10);
+
+      const uploadRes = await fetch(uploadUrl, {
+        method: "PUT",
+        body: file,
+        headers: { "Content-Type": file.type },
+      });
+
+      if (!uploadRes.ok) throw new Error("Upload to storage failed");
+
+      setProgress(50);
+
+      // Krok 3 — poinformuj backend o zakończeniu uploadu
+      setStatus("processing");
+      const completeRes = await fetch("/api/uploads/complete", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          storageKey,
+          toolSlug: TOOL_NAME,
+          processingParams: { preset },
+        }),
+      });
+
+      if (!completeRes.ok) {
+        const err = await completeRes.json();
+        throw new Error(err.error ?? "Processing failed");
+      }
+
+      setProgress(100);
+      const result = await completeRes.json();
+
+      setResultInfo({
+        originalSize: result.originalSize,
+        compressedSize: result.compressedSize,
+        reduction: result.reduction,
+        downloadUrl: result.downloadUrl,
+      });
+
       setStatus("done");
       ToolTracking.processSuccess(TOOL_NAME, PROCESSING_TYPE);
-    } catch (err) {
-      clearInterval(interval);
+
+    } catch (err: any) {
       console.error(err);
+      setErrorMessage(err.message ?? "Something went wrong. Please try again.");
       setStatus("error");
     }
   }
@@ -157,20 +212,20 @@ export default function ToolUpload() {
     if (!resultInfo) return;
     ToolTracking.downloadClicked(TOOL_NAME, PROCESSING_TYPE);
     const a = document.createElement("a");
-    a.href = resultInfo.url;
+    a.href = resultInfo.downloadUrl;
     a.download = `compressed-${file?.name ?? "file.pdf"}`;
     a.click();
   }
 
+  const isProcessing = ["validating", "uploading", "processing"].includes(status);
+
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
 
-      {/* Microcopy */}
       <p style={{ fontSize: "13px", color: "#6b7280", margin: 0 }}>
         Upload your PDF and choose how much you want to reduce its size.
       </p>
 
-      {/* Drag & drop */}
       <div
         onDrop={handleDrop}
         onDragOver={handleDragOver}
@@ -192,12 +247,17 @@ export default function ToolUpload() {
             <label htmlFor="pdf-upload" style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", padding: "10px 20px", background: "#2563eb", color: "#ffffff", borderRadius: "10px", fontWeight: 600, cursor: "pointer", fontSize: "14px" }} onClick={(e) => e.stopPropagation()}>
               Choose PDF
             </label>
+            <p style={{ fontSize: "12px", color: "#9ca3af", margin: "8px 0 0" }}>Maximum file size: 10MB</p>
           </>
         )}
         <input id="pdf-upload" ref={inputRef} type="file" accept=".pdf" style={{ display: "none" }} onChange={handleFileChange} />
       </div>
 
-      {/* Presets */}
+      <div style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "12px", color: "#6b7280" }}>
+        <span>🔐</span>
+        Processed securely on our server. Files are automatically deleted after 30 minutes.
+      </div>
+
       <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
         <p style={{ fontSize: "13px", color: "#4b5563", margin: 0, fontWeight: 500 }}>Compression level:</p>
         <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
@@ -205,13 +265,7 @@ export default function ToolUpload() {
             <button
               key={p.id}
               onClick={() => setPreset(p.id)}
-              style={{
-                display: "flex", flexDirection: "column", alignItems: "flex-start",
-                padding: "10px 16px", borderRadius: "8px", border: "1px solid",
-                borderColor: preset === p.id ? "#2563eb" : "#e5e7eb",
-                background: preset === p.id ? "#2563eb" : "#fff",
-                cursor: "pointer", transition: "all 0.15s",
-              }}
+              style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", padding: "10px 16px", borderRadius: "8px", border: "1px solid", borderColor: preset === p.id ? "#2563eb" : "#e5e7eb", background: preset === p.id ? "#2563eb" : "#fff", cursor: "pointer", transition: "all 0.15s" }}
             >
               <span style={{ fontSize: "13px", fontWeight: 600, color: preset === p.id ? "#fff" : "#111" }}>{p.label}</span>
               <span style={{ fontSize: "11px", color: preset === p.id ? "#bfdbfe" : "#9ca3af" }}>{p.subtext}</span>
@@ -220,27 +274,18 @@ export default function ToolUpload() {
         </div>
       </div>
 
-      {/* Compress button */}
       <button
-        disabled={!file || status === "processing"}
+        disabled={!file || isProcessing}
         onClick={handleProcess}
-        style={{
-          padding: "12px 24px",
-          background: file && status !== "processing" ? "#2563eb" : "#d1d5db",
-          color: "#ffffff", border: "none", borderRadius: "10px",
-          fontWeight: 600, fontSize: "15px",
-          cursor: file && status !== "processing" ? "pointer" : "not-allowed",
-          width: "fit-content",
-        }}
+        style={{ padding: "12px 24px", background: file && !isProcessing ? "#2563eb" : "#d1d5db", color: "#ffffff", border: "none", borderRadius: "10px", fontWeight: 600, fontSize: "15px", cursor: file && !isProcessing ? "pointer" : "not-allowed", width: "fit-content" }}
       >
-        {status === "processing" ? "Compressing..." : "Compress PDF"}
+        {status === "uploading" ? "Uploading..." : status === "processing" ? "Compressing..." : status === "validating" ? "Validating..." : "Compress PDF"}
       </button>
 
-      {/* Progress bar */}
-      {status === "processing" && (
+      {isProcessing && (
         <div>
           <div style={{ display: "flex", justifyContent: "space-between", fontSize: "13px", color: "#666", marginBottom: "6px" }}>
-            <span>Compressing...</span>
+            <span>{status === "uploading" ? "Uploading to secure storage..." : status === "processing" ? "Compressing..." : "Validating..."}</span>
             <span>{progress}%</span>
           </div>
           <div style={{ background: "#e5e7eb", borderRadius: "99px", height: "6px", overflow: "hidden" }}>
@@ -249,17 +294,14 @@ export default function ToolUpload() {
         </div>
       )}
 
-      {/* Error */}
       {status === "error" && (
         <div style={{ padding: "14px 16px", background: "#fef2f2", color: "#dc2626", border: "1px solid #fecaca", borderRadius: "10px", fontSize: "14px" }}>
-          Something went wrong. Please try again.
+          {errorMessage || "Something went wrong. Please try again."}
         </div>
       )}
 
-      {/* Result block */}
       {status === "done" && resultInfo && (
         <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-
           <div style={{ background: "#eff6ff", border: "1px solid #bfdbfe", borderRadius: "10px", padding: "20px" }}>
             <p style={{ fontSize: "24px", fontWeight: 700, color: "#2563eb", margin: "0 0 6px" }}>
               {getResultHeadline(resultInfo.reduction)}
@@ -282,22 +324,14 @@ export default function ToolUpload() {
             </p>
           </div>
 
-          {/* Download button */}
-          <button
-            onClick={handleDownload}
-            style={{ padding: "14px 28px", background: "#16a34a", color: "#ffffff", border: "none", borderRadius: "10px", fontWeight: 600, fontSize: "15px", cursor: "pointer", width: "fit-content" }}
-          >
+          <button onClick={handleDownload} style={{ padding: "14px 28px", background: "#16a34a", color: "#ffffff", border: "none", borderRadius: "10px", fontWeight: 600, fontSize: "15px", cursor: "pointer", width: "fit-content" }}>
             ⬇ Download compressed PDF
           </button>
 
-          {/* Next steps */}
           <div style={{ background: "#f9fafb", border: "1px solid #e5e7eb", borderRadius: "10px", padding: "16px" }}>
             <p style={{ fontSize: "13px", fontWeight: 600, color: "#111", margin: "0 0 10px" }}>Next steps</p>
             <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-              <button
-                onClick={handleReset}
-                style={{ display: "flex", alignItems: "center", gap: "8px", background: "none", border: "none", cursor: "pointer", padding: 0, fontSize: "13px", color: "#2563eb", fontWeight: 500, textAlign: "left" }}
-              >
+              <button onClick={handleReset} style={{ display: "flex", alignItems: "center", gap: "8px", background: "none", border: "none", cursor: "pointer", padding: 0, fontSize: "13px", color: "#2563eb", fontWeight: 500, textAlign: "left" }}>
                 → Compress another PDF
               </button>
               <Link href="/tools/merge-pdf" style={{ fontSize: "13px", color: "#2563eb", textDecoration: "none", fontWeight: 500 }}>
@@ -308,7 +342,6 @@ export default function ToolUpload() {
               </Link>
             </div>
           </div>
-
         </div>
       )}
 
