@@ -83,7 +83,6 @@ export default function RepairUpload() {
     ToolTracking.processStarted(TOOL_NAME, PROCESSING_TYPE);
 
     try {
-      // Krok 1 — pobierz signed upload URL
       const createRes = await fetch("/api/uploads/create", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -102,7 +101,6 @@ export default function RepairUpload() {
 
       const { uploadUrl, storageKey } = await createRes.json();
 
-      // Krok 2 — upload bezpośrednio do R2
       setStatus("uploading");
       setProgress(10);
 
@@ -116,7 +114,6 @@ export default function RepairUpload() {
 
       setProgress(50);
 
-      // Krok 3 — wywołaj Railway worker
       setStatus("processing");
       const completeRes = await fetch("/api/uploads/complete", {
         method: "POST",
@@ -178,9 +175,12 @@ export default function RepairUpload() {
         ) : (
           <>
             <div style={{ fontSize: "13px", color: "#666", marginBottom: "12px" }}>Drag & drop your PDF here or</div>
-            <label style={{ display: "inline-flex", alignItems: "center", padding: "10px 20px", background: "#2563eb", color: "#fff", borderRadius: "10px", fontWeight: 600, cursor: "pointer", fontSize: "14px" }} onClick={(e) => e.stopPropagation()}>
+            <button
+              onClick={(e) => { e.stopPropagation(); inputRef.current?.click(); }}
+              style={{ display: "inline-flex", alignItems: "center", padding: "10px 20px", background: "#2563eb", color: "#fff", border: "none", borderRadius: "10px", fontWeight: 600, cursor: "pointer", fontSize: "14px" }}
+            >
               Choose PDF
-            </label>
+            </button>
             <p style={{ fontSize: "12px", color: "#9ca3af", margin: "8px 0 0" }}>Maximum file size: 10MB</p>
           </>
         )}
