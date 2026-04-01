@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getFileRecord, updateFileStatus } from "@/lib/db";
+import { createClient } from "@/lib/supabase-server";
 
 export async function POST(req: NextRequest) {
   try {
@@ -31,6 +32,32 @@ export async function POST(req: NextRequest) {
     }
 
     const result = await jobRes.json();
+
+    // Inkrementuj licznik konwersji dla zalogowanego usera na free
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (user) {
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("tier, daily_conversions_count, daily_conversions_date")
+        .eq("id", user.id)
+        .single();
+
+      if (profile && profile.tier === "free") {
+        const today = new Date().toISOString().split("T")[0];
+        const lastDate = profile.daily_conversions_date;
+        const newCount = lastDate === today ? profile.daily_conversions_count + 1 : 1;
+
+        await supabase
+          .from("profiles")
+          .update({
+            daily_conversions_count: newCount,
+            daily_conversions_date: today,
+          })
+          .eq("id", user.id);
+      }
+    }
 
     return NextResponse.json(result);
   } catch (error) {
