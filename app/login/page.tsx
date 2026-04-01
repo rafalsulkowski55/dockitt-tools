@@ -5,68 +5,33 @@ import { createClient } from "@/lib/supabase";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [username, setUsername] = useState("");
-  const [mode, setMode] = useState<"login" | "signup">("login");
   const [status, setStatus] = useState<"idle" | "loading" | "done" | "error">("idle");
   const [message, setMessage] = useState("");
 
   const supabase = createClient();
 
-  function validatePassword(pwd: string): string | null {
-    if (pwd.length < 8) return "Password must be at least 8 characters.";
-    if (!/[A-Z]/.test(pwd)) return "Password must contain at least one uppercase letter.";
-    if (!/[0-9]/.test(pwd)) return "Password must contain at least one number.";
-    return null;
-  }
-
-  async function handleEmailAuth() {
+  async function handleMagicLink() {
+    if (!email.trim()) {
+      setStatus("error");
+      setMessage("Please enter your email address.");
+      return;
+    }
     setStatus("loading");
     setMessage("");
 
-    if (mode === "signup") {
-      if (!username.trim()) {
-        setStatus("error");
-        setMessage("Please enter a username.");
-        return;
-      }
-      const pwdError = validatePassword(password);
-      if (pwdError) {
-        setStatus("error");
-        setMessage(pwdError);
-        return;
-      }
-      if (password !== confirmPassword) {
-        setStatus("error");
-        setMessage("Passwords do not match.");
-        return;
-      }
+    const { error } = await supabase.auth.signInWithOtp({
+      email,
+      options: {
+        emailRedirectTo: "https://dockitt.com/auth/callback",
+      },
+    });
 
-      const { error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: { username },
-          emailRedirectTo: "https://dockitt.com/auth/callback",
-        },
-      });
-
-      if (error) {
-        setStatus("error");
-        setMessage(error.message);
-      } else {
-        setStatus("done");
-        setMessage("Check your email to confirm your account.");
-      }
+    if (error) {
+      setStatus("error");
+      setMessage(error.message);
     } else {
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
-      if (error) {
-        setStatus("error");
-        setMessage(error.message);
-      } else {
-        window.location.href = "/";
-      }
+      setStatus("done");
+      setMessage("Check your email — we sent you a sign-in link.");
     }
   }
 
@@ -86,10 +51,10 @@ export default function LoginPage() {
       <div style={{ background: "#fff", borderRadius: "16px", padding: "40px", width: "100%", maxWidth: "400px", boxShadow: "0 2px 16px rgba(0,0,0,0.08)" }}>
 
         <h1 style={{ fontSize: "22px", fontWeight: 700, color: "#111", margin: "0 0 8px" }}>
-          {mode === "login" ? "Sign in to Dockitt" : "Create your account"}
+          Sign in to Dockitt
         </h1>
         <p style={{ fontSize: "14px", color: "#6b7280", margin: "0 0 24px" }}>
-          {mode === "login" ? "Welcome back." : "Free to get started."}
+          No password needed — we'll send you a magic link.
         </p>
 
         <button
@@ -106,70 +71,33 @@ export default function LoginPage() {
           <div style={{ flex: 1, height: "1px", background: "#e5e7eb" }} />
         </div>
 
-        <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-          {mode === "signup" && (
+        {status !== "done" ? (
+          <>
             <input
-              type="text"
-              placeholder="Username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              style={{ padding: "12px 16px", borderRadius: "8px", border: "1px solid #d1d5db", fontSize: "14px", outline: "none" }}
+              type="email"
+              placeholder="your@email.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && handleMagicLink()}
+              style={{ width: "100%", padding: "12px 16px", borderRadius: "8px", border: "1px solid #d1d5db", fontSize: "14px", outline: "none", boxSizing: "border-box" }}
             />
-          )}
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            style={{ padding: "12px 16px", borderRadius: "8px", border: "1px solid #d1d5db", fontSize: "14px", outline: "none" }}
-          />
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            style={{ padding: "12px 16px", borderRadius: "8px", border: "1px solid #d1d5db", fontSize: "14px", outline: "none" }}
-          />
-          {mode === "signup" && (
-            <>
-              <p style={{ fontSize: "12px", color: "#9ca3af", margin: "0" }}>
-                Min. 8 characters, one uppercase letter, one number.
-              </p>
-              <input
-                type="password"
-                placeholder="Confirm password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                style={{ padding: "12px 16px", borderRadius: "8px", border: "1px solid #d1d5db", fontSize: "14px", outline: "none" }}
-              />
-            </>
-          )}
-        </div>
-
-        <button
-          onClick={handleEmailAuth}
-          disabled={status === "loading"}
-          style={{ width: "100%", padding: "12px", background: status === "loading" ? "#d1d5db" : "#2563eb", color: "#fff", border: "none", borderRadius: "8px", fontSize: "14px", fontWeight: 600, cursor: status === "loading" ? "not-allowed" : "pointer", marginTop: "16px" }}
-        >
-          {status === "loading" ? "Loading..." : mode === "login" ? "Sign in" : "Create account"}
-        </button>
-
-        {status === "error" && (
-          <p style={{ fontSize: "13px", color: "#dc2626", margin: "12px 0 0" }}>{message}</p>
+            <button
+              onClick={handleMagicLink}
+              disabled={status === "loading"}
+              style={{ width: "100%", padding: "12px", background: status === "loading" ? "#d1d5db" : "#2563eb", color: "#fff", border: "none", borderRadius: "8px", fontSize: "14px", fontWeight: 600, cursor: status === "loading" ? "not-allowed" : "pointer", marginTop: "12px" }}
+            >
+              {status === "loading" ? "Sending..." : "Send magic link"}
+            </button>
+            {status === "error" && (
+              <p style={{ fontSize: "13px", color: "#dc2626", margin: "12px 0 0" }}>{message}</p>
+            )}
+          </>
+        ) : (
+          <div style={{ background: "#eff6ff", border: "1px solid #bfdbfe", borderRadius: "10px", padding: "20px", textAlign: "center" }}>
+            <p style={{ fontSize: "15px", fontWeight: 600, color: "#1d4ed8", margin: "0 0 6px" }}>Check your inbox!</p>
+            <p style={{ fontSize: "13px", color: "#3b82f6", margin: 0 }}>{message}</p>
+          </div>
         )}
-        {status === "done" && (
-          <p style={{ fontSize: "13px", color: "#16a34a", margin: "12px 0 0" }}>{message}</p>
-        )}
-
-        <p style={{ fontSize: "13px", color: "#6b7280", margin: "20px 0 0", textAlign: "center" }}>
-          {mode === "login" ? "Don't have an account? " : "Already have an account? "}
-          <button
-            onClick={() => { setMode(mode === "login" ? "signup" : "login"); setStatus("idle"); setMessage(""); }}
-            style={{ background: "none", border: "none", color: "#2563eb", cursor: "pointer", fontWeight: 500, fontSize: "13px" }}
-          >
-            {mode === "login" ? "Sign up" : "Sign in"}
-          </button>
-        </p>
 
       </div>
     </div>
