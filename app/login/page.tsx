@@ -6,6 +6,8 @@ import { createClient } from "@/lib/supabase";
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [name, setName] = useState("");
   const [mode, setMode] = useState<"login" | "signup">("login");
   const [status, setStatus] = useState<"idle" | "loading" | "done" | "error">("idle");
   const [message, setMessage] = useState("");
@@ -16,16 +18,32 @@ export default function LoginPage() {
     setStatus("loading");
     setMessage("");
 
-    if (mode === "login") {
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
-      if (error) {
+    if (mode === "signup") {
+      if (!name.trim()) {
         setStatus("error");
-        setMessage(error.message);
-      } else {
-        window.location.href = "/";
+        setMessage("Please enter your name.");
+        return;
       }
-    } else {
-      const { error } = await supabase.auth.signUp({ email, password });
+      if (password !== confirmPassword) {
+        setStatus("error");
+        setMessage("Passwords do not match.");
+        return;
+      }
+      if (password.length < 8) {
+        setStatus("error");
+        setMessage("Password must be at least 8 characters.");
+        return;
+      }
+
+      const { error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: { full_name: name },
+          emailRedirectTo: "https://dockitt.com/auth/callback",
+        },
+      });
+
       if (error) {
         setStatus("error");
         setMessage(error.message);
@@ -33,13 +51,21 @@ export default function LoginPage() {
         setStatus("done");
         setMessage("Check your email to confirm your account.");
       }
+    } else {
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) {
+        setStatus("error");
+        setMessage(error.message);
+      } else {
+        window.location.href = "/";
+      }
     }
   }
 
   async function handleGoogle() {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
-      options: { redirectTo: `${window.location.origin}/auth/callback` },
+      options: { redirectTo: "https://dockitt.com/auth/callback" },
     });
     if (error) {
       setStatus("error");
@@ -73,6 +99,15 @@ export default function LoginPage() {
         </div>
 
         <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+          {mode === "signup" && (
+            <input
+              type="text"
+              placeholder="Full name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              style={{ padding: "12px 16px", borderRadius: "8px", border: "1px solid #d1d5db", fontSize: "14px", outline: "none" }}
+            />
+          )}
           <input
             type="email"
             placeholder="Email"
@@ -87,6 +122,15 @@ export default function LoginPage() {
             onChange={(e) => setPassword(e.target.value)}
             style={{ padding: "12px 16px", borderRadius: "8px", border: "1px solid #d1d5db", fontSize: "14px", outline: "none" }}
           />
+          {mode === "signup" && (
+            <input
+              type="password"
+              placeholder="Confirm password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              style={{ padding: "12px 16px", borderRadius: "8px", border: "1px solid #d1d5db", fontSize: "14px", outline: "none" }}
+            />
+          )}
         </div>
 
         <button
@@ -107,7 +151,7 @@ export default function LoginPage() {
         <p style={{ fontSize: "13px", color: "#6b7280", margin: "20px 0 0", textAlign: "center" }}>
           {mode === "login" ? "Don't have an account? " : "Already have an account? "}
           <button
-            onClick={() => setMode(mode === "login" ? "signup" : "login")}
+            onClick={() => { setMode(mode === "login" ? "signup" : "login"); setStatus("idle"); setMessage(""); }}
             style={{ background: "none", border: "none", color: "#2563eb", cursor: "pointer", fontWeight: 500, fontSize: "13px" }}
           >
             {mode === "login" ? "Sign up" : "Sign in"}
