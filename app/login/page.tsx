@@ -7,21 +7,34 @@ export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [name, setName] = useState("");
+  const [username, setUsername] = useState("");
   const [mode, setMode] = useState<"login" | "signup">("login");
   const [status, setStatus] = useState<"idle" | "loading" | "done" | "error">("idle");
   const [message, setMessage] = useState("");
 
   const supabase = createClient();
 
+  function validatePassword(pwd: string): string | null {
+    if (pwd.length < 8) return "Password must be at least 8 characters.";
+    if (!/[A-Z]/.test(pwd)) return "Password must contain at least one uppercase letter.";
+    if (!/[0-9]/.test(pwd)) return "Password must contain at least one number.";
+    return null;
+  }
+
   async function handleEmailAuth() {
     setStatus("loading");
     setMessage("");
 
     if (mode === "signup") {
-      if (!name.trim()) {
+      if (!username.trim()) {
         setStatus("error");
-        setMessage("Please enter your name.");
+        setMessage("Please enter a username.");
+        return;
+      }
+      const pwdError = validatePassword(password);
+      if (pwdError) {
+        setStatus("error");
+        setMessage(pwdError);
         return;
       }
       if (password !== confirmPassword) {
@@ -29,17 +42,12 @@ export default function LoginPage() {
         setMessage("Passwords do not match.");
         return;
       }
-      if (password.length < 8) {
-        setStatus("error");
-        setMessage("Password must be at least 8 characters.");
-        return;
-      }
 
       const { error } = await supabase.auth.signUp({
         email,
         password,
         options: {
-          data: { full_name: name },
+          data: { username },
           emailRedirectTo: "https://dockitt.com/auth/callback",
         },
       });
@@ -102,9 +110,9 @@ export default function LoginPage() {
           {mode === "signup" && (
             <input
               type="text"
-              placeholder="Full name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
+              placeholder="Username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
               style={{ padding: "12px 16px", borderRadius: "8px", border: "1px solid #d1d5db", fontSize: "14px", outline: "none" }}
             />
           )}
@@ -123,13 +131,18 @@ export default function LoginPage() {
             style={{ padding: "12px 16px", borderRadius: "8px", border: "1px solid #d1d5db", fontSize: "14px", outline: "none" }}
           />
           {mode === "signup" && (
-            <input
-              type="password"
-              placeholder="Confirm password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              style={{ padding: "12px 16px", borderRadius: "8px", border: "1px solid #d1d5db", fontSize: "14px", outline: "none" }}
-            />
+            <>
+              <p style={{ fontSize: "12px", color: "#9ca3af", margin: "0" }}>
+                Min. 8 characters, one uppercase letter, one number.
+              </p>
+              <input
+                type="password"
+                placeholder="Confirm password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                style={{ padding: "12px 16px", borderRadius: "8px", border: "1px solid #d1d5db", fontSize: "14px", outline: "none" }}
+              />
+            </>
           )}
         </div>
 
