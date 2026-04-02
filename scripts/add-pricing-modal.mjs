@@ -1,4 +1,5 @@
 import { readFileSync, writeFileSync } from "fs";
+import { execSync } from "child_process";
 
 const SERVER_SIDE_FILES = [
   "app/tools/[slug]/RepairUpload.tsx",
@@ -18,96 +19,107 @@ const BROWSER_SIDE_FILES = [
   "app/tools/[slug]/WatermarkUpload.tsx",
 ];
 
-function processFile(filepath, isServerSide) {
+function processServerSide(filepath) {
   let content = readFileSync(filepath, "utf8");
 
-  // Dodaj importy jeśli nie ma
-  if (!content.includes("useConversionLimit")) {
-    content = content.replace(
-      `import { ToolTracking } from "@/lib/analytics";`,
-      `import { ToolTracking } from "@/lib/analytics";
-import { useConversionLimit } from "@/lib/use-conversion-limit";
-import PricingModal from "@/app/components/PricingModal";`
-    );
-  }
+  // 1. Dodaj checkDownloadLimit i setPendingDownload do destrukturyzacji hooka
+  content = content.replace(
+    `const { showPricingModal, setShowPricingModal, checkLimit, onConversionSuccess } = useConversionLimit();`,
+    `const { showPricingModal, setShowPricingModal, checkLimit, checkDownloadLimit, onConversionSuccess, setPendingDownload } = useConversionLimit();`
+  );
 
-  // Dodaj hook po pierwszym useState
-  if (!content.includes("useConversionLimit()")) {
-    // Znajdź pierwsze wystąpienie useState i dodaj hook po całym bloku stanów
-    content = content.replace(
-      /( {2}const inputRef = useRef[^\n]+\n)/,
-      `$1\n  const { showPricingModal, setShowPricingModal, checkLimit, onConversionSuccess } = useConversionLimit();\n`
-    );
-  }
+  // 2. Usuń checkLimit() przed przetwarzaniem
+  content = content.replace(
+    /\s+\/\/ Sprawdź limit przed przetwarzaniem\n\s+if \(!checkLimit\(\)\) return;\n/g,
+    "\n"
+  );
 
-  // Dodaj sprawdzenie limitu przed przetwarzaniem (server-side)
-  if (isServerSide && !content.includes("checkLimit()")) {
-    content = content.replace(
-      /( {4}if \(!file\) return;\n)( {4}setStatus\("validating"\);)/,
-      `$1    if (!checkLimit()) return;\n$2`
-    );
-  }
-
-  // Dodaj sprawdzenie limitu przed przetwarzaniem (browser-side)
-  if (!isServerSide && !content.includes("checkLimit()")) {
-    content = content.replace(
-      /(ToolTracking\.processStarted\(TOOL_NAME, PROCESSING_TYPE\);)/,
-      `if (!checkLimit()) return;\n\n    $1`
-    );
-  }
-
-  // Dodaj LIMIT_REACHED handler dla server-side
-  if (isServerSide && !content.includes("LIMIT_REACHED")) {
-    content = content.replace(
-      `      if (!createRes.ok) {
-        const err = await createRes.json();
-        throw new Error(err.error ?? "Failed to create upload URL");
-      }`,
-      `      if (!createRes.ok) {
-        const err = await createRes.json();
-        if (err.error === "LIMIT_REACHED") {
+  // 3. Usuń LIMIT_REACHED z create endpoint
+  content = content.replace(
+    `        if (err.error === "LIMIT_REACHED") {
           setShowPricingModal(true);
           setStatus("idle");
           return;
         }
-        throw new Error(err.error ?? "Failed to create upload URL");
-      }`
-    );
-  }
+        `,
+    "        "
+  );
 
-  // Dodaj onConversionSuccess przed ToolTracking.processSuccess
-  if (!content.includes("onConversionSuccess()")) {
-    content = content.replace(
-      /ToolTracking\.processSuccess\(TOOL_NAME, PROCESSING_TYPE\);/,
-      `onConversionSuccess();\n      ToolTracking.processSuccess(TOOL_NAME, PROCESSING_TYPE);`
-    );
-  }
+  // 4. Zamień onConversionSuccess na setPendingDownload
+  content = content.replace(
+    `      // Inkrementuj licznik po sukcesie
+      onConversionSuccess();`,
+    `      // Zapisz pending download w localStorage
+      setPendingDownload({
+        storageKey,
+        filename: file.name,
+        toolSlug: TOOL_NAME,
+        timestamp: Date.now(),
+      });`
+  );
 
-  // Owiń return w <>
-  if (!content.includes("showPricingModal && <PricingModal")) {
-    content = content.replace(
-      `  return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>`,
-      `  return (
-    <>
-      {showPricingModal && <PricingModal onClose={() => setShowPricingModal(false)} />}
-      <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>`
-    );
-
-    // Zamknij <>
-    content = content.replace(
-      /(\s+<\/div>\n\s+\);\n}[\s]*)$/,
-      `\n      </div>\n    </>\n  );\n}\n`
-    );
-  }
+  // 5. Zamień handleDownload na async z checkDownloadLimit
+  content = content.replace(
+    /function handleDownload\(\) \{[\s\S]*?a\.click\(\);\n\s*\}/,
+    `async function handleDownload() {
+    if (!downloadUrl) return;
+    const canDownload = await checkDownloadLimit();
+    if (!canDownload) return;
+    onConversionSuccess();
+    ToolTracking.downloadClicked(TOOL_NAME, PROCESSING_TYPE);
+    const a = document.createElement("a");
+    a.href = downloadUrl;
+    a.download = file?.name ?? "file.pdf";
+    a.click();
+  }`
+  );
 
   writeFileSync(filepath, content, "utf8");
-  console.log(`✅ ${filepath}`);
+  console.log(`✅ SERVER: ${filepath}`);
 }
 
-// Najpierw przywróć oryginały z gita
-import { execSync } from "child_process";
+function processBrowserSide(filepath) {
+  let content = readFileSync(filepath, "utf8");
 
+  // 1. Dodaj checkDownloadLimit do destrukturyzacji hooka
+  content = content.replace(
+    `const { showPricingModal, setShowPricingModal, checkLimit, onConversionSuccess } = useConversionLimit();`,
+    `const { showPricingModal, setShowPricingModal, checkLimit, checkDownloadLimit, onConversionSuccess } = useConversionLimit();`
+  );
+
+  // 2. Usuń checkLimit() przed przetwarzaniem
+  content = content.replace(
+    /\s+\/\/ Sprawdź limit przed przetwarzaniem\n\s+if \(!checkLimit\(\)\) return;\n/g,
+    "\n"
+  );
+
+  // 3. Usuń onConversionSuccess() po sukcesie
+  content = content.replace(
+    /\s+\/\/ Inkrementuj licznik po sukcesie\n\s+onConversionSuccess\(\);\n/g,
+    "\n"
+  );
+
+  // 4. Zamień handleDownload na async z checkDownloadLimit
+  content = content.replace(
+    /function handleDownload\(\) \{[\s\S]*?a\.click\(\);\n\s*\}/,
+    `async function handleDownload() {
+    if (!downloadUrl) return;
+    const canDownload = await checkDownloadLimit();
+    if (!canDownload) return;
+    onConversionSuccess();
+    ToolTracking.downloadClicked(TOOL_NAME, PROCESSING_TYPE);
+    const a = document.createElement("a");
+    a.href = downloadUrl;
+    a.download = "output.pdf";
+    a.click();
+  }`
+  );
+
+  writeFileSync(filepath, content, "utf8");
+  console.log(`✅ BROWSER: ${filepath}`);
+}
+
+// Przywróć oryginały z gita
 for (const file of [...SERVER_SIDE_FILES, ...BROWSER_SIDE_FILES]) {
   try {
     execSync(`git checkout HEAD -- "${file}"`);
@@ -118,11 +130,11 @@ for (const file of [...SERVER_SIDE_FILES, ...BROWSER_SIDE_FILES]) {
 }
 
 for (const file of SERVER_SIDE_FILES) {
-  processFile(file, true);
+  processServerSide(file);
 }
 
 for (const file of BROWSER_SIDE_FILES) {
-  processFile(file, false);
+  processBrowserSide(file);
 }
 
 console.log("Done!");

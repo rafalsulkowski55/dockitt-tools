@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { getAllTools, getToolBySlug, getRelatedTools } from "@/lib/tools";
+import { Suspense } from "react";
 import ToolUpload from "./ToolUpload";
 import MergeUpload from "./MergeUpload";
 import SplitUpload from "./SplitUpload";
@@ -15,6 +16,7 @@ import CropUpload from "./CropUpload";
 import ReorderUpload from "./ReorderUpload";
 import RepairUpload from "./RepairUpload";
 import OcrUpload from "./OcrUpload";
+import DownloadHandler from "./DownloadHandler";
 import Link from "next/link";
 
 type ToolPageProps = {
@@ -173,6 +175,10 @@ export default async function ToolPage({ params }: ToolPageProps) {
     <main style={{ maxWidth: "780px", margin: "0 auto", padding: "40px 20px" }}>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaApp) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaFaq) }} />
+
+      <Suspense fallback={null}>
+        <DownloadHandler />
+      </Suspense>
 
       <div style={{ display: "flex", flexDirection: "column", gap: "40px" }}>
 

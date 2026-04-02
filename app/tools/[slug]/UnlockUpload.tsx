@@ -22,7 +22,7 @@ export default function UnlockUpload() {
   const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const { showPricingModal, setShowPricingModal, checkLimit, onConversionSuccess } = useConversionLimit();
+  const { showPricingModal, setShowPricingModal, checkLimit, checkDownloadLimit, onConversionSuccess, setPendingDownload } = useConversionLimit();
 
   useEffect(() => {
     ToolTracking.viewTool(TOOL_NAME, PROCESSING_TYPE);
@@ -103,11 +103,6 @@ export default function UnlockUpload() {
 
       if (!createRes.ok) {
         const err = await createRes.json();
-        if (err.error === "LIMIT_REACHED") {
-          setShowPricingModal(true);
-          setStatus("idle");
-          return;
-        }
         throw new Error(err.error ?? "Failed to create upload URL");
       }
 
@@ -156,12 +151,15 @@ export default function UnlockUpload() {
     }
   }
 
-  function handleDownload() {
+  async function handleDownload() {
     if (!downloadUrl) return;
+    const canDownload = await checkDownloadLimit();
+    if (!canDownload) return;
+    onConversionSuccess();
     ToolTracking.downloadClicked(TOOL_NAME, PROCESSING_TYPE);
     const a = document.createElement("a");
     a.href = downloadUrl;
-    a.download = `unlocked-${file?.name ?? "file.pdf"}`;
+    a.download = file?.name ?? "file.pdf";
     a.click();
   }
 

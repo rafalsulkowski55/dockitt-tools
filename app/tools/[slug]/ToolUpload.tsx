@@ -36,7 +36,7 @@ export default function ToolUpload() {
   } | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const { showPricingModal, setShowPricingModal, checkLimit, onConversionSuccess } = useConversionLimit();
+  const { showPricingModal, setShowPricingModal, checkDownloadLimit, onConversionSuccess, setPendingDownload } = useConversionLimit();
 
   useEffect(() => {
     ToolTracking.viewTool(TOOL_NAME, PROCESSING_TYPE);
@@ -93,7 +93,7 @@ export default function ToolUpload() {
     }
 
     if (f.size > MAX_FILE_SIZE) {
-      setErrorMessage(`File too large. Maximum size is ${formatSize(MAX_FILE_SIZE)}.`);
+      setErrorMessage(`File too large. Maximum size is ${formatSize(MAX_FILE_SIZE)}. Upgrade to upload files up to 50MB.`);
       setStatus("error");
       return;
     }
@@ -136,9 +136,6 @@ export default function ToolUpload() {
   async function handleProcess() {
     if (!file) return;
 
-    // Sprawdź limit przed przetwarzaniem
-    if (!checkLimit()) return;
-
     setStatus("validating");
     setErrorMessage("");
     setResultInfo(null);
@@ -159,11 +156,6 @@ export default function ToolUpload() {
 
       if (!createRes.ok) {
         const err = await createRes.json();
-        if (err.error === "LIMIT_REACHED") {
-          setShowPricingModal(true);
-          setStatus("idle");
-          return;
-        }
         throw new Error(err.error ?? "Failed to create upload URL");
       }
 
@@ -201,8 +193,13 @@ export default function ToolUpload() {
       setProgress(100);
       const result = await completeRes.json();
 
-      // Inkrementuj licznik po sukcesie
-      onConversionSuccess();
+      // Zapisz pending download w localStorage
+      setPendingDownload({
+        storageKey,
+        filename: file.name,
+        toolSlug: TOOL_NAME,
+        timestamp: Date.now(),
+      });
 
       setResultInfo({
         originalSize: result.originalSize,
@@ -221,8 +218,11 @@ export default function ToolUpload() {
     }
   }
 
-  function handleDownload() {
+  async function handleDownload() {
     if (!resultInfo) return;
+    const canDownload = await checkDownloadLimit();
+    if (!canDownload) return;
+    onConversionSuccess();
     ToolTracking.downloadClicked(TOOL_NAME, PROCESSING_TYPE);
     const a = document.createElement("a");
     a.href = resultInfo.downloadUrl;

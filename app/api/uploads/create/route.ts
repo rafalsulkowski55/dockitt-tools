@@ -11,45 +11,29 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
-    // Sprawdź sesję usera
+    // Sprawdź sesję usera i tier
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
-    // Pobierz profil i sprawdź tier
-    let tier = "free";
-    let maxFileSizeMB = 10;
+    let maxFileSizeMB = 10; // default dla niezalogowanych i free
 
     if (user) {
       const { data: profile } = await supabase
         .from("profiles")
-        .select("tier, pay_per_use_expires_at, daily_conversions_count, daily_conversions_date")
+        .select("tier, pay_per_use_expires_at")
         .eq("id", user.id)
         .single();
 
       if (profile) {
         if (profile.tier === "pay_per_use" && profile.pay_per_use_expires_at) {
-          if (new Date(profile.pay_per_use_expires_at) < new Date()) {
-            await supabase
-              .from("profiles")
-              .update({ tier: "free" })
-              .eq("id", user.id);
-          } else {
-            tier = "pay_per_use";
+          if (new Date(profile.pay_per_use_expires_at) > new Date()) {
             maxFileSizeMB = 50;
+          } else {
+            // Wygasł — cofnij do free
+            await supabase.from("profiles").update({ tier: "free" }).eq("id", user.id);
           }
         } else if (profile.tier === "premium") {
-          tier = "premium";
           maxFileSizeMB = 100;
-        }
-
-        if (tier === "free") {
-          const today = new Date().toISOString().split("T")[0];
-          const lastDate = profile.daily_conversions_date;
-          const count = lastDate === today ? profile.daily_conversions_count : 0;
-
-          if (count >= 1) {
-            return NextResponse.json({ error: "LIMIT_REACHED", tier: "free" }, { status: 403 });
-          }
         }
       }
     }

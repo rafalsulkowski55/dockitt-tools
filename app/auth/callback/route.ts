@@ -25,5 +25,6 @@ export async function GET(req: NextRequest) {
     await supabase.auth.exchangeCodeForSession(code);
   }
 
-  return NextResponse.redirect(new URL("/", req.url));
+  // Redirect na stronę która obsłuży pendingDownload po stronie klienta
+  return NextResponse.redirect(new URL("/auth/success", req.url));
 }

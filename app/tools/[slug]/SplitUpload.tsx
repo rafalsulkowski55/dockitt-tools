@@ -19,7 +19,7 @@ export default function SplitUpload() {
   const [progress, setProgress] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const { showPricingModal, setShowPricingModal, checkLimit, onConversionSuccess } = useConversionLimit();
+  const { showPricingModal, setShowPricingModal, checkLimit, checkDownloadLimit, onConversionSuccess } = useConversionLimit();
 
   useEffect(() => {
     ToolTracking.viewTool(TOOL_NAME, PROCESSING_TYPE);
@@ -98,12 +98,15 @@ export default function SplitUpload() {
     }
   }
 
-  function handleDownload() {
+  async function handleDownload() {
     if (!downloadUrl) return;
+    const canDownload = await checkDownloadLimit();
+    if (!canDownload) return;
+    onConversionSuccess();
     ToolTracking.downloadClicked(TOOL_NAME, PROCESSING_TYPE);
     const a = document.createElement("a");
     a.href = downloadUrl;
-    a.download = `split-pages-${fromPage}-${toPage}.pdf`;
+    a.download = "output.pdf";
     a.click();
   }
 

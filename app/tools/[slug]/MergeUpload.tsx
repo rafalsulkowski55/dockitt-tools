@@ -15,7 +15,7 @@ export default function MergeUpload() {
   const [progress, setProgress] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const { showPricingModal, setShowPricingModal, checkLimit, onConversionSuccess } = useConversionLimit();
+  const { showPricingModal, setShowPricingModal, checkDownloadLimit, onConversionSuccess } = useConversionLimit();
 
   useEffect(() => {
     ToolTracking.viewTool(TOOL_NAME, PROCESSING_TYPE);
@@ -58,9 +58,6 @@ export default function MergeUpload() {
   async function handleProcess() {
     if (files.length < 2) return;
 
-    // Sprawdź limit przed przetwarzaniem
-    if (!checkLimit()) return;
-
     ToolTracking.processStarted(TOOL_NAME, PROCESSING_TYPE);
     setStatus("processing");
     setDownloadUrl(null);
@@ -82,10 +79,6 @@ export default function MergeUpload() {
       const url = URL.createObjectURL(blob);
       setDownloadUrl(url);
       setStatus("done");
-
-      // Inkrementuj licznik po sukcesie
-      onConversionSuccess();
-
       ToolTracking.processSuccess(TOOL_NAME, PROCESSING_TYPE);
     } catch (err) {
       clearInterval(interval);
@@ -94,8 +87,11 @@ export default function MergeUpload() {
     }
   }
 
-  function handleDownload() {
+  async function handleDownload() {
     if (!downloadUrl) return;
+    const canDownload = await checkDownloadLimit();
+    if (!canDownload) return;
+    onConversionSuccess();
     ToolTracking.downloadClicked(TOOL_NAME, PROCESSING_TYPE);
     const a = document.createElement("a");
     a.href = downloadUrl;

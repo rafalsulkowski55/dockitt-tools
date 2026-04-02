@@ -25,7 +25,7 @@ export default function CropUpload() {
   const overlayCanvasRef = useRef<HTMLCanvasElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const { showPricingModal, setShowPricingModal, checkLimit, onConversionSuccess } = useConversionLimit();
+  const { showPricingModal, setShowPricingModal, checkLimit, checkDownloadLimit, onConversionSuccess } = useConversionLimit();
   const isDragging = useRef(false);
   const isResizing = useRef<string | null>(null);
   const dragStart = useRef({ x: 0, y: 0 });

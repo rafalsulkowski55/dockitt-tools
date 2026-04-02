@@ -1,8 +1,16 @@
 const STORAGE_KEY = "dockitt_daily_conversions";
+const PENDING_DOWNLOAD_KEY = "dockitt_pending_download";
 
 interface ConversionRecord {
   date: string;
   count: number;
+}
+
+interface PendingDownload {
+  storageKey: string;
+  filename: string;
+  toolSlug: string;
+  timestamp: number;
 }
 
 function getToday(): string {
@@ -32,4 +40,29 @@ export function incrementConversion(): void {
 export function hasReachedLimit(): boolean {
   const record = getConversionRecord();
   return record.count >= 1;
+}
+
+// Pending download — dla server-side toolów
+export function setPendingDownload(data: PendingDownload): void {
+  localStorage.setItem(PENDING_DOWNLOAD_KEY, JSON.stringify(data));
+}
+
+export function getPendingDownload(): PendingDownload | null {
+  try {
+    const raw = localStorage.getItem(PENDING_DOWNLOAD_KEY);
+    if (!raw) return null;
+    const data = JSON.parse(raw) as PendingDownload;
+    // Sprawdź czy plik nie wygasł (30 minut)
+    if (Date.now() - data.timestamp > 30 * 60 * 1000) {
+      localStorage.removeItem(PENDING_DOWNLOAD_KEY);
+      return null;
+    }
+    return data;
+  } catch {
+    return null;
+  }
+}
+
+export function clearPendingDownload(): void {
+  localStorage.removeItem(PENDING_DOWNLOAD_KEY);
 }
