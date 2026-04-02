@@ -2,6 +2,8 @@
 
 import { useState, useRef, useEffect } from "react";
 import { ToolTracking } from "@/lib/analytics";
+import { useConversionLimit } from "@/lib/use-conversion-limit";
+import PricingModal from "@/app/components/PricingModal";
 
 const TOOL_NAME = "reorder-pdf-pages";
 const PROCESSING_TYPE = "browser" as const;
@@ -16,6 +18,8 @@ export default function ReorderUpload() {
   const [progress, setProgress] = useState(0);
   const [dragOver, setDragOver] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  const { showPricingModal, setShowPricingModal, checkLimit, onConversionSuccess } = useConversionLimit();
 
   useEffect(() => {
     ToolTracking.viewTool(TOOL_NAME, PROCESSING_TYPE);
@@ -65,6 +69,8 @@ export default function ReorderUpload() {
 
   async function handleProcess() {
     if (!file || pages.length === 0) return;
+    if (!checkLimit()) return;
+
     ToolTracking.processStarted(TOOL_NAME, PROCESSING_TYPE);
     setStatus("processing");
     setErrorMessage("");
@@ -92,6 +98,7 @@ export default function ReorderUpload() {
       a.download = `reordered-${file.name}`;
       a.click();
       setStatus("done");
+      onConversionSuccess();
       ToolTracking.processSuccess(TOOL_NAME, PROCESSING_TYPE);
       ToolTracking.downloadClicked(TOOL_NAME, PROCESSING_TYPE);
     } catch (err: unknown) {
@@ -106,7 +113,9 @@ export default function ReorderUpload() {
   const isReady = file && pages.length > 0 && status !== "processing";
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+    <>
+      {showPricingModal && <PricingModal onClose={() => setShowPricingModal(false)} />}
+      <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
 
       <div
         onClick={() => inputRef.current?.click()}
@@ -180,7 +189,7 @@ export default function ReorderUpload() {
           ✅ Pages reordered and PDF downloaded successfully.
         </div>
       )}
-
-    </div>
+      </div>
+    </>
   );
 }

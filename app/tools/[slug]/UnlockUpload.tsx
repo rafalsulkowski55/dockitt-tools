@@ -2,6 +2,8 @@
 
 import { useState, useRef, useEffect } from "react";
 import { ToolTracking } from "@/lib/analytics";
+import { useConversionLimit } from "@/lib/use-conversion-limit";
+import PricingModal from "@/app/components/PricingModal";
 
 const TOOL_NAME = "unlock-pdf";
 const PROCESSING_TYPE = "server" as const;
@@ -19,6 +21,8 @@ export default function UnlockUpload() {
   const [errorMessage, setErrorMessage] = useState("");
   const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  const { showPricingModal, setShowPricingModal, checkLimit, onConversionSuccess } = useConversionLimit();
 
   useEffect(() => {
     ToolTracking.viewTool(TOOL_NAME, PROCESSING_TYPE);
@@ -78,6 +82,7 @@ export default function UnlockUpload() {
 
   async function handleUnlock() {
     if (!file) return;
+    if (!checkLimit()) return;
     setStatus("validating");
     setErrorMessage("");
     setDownloadUrl(null);
@@ -98,6 +103,11 @@ export default function UnlockUpload() {
 
       if (!createRes.ok) {
         const err = await createRes.json();
+        if (err.error === "LIMIT_REACHED") {
+          setShowPricingModal(true);
+          setStatus("idle");
+          return;
+        }
         throw new Error(err.error ?? "Failed to create upload URL");
       }
 
@@ -136,6 +146,7 @@ export default function UnlockUpload() {
       const result = await completeRes.json();
       setDownloadUrl(result.downloadUrl);
       setStatus("done");
+      onConversionSuccess();
       ToolTracking.processSuccess(TOOL_NAME, PROCESSING_TYPE);
 
     } catch (err: unknown) {
@@ -157,7 +168,9 @@ export default function UnlockUpload() {
   const isProcessing = ["validating", "uploading", "processing"].includes(status);
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+    <>
+      {showPricingModal && <PricingModal onClose={() => setShowPricingModal(false)} />}
+      <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
 
       <div
         onClick={() => inputRef.current?.click()}
@@ -249,7 +262,7 @@ export default function UnlockUpload() {
           </button>
         </div>
       )}
-
-    </div>
+      </div>
+    </>
   );
 }

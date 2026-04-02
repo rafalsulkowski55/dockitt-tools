@@ -2,6 +2,8 @@
 
 import { useState, useRef, useEffect } from "react";
 import { ToolTracking } from "@/lib/analytics";
+import { useConversionLimit } from "@/lib/use-conversion-limit";
+import PricingModal from "@/app/components/PricingModal";
 
 const TOOL_NAME = "watermark-pdf";
 const PROCESSING_TYPE = "browser" as const;
@@ -14,6 +16,8 @@ export default function WatermarkUpload() {
   const [progress, setProgress] = useState(0);
   const [dragOver, setDragOver] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  const { showPricingModal, setShowPricingModal, checkLimit, onConversionSuccess } = useConversionLimit();
 
   useEffect(() => {
     ToolTracking.viewTool(TOOL_NAME, PROCESSING_TYPE);
@@ -41,6 +45,8 @@ export default function WatermarkUpload() {
 
   async function handleProcess() {
     if (!file || !text.trim()) return;
+    if (!checkLimit()) return;
+
     ToolTracking.processStarted(TOOL_NAME, PROCESSING_TYPE);
     setStatus("processing");
     setErrorMessage("");
@@ -75,6 +81,7 @@ export default function WatermarkUpload() {
       a.download = `watermarked-${file.name}`;
       a.click();
       setStatus("done");
+      onConversionSuccess();
       ToolTracking.processSuccess(TOOL_NAME, PROCESSING_TYPE);
       ToolTracking.downloadClicked(TOOL_NAME, PROCESSING_TYPE);
     } catch (err: unknown) {
@@ -89,7 +96,9 @@ export default function WatermarkUpload() {
   const isReady = file && text.trim() && status !== "processing";
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+    <>
+      {showPricingModal && <PricingModal onClose={() => setShowPricingModal(false)} />}
+      <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
 
       <div
         onClick={() => inputRef.current?.click()}
@@ -194,7 +203,7 @@ export default function WatermarkUpload() {
           ✅ Watermark added and PDF downloaded successfully.
         </div>
       )}
-
-    </div>
+      </div>
+    </>
   );
 }

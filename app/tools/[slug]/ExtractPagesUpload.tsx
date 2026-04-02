@@ -2,6 +2,8 @@
 
 import { useState, useRef, useEffect } from "react";
 import { ToolTracking } from "@/lib/analytics";
+import { useConversionLimit } from "@/lib/use-conversion-limit";
+import PricingModal from "@/app/components/PricingModal";
 
 const TOOL_NAME = "extract-pdf-pages";
 const PROCESSING_TYPE = "browser" as const;
@@ -14,6 +16,8 @@ export default function ExtractPagesUpload() {
   const [errorMessage, setErrorMessage] = useState("");
   const [progress, setProgress] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  const { showPricingModal, setShowPricingModal, checkLimit, onConversionSuccess } = useConversionLimit();
 
   useEffect(() => {
     ToolTracking.viewTool(TOOL_NAME, PROCESSING_TYPE);
@@ -50,6 +54,8 @@ export default function ExtractPagesUpload() {
 
   async function handleProcess() {
     if (!file) return;
+    if (!checkLimit()) return;
+
     ToolTracking.processStarted(TOOL_NAME, PROCESSING_TYPE);
     setStatus("processing");
     setErrorMessage("");
@@ -77,6 +83,7 @@ export default function ExtractPagesUpload() {
       a.download = `extracted-pages-${file.name}`;
       a.click();
       setStatus("done");
+      onConversionSuccess();
       ToolTracking.processSuccess(TOOL_NAME, PROCESSING_TYPE);
       ToolTracking.downloadClicked(TOOL_NAME, PROCESSING_TYPE);
     } catch (err: unknown) {
@@ -88,7 +95,9 @@ export default function ExtractPagesUpload() {
   }
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+    <>
+      {showPricingModal && <PricingModal onClose={() => setShowPricingModal(false)} />}
+      <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
 
       <div
         onDrop={handleDrop}
@@ -202,7 +211,7 @@ export default function ExtractPagesUpload() {
           ✅ Done. Your extracted pages have been downloaded.
         </div>
       )}
-
-    </div>
+      </div>
+    </>
   );
 }

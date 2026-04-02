@@ -2,6 +2,8 @@
 
 import { useState, useRef, useEffect } from "react";
 import { ToolTracking } from "@/lib/analytics";
+import { useConversionLimit } from "@/lib/use-conversion-limit";
+import PricingModal from "@/app/components/PricingModal";
 
 const TOOL_NAME = "crop-pdf";
 const PROCESSING_TYPE = "browser" as const;
@@ -22,6 +24,8 @@ export default function CropUpload() {
   const previewCanvasRef = useRef<HTMLCanvasElement>(null);
   const overlayCanvasRef = useRef<HTMLCanvasElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  const { showPricingModal, setShowPricingModal, checkLimit, onConversionSuccess } = useConversionLimit();
   const isDragging = useRef(false);
   const isResizing = useRef<string | null>(null);
   const dragStart = useRef({ x: 0, y: 0 });
@@ -225,6 +229,8 @@ export default function CropUpload() {
   async function handleProcess() {
     if (!file || !cropBoxRef.current) return;
     if (cropBoxRef.current) allCropsRef.current[currentPage] = cropBoxRef.current;
+    if (!checkLimit()) return;
+
     ToolTracking.processStarted(TOOL_NAME, PROCESSING_TYPE);
     setStatus("processing");
     setErrorMessage("");
@@ -265,6 +271,7 @@ export default function CropUpload() {
       a.download = `cropped-${file.name}`;
       a.click();
       setStatus("done");
+      onConversionSuccess();
       ToolTracking.processSuccess(TOOL_NAME, PROCESSING_TYPE);
       ToolTracking.downloadClicked(TOOL_NAME, PROCESSING_TYPE);
     } catch (err: unknown) {
@@ -278,7 +285,9 @@ export default function CropUpload() {
   const isReady = file && status !== "processing";
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+    <>
+      {showPricingModal && <PricingModal onClose={() => setShowPricingModal(false)} />}
+      <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
 
       <div
         onClick={() => inputRef.current?.click()}
@@ -352,7 +361,7 @@ export default function CropUpload() {
           ✅ PDF cropped and downloaded successfully.
         </div>
       )}
-
-    </div>
+      </div>
+    </>
   );
 }
