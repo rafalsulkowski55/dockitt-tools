@@ -3,6 +3,7 @@ import { Geist } from "next/font/google";
 import Link from "next/link";
 import Script from "next/script";
 import Header from "./components/Header";
+import CookieBanner from "./components/CookieBanner";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -64,6 +65,8 @@ export default function RootLayout({
 
         {children}
 
+        <CookieBanner />
+
         <footer style={{
           borderTop: "1px solid #e5e7eb",
           background: "#ffffff",
@@ -91,6 +94,3 @@ export default function RootLayout({
     </html>
   );
 }
- 
-
- 
