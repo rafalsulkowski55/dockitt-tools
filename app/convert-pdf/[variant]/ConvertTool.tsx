@@ -18,11 +18,12 @@ export default function ConvertTool({ variant }: Props) {
   const [errorMessage, setErrorMessage] = useState("");
   const [resultUrls, setResultUrls] = useState<string[]>([]);
   const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
+  const [storageKey, setStorageKey] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
   const [dragOver, setDragOver] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const { showPricingModal, setShowPricingModal, checkLimit, onConversionSuccess } = useConversionLimit();
+  const { showPricingModal, setShowPricingModal, checkDownloadLimit, onConversionSuccess, setPendingDownload } = useConversionLimit();
 
   const processingType = R2_VARIANTS.has(variant.slug) ? "server" : "browser";
 
@@ -36,6 +37,7 @@ export default function ConvertTool({ variant }: Props) {
     setErrorMessage("");
     setResultUrls([]);
     setDownloadUrl(null);
+    setStorageKey(null);
     setProgress(0);
     if (selected.length > 0) ToolTracking.uploadStarted(variant.slug, processingType);
   }
@@ -75,7 +77,6 @@ export default function ConvertTool({ variant }: Props) {
 
     setResultUrls(urls);
     setStatus("done");
-    onConversionSuccess();
     ToolTracking.processSuccess(variant.slug, processingType);
   }
 
@@ -93,14 +94,9 @@ export default function ConvertTool({ variant }: Props) {
     setProgress(100);
     const blob = await res.blob();
     const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `converted.${variant.outputFormat}`;
-    a.click();
+    setDownloadUrl(url);
     setStatus("done");
-    onConversionSuccess();
     ToolTracking.processSuccess(variant.slug, processingType);
-    ToolTracking.downloadClicked(variant.slug, processingType);
   }
 
   async function convertViaR2() {
@@ -111,7 +107,7 @@ export default function ConvertTool({ variant }: Props) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         filename: file.name,
-        mimeType: file.type,
+        contentType: file.type,
         sizeBytes: file.size,
         toolSlug: variant.slug,
       }),
@@ -119,15 +115,10 @@ export default function ConvertTool({ variant }: Props) {
 
     if (!createRes.ok) {
       const err = await createRes.json();
-      if (err.error === "LIMIT_REACHED") {
-        setShowPricingModal(true);
-        setStatus("idle");
-        return;
-      }
       throw new Error(err.error ?? "Failed to create upload URL");
     }
 
-    const { uploadUrl, storageKey } = await createRes.json();
+    const { uploadUrl, storageKey: sk } = await createRes.json();
 
     setStatus("uploading");
     setProgress(10);
@@ -147,7 +138,7 @@ export default function ConvertTool({ variant }: Props) {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        storageKey,
+        storageKey: sk,
         toolSlug: variant.slug,
         processingParams: {},
       }),
@@ -161,22 +152,29 @@ export default function ConvertTool({ variant }: Props) {
     setProgress(100);
     const result = await completeRes.json();
     setDownloadUrl(result.downloadUrl);
+    setStorageKey(sk);
+
+    // Zapisz pending download w localStorage
+    setPendingDownload({
+      storageKey: sk,
+      filename: file.name,
+      toolSlug: variant.slug,
+      timestamp: Date.now(),
+    });
+
     setStatus("done");
-    onConversionSuccess();
     ToolTracking.processSuccess(variant.slug, processingType);
   }
 
   async function handleConvert() {
     if (files.length === 0) return;
 
-    // Sprawdź limit przed przetwarzaniem
-    if (!checkLimit()) return;
-
     ToolTracking.processStarted(variant.slug, processingType);
     setStatus("processing");
     setErrorMessage("");
     setResultUrls([]);
     setDownloadUrl(null);
+    setStorageKey(null);
     setProgress(0);
 
     const interval = setInterval(() => {
@@ -203,7 +201,10 @@ export default function ConvertTool({ variant }: Props) {
     }
   }
 
-  function downloadImage(url: string, index: number) {
+  async function downloadImage(url: string, index: number) {
+    const canDownload = await checkDownloadLimit();
+    if (!canDownload) return;
+    onConversionSuccess();
     ToolTracking.downloadClicked(variant.slug, processingType);
     const a = document.createElement("a");
     a.href = url;
@@ -211,12 +212,36 @@ export default function ConvertTool({ variant }: Props) {
     a.click();
   }
 
-  function downloadAll() {
-    resultUrls.forEach((url, i) => downloadImage(url, i));
+  async function downloadAll() {
+    const canDownload = await checkDownloadLimit();
+    if (!canDownload) return;
+    onConversionSuccess();
+    resultUrls.forEach((url, i) => {
+      ToolTracking.downloadClicked(variant.slug, processingType);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `page-${i + 1}.${variant.outputFormat}`;
+      a.click();
+    });
   }
 
-  function handleDownloadR2() {
+  async function handleDownloadR2() {
     if (!downloadUrl) return;
+    const canDownload = await checkDownloadLimit();
+    if (!canDownload) return;
+    onConversionSuccess();
+    ToolTracking.downloadClicked(variant.slug, processingType);
+    const a = document.createElement("a");
+    a.href = downloadUrl;
+    a.download = `converted.${variant.outputFormat}`;
+    a.click();
+  }
+
+  async function handleDownloadApi() {
+    if (!downloadUrl) return;
+    const canDownload = await checkDownloadLimit();
+    if (!canDownload) return;
+    onConversionSuccess();
     ToolTracking.downloadClicked(variant.slug, processingType);
     const a = document.createElement("a");
     a.href = downloadUrl;
@@ -313,7 +338,7 @@ export default function ConvertTool({ variant }: Props) {
           </div>
         )}
 
-        {status === "done" && downloadUrl && (
+        {status === "done" && downloadUrl && R2_VARIANTS.has(variant.slug) && (
           <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
             <div style={{ padding: "20px", background: "#eff6ff", border: "1px solid #bfdbfe", borderRadius: "10px" }}>
               <p style={{ fontSize: "18px", fontWeight: 700, color: "#2563eb", margin: "0 0 6px" }}>✅ Conversion complete</p>
@@ -325,9 +350,15 @@ export default function ConvertTool({ variant }: Props) {
           </div>
         )}
 
-        {status === "done" && resultUrls.length === 0 && !downloadUrl && (
-          <div style={{ padding: "14px 16px", background: "#eff6ff", color: "#2563eb", border: "1px solid #bfdbfe", borderRadius: "10px", fontSize: "14px" }}>
-            ✅ Conversion complete. Your file has been downloaded.
+        {status === "done" && downloadUrl && !R2_VARIANTS.has(variant.slug) && resultUrls.length === 0 && (
+          <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+            <div style={{ padding: "20px", background: "#eff6ff", border: "1px solid #bfdbfe", borderRadius: "10px" }}>
+              <p style={{ fontSize: "18px", fontWeight: 700, color: "#2563eb", margin: "0 0 6px" }}>✅ Conversion complete</p>
+              <p style={{ fontSize: "13px", color: "#4b5563", margin: 0 }}>Your file is ready to download.</p>
+            </div>
+            <button onClick={handleDownloadApi} style={{ padding: "14px 28px", background: "#16a34a", color: "#fff", border: "none", borderRadius: "10px", fontWeight: 600, fontSize: "15px", cursor: "pointer", width: "fit-content" }}>
+              ⬇ Download {variant.outputFormat.toUpperCase()}
+            </button>
           </div>
         )}
 
