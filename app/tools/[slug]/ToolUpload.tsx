@@ -3,6 +3,8 @@
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { ToolTracking } from "@/lib/analytics";
+import { useConversionLimit } from "@/lib/use-conversion-limit";
+import PricingModal from "@/app/components/PricingModal";
 
 const TOOL_NAME = "compress-pdf";
 const PROCESSING_TYPE = "server" as const;
@@ -33,6 +35,8 @@ export default function ToolUpload() {
     downloadUrl: string;
   } | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  const { showPricingModal, setShowPricingModal, checkLimit, onConversionSuccess } = useConversionLimit();
 
   useEffect(() => {
     ToolTracking.viewTool(TOOL_NAME, PROCESSING_TYPE);
@@ -131,6 +135,10 @@ export default function ToolUpload() {
 
   async function handleProcess() {
     if (!file) return;
+
+    // Sprawdź limit przed przetwarzaniem
+    if (!checkLimit()) return;
+
     setStatus("validating");
     setErrorMessage("");
     setResultInfo(null);
@@ -138,13 +146,12 @@ export default function ToolUpload() {
     ToolTracking.processStarted(TOOL_NAME, PROCESSING_TYPE);
 
     try {
-      // Krok 1 — pobierz signed upload URL
       const createRes = await fetch("/api/uploads/create", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           filename: file.name,
-          mimeType: file.type,
+          contentType: file.type,
           sizeBytes: file.size,
           toolSlug: TOOL_NAME,
         }),
@@ -152,12 +159,16 @@ export default function ToolUpload() {
 
       if (!createRes.ok) {
         const err = await createRes.json();
+        if (err.error === "LIMIT_REACHED") {
+          setShowPricingModal(true);
+          setStatus("idle");
+          return;
+        }
         throw new Error(err.error ?? "Failed to create upload URL");
       }
 
       const { uploadUrl, storageKey } = await createRes.json();
 
-      // Krok 2 — upload bezpośrednio do R2
       setStatus("uploading");
       setProgress(10);
 
@@ -171,7 +182,6 @@ export default function ToolUpload() {
 
       setProgress(50);
 
-      // Krok 3 — poinformuj backend o zakończeniu uploadu
       setStatus("processing");
       const completeRes = await fetch("/api/uploads/complete", {
         method: "POST",
@@ -191,6 +201,9 @@ export default function ToolUpload() {
       setProgress(100);
       const result = await completeRes.json();
 
+      // Inkrementuj licznik po sukcesie
+      onConversionSuccess();
+
       setResultInfo({
         originalSize: result.originalSize,
         compressedSize: result.compressedSize,
@@ -201,9 +214,9 @@ export default function ToolUpload() {
       setStatus("done");
       ToolTracking.processSuccess(TOOL_NAME, PROCESSING_TYPE);
 
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err);
-      setErrorMessage(err.message ?? "Something went wrong. Please try again.");
+      setErrorMessage(err instanceof Error ? err.message : "Something went wrong. Please try again.");
       setStatus("error");
     }
   }
@@ -220,131 +233,135 @@ export default function ToolUpload() {
   const isProcessing = ["validating", "uploading", "processing"].includes(status);
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+    <>
+      {showPricingModal && <PricingModal onClose={() => setShowPricingModal(false)} />}
 
-      <p style={{ fontSize: "13px", color: "#6b7280", margin: 0 }}>
-        Upload your PDF and choose how much you want to reduce its size.
-      </p>
+      <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
 
-      <div
-        onDrop={handleDrop}
-        onDragOver={handleDragOver}
-        onClick={() => inputRef.current?.click()}
-        style={{ border: "2px dashed #bfdbfe", borderRadius: "12px", padding: "24px", textAlign: "center", background: "#f8faff", cursor: "pointer" }}
-      >
-        {previewUrl ? (
-          <div style={{ display: "flex", alignItems: "center", gap: "16px", textAlign: "left" }}>
-            <img src={previewUrl} alt="PDF preview" style={{ height: "80px", width: "auto", borderRadius: "6px", border: "1px solid #bfdbfe", boxShadow: "0 2px 6px rgba(37,99,235,0.1)", flexShrink: 0 }} />
-            <div>
-              <p style={{ fontSize: "14px", fontWeight: 600, color: "#111", margin: "0 0 4px" }}>{fileName}</p>
-              <p style={{ fontSize: "12px", color: "#9ca3af", margin: 0 }}>{fileSize}</p>
-              <p style={{ fontSize: "12px", color: "#2563eb", margin: "4px 0 0" }}>Click to change file</p>
-            </div>
-          </div>
-        ) : (
-          <>
-            <div style={{ fontSize: "13px", color: "#666", marginBottom: "12px" }}>Drag & drop your PDF here or</div>
-            <label htmlFor="pdf-upload" style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", padding: "10px 20px", background: "#2563eb", color: "#ffffff", borderRadius: "10px", fontWeight: 600, cursor: "pointer", fontSize: "14px" }} onClick={(e) => e.stopPropagation()}>
-              Choose PDF
-            </label>
-            <p style={{ fontSize: "12px", color: "#9ca3af", margin: "8px 0 0" }}>Maximum file size: 10MB</p>
-          </>
-        )}
-        <input id="pdf-upload" ref={inputRef} type="file" accept=".pdf" style={{ display: "none" }} onChange={handleFileChange} />
-      </div>
+        <p style={{ fontSize: "13px", color: "#6b7280", margin: 0 }}>
+          Upload your PDF and choose how much you want to reduce its size.
+        </p>
 
-      <div style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "12px", color: "#6b7280" }}>
-        <span>🔐</span>
-        Processed securely on our server. Files are automatically deleted after 30 minutes.
-      </div>
-
-      <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-        <p style={{ fontSize: "13px", color: "#4b5563", margin: 0, fontWeight: 500 }}>Compression level:</p>
-        <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
-          {PRESETS.map((p) => (
-            <button
-              key={p.id}
-              onClick={() => setPreset(p.id)}
-              style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", padding: "10px 16px", borderRadius: "8px", border: "1px solid", borderColor: preset === p.id ? "#2563eb" : "#e5e7eb", background: preset === p.id ? "#2563eb" : "#fff", cursor: "pointer", transition: "all 0.15s" }}
-            >
-              <span style={{ fontSize: "13px", fontWeight: 600, color: preset === p.id ? "#fff" : "#111" }}>{p.label}</span>
-              <span style={{ fontSize: "11px", color: preset === p.id ? "#bfdbfe" : "#9ca3af" }}>{p.subtext}</span>
-            </button>
-          ))}
-        </div>
-      </div>
-
-      <button
-        disabled={!file || isProcessing}
-        onClick={handleProcess}
-        style={{ padding: "12px 24px", background: file && !isProcessing ? "#2563eb" : "#d1d5db", color: "#ffffff", border: "none", borderRadius: "10px", fontWeight: 600, fontSize: "15px", cursor: file && !isProcessing ? "pointer" : "not-allowed", width: "fit-content" }}
-      >
-        {status === "uploading" ? "Uploading..." : status === "processing" ? "Compressing..." : status === "validating" ? "Validating..." : "Compress PDF"}
-      </button>
-
-      {isProcessing && (
-        <div>
-          <div style={{ display: "flex", justifyContent: "space-between", fontSize: "13px", color: "#666", marginBottom: "6px" }}>
-            <span>{status === "uploading" ? "Uploading to secure storage..." : status === "processing" ? "Compressing..." : "Validating..."}</span>
-            <span>{progress}%</span>
-          </div>
-          <div style={{ background: "#e5e7eb", borderRadius: "99px", height: "6px", overflow: "hidden" }}>
-            <div style={{ height: "100%", width: `${progress}%`, background: "#2563eb", borderRadius: "99px", transition: "width 0.3s ease" }} />
-          </div>
-        </div>
-      )}
-
-      {status === "error" && (
-        <div style={{ padding: "14px 16px", background: "#fef2f2", color: "#dc2626", border: "1px solid #fecaca", borderRadius: "10px", fontSize: "14px" }}>
-          {errorMessage || "Something went wrong. Please try again."}
-        </div>
-      )}
-
-      {status === "done" && resultInfo && (
-        <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-          <div style={{ background: "#eff6ff", border: "1px solid #bfdbfe", borderRadius: "10px", padding: "20px" }}>
-            <p style={{ fontSize: "24px", fontWeight: 700, color: "#2563eb", margin: "0 0 6px" }}>
-              {getResultHeadline(resultInfo.reduction)}
-            </p>
-            <p style={{ fontSize: "15px", color: "#4b5563", margin: "0 0 12px" }}>
-              {formatSize(resultInfo.originalSize)} → {formatSize(resultInfo.compressedSize)}
-            </p>
-            <div style={{ display: "flex", gap: "10px", marginBottom: "12px" }}>
-              <div style={{ flex: 1, background: "#f9fafb", border: "1px solid #e5e7eb", borderRadius: "8px", padding: "10px 14px" }}>
-                <p style={{ fontSize: "11px", color: "#9ca3af", margin: "0 0 2px", textTransform: "uppercase", letterSpacing: "0.05em" }}>Before</p>
-                <p style={{ fontSize: "15px", fontWeight: 600, color: "#374151", margin: 0 }}>{formatSize(resultInfo.originalSize)}</p>
-              </div>
-              <div style={{ flex: 1, background: "#f0fdf4", border: "1px solid #bbf7d0", borderRadius: "8px", padding: "10px 14px" }}>
-                <p style={{ fontSize: "11px", color: "#16a34a", margin: "0 0 2px", textTransform: "uppercase", letterSpacing: "0.05em" }}>After</p>
-                <p style={{ fontSize: "15px", fontWeight: 600, color: "#15803d", margin: 0 }}>{formatSize(resultInfo.compressedSize)}</p>
+        <div
+          onDrop={handleDrop}
+          onDragOver={handleDragOver}
+          onClick={() => inputRef.current?.click()}
+          style={{ border: "2px dashed #bfdbfe", borderRadius: "12px", padding: "24px", textAlign: "center", background: "#f8faff", cursor: "pointer" }}
+        >
+          {previewUrl ? (
+            <div style={{ display: "flex", alignItems: "center", gap: "16px", textAlign: "left" }}>
+              <img src={previewUrl} alt="PDF preview" style={{ height: "80px", width: "auto", borderRadius: "6px", border: "1px solid #bfdbfe", boxShadow: "0 2px 6px rgba(37,99,235,0.1)", flexShrink: 0 }} />
+              <div>
+                <p style={{ fontSize: "14px", fontWeight: 600, color: "#111", margin: "0 0 4px" }}>{fileName}</p>
+                <p style={{ fontSize: "12px", color: "#9ca3af", margin: 0 }}>{fileSize}</p>
+                <p style={{ fontSize: "12px", color: "#2563eb", margin: "4px 0 0" }}>Click to change file</p>
               </div>
             </div>
-            <p style={{ fontSize: "13px", color: "#16a34a", margin: 0 }}>
-              {getSuccessMessage(resultInfo.compressedSize)}
-            </p>
-          </div>
+          ) : (
+            <>
+              <div style={{ fontSize: "13px", color: "#666", marginBottom: "12px" }}>Drag & drop your PDF here or</div>
+              <label htmlFor="pdf-upload" style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", padding: "10px 20px", background: "#2563eb", color: "#ffffff", borderRadius: "10px", fontWeight: 600, cursor: "pointer", fontSize: "14px" }} onClick={(e) => e.stopPropagation()}>
+                Choose PDF
+              </label>
+              <p style={{ fontSize: "12px", color: "#9ca3af", margin: "8px 0 0" }}>Maximum file size: 10MB</p>
+            </>
+          )}
+          <input id="pdf-upload" ref={inputRef} type="file" accept=".pdf" style={{ display: "none" }} onChange={handleFileChange} />
+        </div>
 
-          <button onClick={handleDownload} style={{ padding: "14px 28px", background: "#16a34a", color: "#ffffff", border: "none", borderRadius: "10px", fontWeight: 600, fontSize: "15px", cursor: "pointer", width: "fit-content" }}>
-            ⬇ Download compressed PDF
-          </button>
+        <div style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "12px", color: "#6b7280" }}>
+          <span>🔐</span>
+          Processed securely on our server. Files are automatically deleted after 30 minutes.
+        </div>
 
-          <div style={{ background: "#f9fafb", border: "1px solid #e5e7eb", borderRadius: "10px", padding: "16px" }}>
-            <p style={{ fontSize: "13px", fontWeight: 600, color: "#111", margin: "0 0 10px" }}>Next steps</p>
-            <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-              <button onClick={handleReset} style={{ display: "flex", alignItems: "center", gap: "8px", background: "none", border: "none", cursor: "pointer", padding: 0, fontSize: "13px", color: "#2563eb", fontWeight: 500, textAlign: "left" }}>
-                → Compress another PDF
+        <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+          <p style={{ fontSize: "13px", color: "#4b5563", margin: 0, fontWeight: 500 }}>Compression level:</p>
+          <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+            {PRESETS.map((p) => (
+              <button
+                key={p.id}
+                onClick={() => setPreset(p.id)}
+                style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", padding: "10px 16px", borderRadius: "8px", border: "1px solid", borderColor: preset === p.id ? "#2563eb" : "#e5e7eb", background: preset === p.id ? "#2563eb" : "#fff", cursor: "pointer", transition: "all 0.15s" }}
+              >
+                <span style={{ fontSize: "13px", fontWeight: 600, color: preset === p.id ? "#fff" : "#111" }}>{p.label}</span>
+                <span style={{ fontSize: "11px", color: preset === p.id ? "#bfdbfe" : "#9ca3af" }}>{p.subtext}</span>
               </button>
-              <Link href="/tools/merge-pdf" style={{ fontSize: "13px", color: "#2563eb", textDecoration: "none", fontWeight: 500 }}>
-                → Merge PDF files
-              </Link>
-              <Link href="/tools/protect-pdf" style={{ fontSize: "13px", color: "#2563eb", textDecoration: "none", fontWeight: 500 }}>
-                → Password protect your PDF
-              </Link>
-            </div>
+            ))}
           </div>
         </div>
-      )}
 
-    </div>
+        <button
+          disabled={!file || isProcessing}
+          onClick={handleProcess}
+          style={{ padding: "12px 24px", background: file && !isProcessing ? "#2563eb" : "#d1d5db", color: "#ffffff", border: "none", borderRadius: "10px", fontWeight: 600, fontSize: "15px", cursor: file && !isProcessing ? "pointer" : "not-allowed", width: "fit-content" }}
+        >
+          {status === "uploading" ? "Uploading..." : status === "processing" ? "Compressing..." : status === "validating" ? "Validating..." : "Compress PDF"}
+        </button>
+
+        {isProcessing && (
+          <div>
+            <div style={{ display: "flex", justifyContent: "space-between", fontSize: "13px", color: "#666", marginBottom: "6px" }}>
+              <span>{status === "uploading" ? "Uploading to secure storage..." : status === "processing" ? "Compressing..." : "Validating..."}</span>
+              <span>{progress}%</span>
+            </div>
+            <div style={{ background: "#e5e7eb", borderRadius: "99px", height: "6px", overflow: "hidden" }}>
+              <div style={{ height: "100%", width: `${progress}%`, background: "#2563eb", borderRadius: "99px", transition: "width 0.3s ease" }} />
+            </div>
+          </div>
+        )}
+
+        {status === "error" && (
+          <div style={{ padding: "14px 16px", background: "#fef2f2", color: "#dc2626", border: "1px solid #fecaca", borderRadius: "10px", fontSize: "14px" }}>
+            {errorMessage || "Something went wrong. Please try again."}
+          </div>
+        )}
+
+        {status === "done" && resultInfo && (
+          <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+            <div style={{ background: "#eff6ff", border: "1px solid #bfdbfe", borderRadius: "10px", padding: "20px" }}>
+              <p style={{ fontSize: "24px", fontWeight: 700, color: "#2563eb", margin: "0 0 6px" }}>
+                {getResultHeadline(resultInfo.reduction)}
+              </p>
+              <p style={{ fontSize: "15px", color: "#4b5563", margin: "0 0 12px" }}>
+                {formatSize(resultInfo.originalSize)} → {formatSize(resultInfo.compressedSize)}
+              </p>
+              <div style={{ display: "flex", gap: "10px", marginBottom: "12px" }}>
+                <div style={{ flex: 1, background: "#f9fafb", border: "1px solid #e5e7eb", borderRadius: "8px", padding: "10px 14px" }}>
+                  <p style={{ fontSize: "11px", color: "#9ca3af", margin: "0 0 2px", textTransform: "uppercase", letterSpacing: "0.05em" }}>Before</p>
+                  <p style={{ fontSize: "15px", fontWeight: 600, color: "#374151", margin: 0 }}>{formatSize(resultInfo.originalSize)}</p>
+                </div>
+                <div style={{ flex: 1, background: "#f0fdf4", border: "1px solid #bbf7d0", borderRadius: "8px", padding: "10px 14px" }}>
+                  <p style={{ fontSize: "11px", color: "#16a34a", margin: "0 0 2px", textTransform: "uppercase", letterSpacing: "0.05em" }}>After</p>
+                  <p style={{ fontSize: "15px", fontWeight: 600, color: "#15803d", margin: 0 }}>{formatSize(resultInfo.compressedSize)}</p>
+                </div>
+              </div>
+              <p style={{ fontSize: "13px", color: "#16a34a", margin: 0 }}>
+                {getSuccessMessage(resultInfo.compressedSize)}
+              </p>
+            </div>
+
+            <button onClick={handleDownload} style={{ padding: "14px 28px", background: "#16a34a", color: "#ffffff", border: "none", borderRadius: "10px", fontWeight: 600, fontSize: "15px", cursor: "pointer", width: "fit-content" }}>
+              ⬇ Download compressed PDF
+            </button>
+
+            <div style={{ background: "#f9fafb", border: "1px solid #e5e7eb", borderRadius: "10px", padding: "16px" }}>
+              <p style={{ fontSize: "13px", fontWeight: 600, color: "#111", margin: "0 0 10px" }}>Next steps</p>
+              <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                <button onClick={handleReset} style={{ display: "flex", alignItems: "center", gap: "8px", background: "none", border: "none", cursor: "pointer", padding: 0, fontSize: "13px", color: "#2563eb", fontWeight: 500, textAlign: "left" }}>
+                  → Compress another PDF
+                </button>
+                <Link href="/tools/merge-pdf" style={{ fontSize: "13px", color: "#2563eb", textDecoration: "none", fontWeight: 500 }}>
+                  → Merge PDF files
+                </Link>
+                <Link href="/tools/protect-pdf" style={{ fontSize: "13px", color: "#2563eb", textDecoration: "none", fontWeight: 500 }}>
+                  → Password protect your PDF
+                </Link>
+              </div>
+            </div>
+          </div>
+        )}
+
+      </div>
+    </>
   );
 }
