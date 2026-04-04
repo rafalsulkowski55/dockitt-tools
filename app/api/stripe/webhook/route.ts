@@ -106,6 +106,7 @@ export async function POST(req: NextRequest) {
     if (signInError || !signInData?.session) {
       console.error("Error signing in:", signInError);
     } else {
+      console.log("Inserting pending session for:", email, "stripe session:", stripeSessionId);
       await supabase.from("pending_sessions").insert({
         stripe_session_id: stripeSessionId,
         access_token: signInData.session.access_token,
