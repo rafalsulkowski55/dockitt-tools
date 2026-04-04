@@ -16,8 +16,9 @@ export async function createFileRecord(params: {
   toolSlug: string;
   sessionToken?: string;
   userId?: string;
+  expiresAt?: Date;
 }) {
-  const expiresAt = new Date(Date.now() + 30 * 60 * 1000); // 30 minut
+  const expiresAt = params.expiresAt ?? new Date(Date.now() + 30 * 60 * 1000);
   const result = await pool.query(
     `INSERT INTO stored_files 
      (storage_key, kind, content_type, original_filename, size_bytes, tool_slug, session_token, user_id, status, expires_at)

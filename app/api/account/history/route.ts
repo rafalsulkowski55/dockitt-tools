@@ -19,7 +19,7 @@ export async function GET(req: NextRequest) {
     }
 
     const result = await pool.query(
-      `SELECT tool_slug, original_filename, created_at
+      `SELECT tool_slug, original_filename, created_at, storage_key
        FROM stored_files
        WHERE user_id = $1 AND kind = 'input'
        ORDER BY created_at DESC

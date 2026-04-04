@@ -16,6 +16,7 @@ interface HistoryItem {
   tool_slug: string;
   original_filename: string;
   created_at: string;
+  storage_key: string;
 }
 
 export default function AccountPage() {
@@ -137,7 +138,30 @@ export default function AccountPage() {
                     <div style={{ fontSize: "14px", fontWeight: 500, color: "#111" }}>{item.original_filename}</div>
                     <div style={{ fontSize: "12px", color: "#9ca3af", marginTop: "2px" }}>{item.tool_slug}</div>
                   </div>
-                  <div style={{ fontSize: "12px", color: "#9ca3af" }}>{new Date(item.created_at).toLocaleDateString()}</div>
+                  <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                    <div style={{ fontSize: "12px", color: "#9ca3af" }}>{new Date(item.created_at).toLocaleDateString()}</div>
+                    {item.storage_key && (
+                      <button
+                        onClick={async () => {
+                          const res = await fetch(`/api/files/download?storageKey=${encodeURIComponent(item.storage_key)}`);
+                          const data = await res.json();
+                          if (data.error === "FILE_EXPIRED") {
+                            alert("This file has expired.");
+                            return;
+                          }
+                          if (data.downloadUrl) {
+                            const a = document.createElement("a");
+                            a.href = data.downloadUrl;
+                            a.download = item.original_filename;
+                            a.click();
+                          }
+                        }}
+                        style={{ padding: "6px 12px", background: "#2563eb", color: "#fff", border: "none", borderRadius: "6px", fontSize: "12px", fontWeight: 600, cursor: "pointer" }}
+                      >
+                        ⬇ Download
+                      </button>
+                    )}
+                  </div>
                 </div>
               ))}
             </div>
