@@ -21,10 +21,13 @@ export async function getSignedUploadUrl(key: string, contentType: string, expir
   return getSignedUrl(r2Client, command, { expiresIn });
 }
 
-export async function getSignedDownloadUrl(key: string, expiresIn = 300) {
+export async function getSignedDownloadUrl(key: string, expiresIn = 300, filename?: string) {
   const command = new GetObjectCommand({
     Bucket: BUCKET,
     Key: key,
+    ResponseContentDisposition: filename
+      ? `attachment; filename="${encodeURIComponent(filename)}"`
+      : "attachment",
   });
   return getSignedUrl(r2Client, command, { expiresIn });
 }
