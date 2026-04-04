@@ -44,6 +44,19 @@ function PaymentSuccessContent() {
           return;
         }
 
+        // Przypisz pending plik do usera
+        const pending = getPendingDownload();
+        if (pending?.storageKey) {
+          await fetch("/api/files/claim", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              storageKey: pending.storageKey,
+              accessToken: data.access_token,
+            }),
+          });
+        }
+
         setTier(data.tier);
         setExpiresAt(data.pay_per_use_expires_at);
         setStatus("success");
