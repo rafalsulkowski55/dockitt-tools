@@ -43,11 +43,10 @@ export async function POST(req: NextRequest) {
     const { data: { users } } = await supabase.auth.admin.listUsers();
     let authUser = users.find(u => u.email === email) ?? null;
     let isNewUser = false;
-    let tempPassword: string | null = null;
+    let tempPassword: string = generatePassword();
 
     if (!authUser) {
       isNewUser = true;
-      tempPassword = generatePassword();
       const { data: newUser, error: createError } = await supabase.auth.admin.createUser({
         email,
         password: tempPassword,
@@ -58,6 +57,15 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ error: "Failed to create user" }, { status: 500 });
       }
       authUser = newUser.user ?? null;
+    } else {
+      // Istniejący user — zmień hasło żeby zalogować
+      const { error: updateError } = await supabase.auth.admin.updateUserById(
+        authUser.id,
+        { password: tempPassword }
+      );
+      if (updateError) {
+        console.error("Error updating user password:", updateError);
+      }
     }
 
     const userId = authUser?.id ?? null;
@@ -89,32 +97,27 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    // Stwórz sesję — zaloguj przez email+hasło
-    if (tempPassword) {
-      const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
-        email,
-        password: tempPassword,
-      });
+    // Zaloguj przez email+hasło i zapisz sesję
+    const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
+      email,
+      password: tempPassword,
+    });
 
-      if (signInError || !signInData?.session) {
-        console.error("Error signing in:", signInError);
-      } else {
-        await supabase.from("pending_sessions").insert({
-          stripe_session_id: stripeSessionId,
-          access_token: signInData.session.access_token,
-          refresh_token: signInData.session.refresh_token,
-          email,
-          tier,
-          pay_per_use_expires_at: expiresAt,
-        });
-      }
+    if (signInError || !signInData?.session) {
+      console.error("Error signing in:", signInError);
+    } else {
+      await supabase.from("pending_sessions").insert({
+        stripe_session_id: stripeSessionId,
+        access_token: signInData.session.access_token,
+        refresh_token: signInData.session.refresh_token,
+        email,
+        tier,
+        pay_per_use_expires_at: expiresAt,
+      });
     }
 
     // Wyślij email przez Resend
-    const planLabel = tier === "pay_per_use"
-      ? "48-hour access"
-      : "Premium";
-
+    const planLabel = tier === "pay_per_use" ? "48-hour access" : "Premium";
     const activeUntil = expiresAt
       ? `Active until: ${new Date(expiresAt).toLocaleString("en-US", { dateStyle: "long", timeStyle: "short" })}`
       : "Active: monthly renewal";
@@ -134,7 +137,7 @@ export async function POST(req: NextRequest) {
             <h1 style="font-size: 24px; font-weight: 700; color: #111; margin: 0 0 8px;">Thank you for your payment! 🎉</h1>
             <p style="font-size: 16px; color: #555; margin: 0 0 24px;">Your plan is now active.</p>
 
-            <a href="https://dockitt.com" style="display: inline-block; padding: 14px 28px; background: #2563eb; color: #fff; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 16px; margin-bottom: 32px;">Go to Dockitt →</a>
+            <a href="https://www.dockitt.com" style="display: inline-block; padding: 14px 28px; background: #2563eb; color: #fff; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 16px; margin-bottom: 32px;">Go to Dockitt →</a>
 
             <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 24px 0;" />
 
@@ -145,7 +148,7 @@ export async function POST(req: NextRequest) {
               <tr><td style="padding: 4px 0;">${activeUntil}</td></tr>
             </table>
 
-            ${isNewUser && tempPassword ? `
+            ${isNewUser ? `
             <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 24px 0;" />
             <h2 style="font-size: 16px; font-weight: 600; color: #111; margin: 0 0 12px;">Your account details</h2>
             <table style="width: 100%; font-size: 14px; color: #555;">
