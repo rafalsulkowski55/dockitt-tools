@@ -11,12 +11,15 @@ export default function AuthSuccessPage() {
     const pending = getPendingDownload();
 
     if (pending) {
-      // Jest pending download — redirect na tool z parametrem
       clearPendingDownload();
-      const toolPath = `/tools/${pending.toolSlug}`;
-      router.replace(`${toolPath}?download=true&storageKey=${encodeURIComponent(pending.storageKey)}&filename=${encodeURIComponent(pending.filename)}`);
+      const toolPath = pending.toolPath ?? `/tools/${pending.toolSlug}`;
+
+      if (pending.storageKey) {
+        router.replace(`${toolPath}?download=true&storageKey=${encodeURIComponent(pending.storageKey)}&filename=${encodeURIComponent(pending.filename)}`);
+      } else {
+        router.replace(`${toolPath}?reprocess=true`);
+      }
     } else {
-      // Brak pending download — idź na stronę główną
       router.replace("/");
     }
   }, [router]);

@@ -196,8 +196,9 @@ export default function ToolUpload() {
       // Zapisz pending download w localStorage
       setPendingDownload({
         storageKey,
-        filename: file.name,
+        filename: `compressed-${file.name}`,
         toolSlug: TOOL_NAME,
+        toolPath: `/tools/${TOOL_NAME}`,
         timestamp: Date.now(),
       });
 

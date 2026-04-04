@@ -157,8 +157,9 @@ export default function ConvertTool({ variant }: Props) {
     // Zapisz pending download w localStorage
     setPendingDownload({
       storageKey: sk,
-      filename: file.name,
+      filename: `converted-${file.name}`,
       toolSlug: variant.slug,
+      toolPath: `/convert-pdf/${variant.slug}`,
       timestamp: Date.now(),
     });
 

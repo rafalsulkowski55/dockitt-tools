@@ -6,10 +6,11 @@ interface ConversionRecord {
   count: number;
 }
 
-interface PendingDownload {
-  storageKey: string;
+export interface PendingDownload {
+  storageKey?: string;
   filename: string;
   toolSlug: string;
+  toolPath: string;
   timestamp: number;
 }
 
@@ -42,7 +43,6 @@ export function hasReachedLimit(): boolean {
   return record.count >= 1;
 }
 
-// Pending download — dla server-side toolów
 export function setPendingDownload(data: PendingDownload): void {
   localStorage.setItem(PENDING_DOWNLOAD_KEY, JSON.stringify(data));
 }
@@ -52,8 +52,7 @@ export function getPendingDownload(): PendingDownload | null {
     const raw = localStorage.getItem(PENDING_DOWNLOAD_KEY);
     if (!raw) return null;
     const data = JSON.parse(raw) as PendingDownload;
-    // Sprawdź czy plik nie wygasł (30 minut)
-    if (Date.now() - data.timestamp > 30 * 60 * 1000) {
+    if (data.timestamp && Date.now() - data.timestamp > 30 * 60 * 1000) {
       localStorage.removeItem(PENDING_DOWNLOAD_KEY);
       return null;
     }
