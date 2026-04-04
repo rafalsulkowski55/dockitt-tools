@@ -1,14 +1,16 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import { Suspense } from "react";
 import { createClient } from "@/lib/supabase";
+import { getPendingDownload, clearPendingDownload } from "@/lib/conversion-limit";
 
 function PaymentSuccessContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [status, setStatus] = useState<"loading" | "success" | "error">("loading");
+  const [tier, setTier] = useState<string | null>(null);
+  const [expiresAt, setExpiresAt] = useState<string | null>(null);
 
   useEffect(() => {
     const sessionId = searchParams.get("session_id");
@@ -19,31 +21,51 @@ function PaymentSuccessContent() {
 
     async function handleSuccess() {
       try {
-        // Pobierz email z session_id przez nasz API
-        const res = await fetch(`/api/stripe/session?session_id=${sessionId}`);
+        // Pobierz tokeny bezpośrednio z pending_sessions
+        const res = await fetch(`/api/stripe/pending-session?session_id=${sessionId}`);
         const data = await res.json();
 
-        if (!res.ok || !data.email) {
+        if (!res.ok || !data.access_token) {
+          console.error("pending-session error:", data);
           setStatus("error");
           return;
         }
 
-        // Wyślij magic link i automatycznie zaloguj
+        // Zaloguj usera przez tokeny
         const supabase = createClient();
-        await supabase.auth.signInWithOtp({
-          email: data.email,
-          options: {
-            emailRedirectTo: "https://www.dockitt.com/auth/callback",
-          },
+        const { error: sessionError } = await supabase.auth.setSession({
+          access_token: data.access_token,
+          refresh_token: data.refresh_token,
         });
 
+        if (sessionError) {
+          console.error("setSession error:", sessionError);
+          setStatus("error");
+          return;
+        }
+
+        setTier(data.tier);
+        setExpiresAt(data.pay_per_use_expires_at);
         setStatus("success");
 
-        // Po 3 sekundach redirect na stronę główną lub tool
+        // Sprawdź pending download i zrób redirect
         setTimeout(() => {
-          router.push("/");
-        }, 3000);
-      } catch {
+          const pending = getPendingDownload();
+          if (pending) {
+            clearPendingDownload();
+            const toolPath = pending.toolPath ?? `/tools/${pending.toolSlug}`;
+            if (pending.storageKey) {
+              router.push(`${toolPath}?download=true&storageKey=${encodeURIComponent(pending.storageKey)}&filename=${encodeURIComponent(pending.filename)}`);
+            } else {
+              router.push(`${toolPath}?reprocess=true`);
+            }
+          } else {
+            router.push("/account");
+          }
+        }, 2000);
+
+      } catch (err) {
+        console.error("handleSuccess error:", err);
         setStatus("error");
       }
     }
@@ -82,14 +104,16 @@ function PaymentSuccessContent() {
               Payment successful!
             </h1>
             <p style={{ fontSize: "15px", color: "#6b7280", margin: "0 0 16px" }}>
-              Check your email — we sent you a link to access your files anytime.
+              {tier === "pay_per_use" && expiresAt
+                ? `Your 48-hour access is active until ${new Date(expiresAt).toLocaleString("en-US", { dateStyle: "long", timeStyle: "short" })}.`
+                : "Your Premium plan is now active."}
             </p>
             <div style={{
               background: "#eff6ff", border: "1px solid #bfdbfe",
               borderRadius: "10px", padding: "16px", marginBottom: "24px",
             }}>
               <p style={{ fontSize: "13px", color: "#1d4ed8", margin: 0 }}>
-                You'll be redirected automatically in a moment...
+                Check your email for your account details. Redirecting you now...
               </p>
             </div>
           </>
@@ -102,7 +126,7 @@ function PaymentSuccessContent() {
               Something went wrong
             </h1>
             <p style={{ fontSize: "15px", color: "#6b7280", margin: "0 0 24px" }}>
-              Your payment was successful. Check your email for a sign-in link.
+              Your payment was successful. Check your email for your account details.
             </p>
             <a href="/" style={{
               display: "inline-block", padding: "12px 24px",
@@ -120,9 +144,11 @@ function PaymentSuccessContent() {
 
 export default function PaymentSuccessPage() {
   return (
-    <Suspense fallback={<div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
-      <p style={{ color: "#6b7280" }}>Loading...</p>
-    </div>}>
+    <Suspense fallback={
+      <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <p style={{ color: "#6b7280" }}>Loading...</p>
+      </div>
+    }>
       <PaymentSuccessContent />
     </Suspense>
   );
