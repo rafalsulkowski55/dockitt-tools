@@ -147,37 +147,33 @@ export default function SignUpload() {
       const sigCanvas = signatureCanvasRef.current;
       if (!sigCanvas) throw new Error("Canvas not found");
 
-      const signatureBlob = await new Promise<Blob>((resolve, reject) => {
-        sigCanvas.toBlob((blob) => {
-          if (blob) resolve(blob);
-          else reject(new Error("Failed to create signature image"));
-        }, "image/png");
-      });
+      const sigDataUrl = sigCanvas.toDataURL("image/png");
+      const sigBase64 = sigDataUrl.split(",")[1];
+      const sigBytes = Uint8Array.from(atob(sigBase64), c => c.charCodeAt(0));
 
+      const { PDFDocument } = await import("pdf-lib");
+      const arrayBuffer = await file.arrayBuffer();
+      const pdfDoc = await PDFDocument.load(arrayBuffer, { ignoreEncryption: true });
+      const sigImage = await pdfDoc.embedPng(sigBytes);
+
+      const page = pdfDoc.getPages()[0];
+      const { width, height } = page.getSize();
       const sigWidth = 200;
       const sigHeight = 80;
       const pdfX = signaturePos ? signaturePos.x / pdfScale : 50;
-      const pdfY = signaturePos ? signaturePos.y / pdfScale : 50;
+      const pdfY = signaturePos ? height - (signaturePos.y / pdfScale) - sigHeight : 50;
 
-      const formData = new FormData();
-      formData.append("file", file);
-      formData.append("signature", signatureBlob, "signature.png");
-      formData.append("page", "1");
-      formData.append("x", pdfX.toString());
-      formData.append("y", pdfY.toString());
-      formData.append("width", sigWidth.toString());
-      formData.append("height", sigHeight.toString());
+      page.drawImage(sigImage, {
+        x: pdfX,
+        y: pdfY,
+        width: sigWidth,
+        height: sigHeight,
+      });
 
-      const res = await fetch("/api/sign-pdf", { method: "POST", body: formData });
       clearInterval(interval);
-
-      if (!res.ok) {
-        const err = await res.json();
-        throw new Error(err.error ?? "Unknown error");
-      }
-
       setProgress(100);
-      const blob = await res.blob();
+      const newBytes = await pdfDoc.save();
+      const blob = new Blob([new Uint8Array(newBytes)], { type: "application/pdf" });
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
@@ -201,21 +197,9 @@ export default function SignUpload() {
   return (
     <>
       {showPricingModal && <PricingModal onClose={() => setShowPricingModal(false)} />}
-
       <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
 
-        <div
-          onClick={() => inputRef.current?.click()}
-          onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
-          onDragLeave={() => setDragOver(false)}
-          onDrop={handleDrop}
-          style={{
-            border: `2px dashed ${dragOver ? "#2563eb" : "#bfdbfe"}`,
-            background: dragOver ? "#e0eeff" : "#f8faff",
-            borderRadius: "12px", padding: "32px 24px",
-            textAlign: "center", cursor: "pointer", transition: "all 0.15s",
-          }}
-        >
+        <div onClick={() => inputRef.current?.click()} onDragOver={(e) => { e.preventDefault(); setDragOver(true); }} onDragLeave={() => setDragOver(false)} onDrop={handleDrop} style={{ border: `2px dashed ${dragOver ? "#2563eb" : "#bfdbfe"}`, background: dragOver ? "#e0eeff" : "#f8faff", borderRadius: "12px", padding: "32px 24px", textAlign: "center", cursor: "pointer", transition: "all 0.15s" }}>
           <div style={{ fontSize: "28px", marginBottom: "8px" }}>📄</div>
           {file ? (
             <p style={{ fontSize: "14px", color: "#111", fontWeight: 500, margin: 0 }}>{file.name}</p>
@@ -232,9 +216,7 @@ export default function SignUpload() {
           Choose PDF
         </button>
 
-        <p style={{ fontSize: "12px", color: "#9ca3af", margin: 0 }}>
-          🔒 Processed entirely in your browser. Files never leave your device.
-        </p>
+        <p style={{ fontSize: "12px", color: "#9ca3af", margin: 0 }}>🔒 Processed entirely in your browser. Files never leave your device.</p>
 
         {file && (
           <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
@@ -283,7 +265,6 @@ export default function SignUpload() {
             ✅ PDF signed and downloaded successfully.
           </div>
         )}
-
       </div>
     </>
   );

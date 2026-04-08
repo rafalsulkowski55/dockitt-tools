@@ -81,17 +81,17 @@ export default function ReorderUpload() {
     }, 300);
 
     try {
-      const formData = new FormData();
-      formData.append("file", file);
-      formData.append("order", pages.join(","));
-      const res = await fetch("/api/reorder-pdf-pages", { method: "POST", body: formData });
+      const { PDFDocument } = await import("pdf-lib");
+      const arrayBuffer = await file.arrayBuffer();
+      const srcDoc = await PDFDocument.load(arrayBuffer, { ignoreEncryption: true });
+      const newDoc = await PDFDocument.create();
+      const pageIndices = pages.map(n => n - 1);
+      const copiedPages = await newDoc.copyPages(srcDoc, pageIndices);
+      copiedPages.forEach(page => newDoc.addPage(page));
       clearInterval(interval);
-      if (!res.ok) {
-        const err = await res.json();
-        throw new Error(err.error ?? "Unknown error");
-      }
       setProgress(100);
-      const blob = await res.blob();
+      const newBytes = await newDoc.save();
+      const blob = new Blob([new Uint8Array(newBytes)], { type: "application/pdf" });
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
@@ -117,13 +117,7 @@ export default function ReorderUpload() {
       {showPricingModal && <PricingModal onClose={() => setShowPricingModal(false)} />}
       <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
 
-      <div
-        onClick={() => inputRef.current?.click()}
-        onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
-        onDragLeave={() => setDragOver(false)}
-        onDrop={handleDrop}
-        style={{ border: `2px dashed ${dragOver ? "#2563eb" : "#bfdbfe"}`, background: dragOver ? "#e0eeff" : "#f8faff", borderRadius: "12px", padding: "32px 24px", textAlign: "center", cursor: "pointer", transition: "all 0.15s" }}
-      >
+      <div onClick={() => inputRef.current?.click()} onDragOver={(e) => { e.preventDefault(); setDragOver(true); }} onDragLeave={() => setDragOver(false)} onDrop={handleDrop} style={{ border: `2px dashed ${dragOver ? "#2563eb" : "#bfdbfe"}`, background: dragOver ? "#e0eeff" : "#f8faff", borderRadius: "12px", padding: "32px 24px", textAlign: "center", cursor: "pointer", transition: "all 0.15s" }}>
         <div style={{ fontSize: "28px", marginBottom: "8px" }}>📄</div>
         {file ? (
           <p style={{ fontSize: "14px", color: "#111", fontWeight: 500, margin: 0 }}>{file.name}</p>
@@ -140,23 +134,14 @@ export default function ReorderUpload() {
         Choose PDF
       </button>
 
-      <p style={{ fontSize: "12px", color: "#9ca3af", margin: 0 }}>
-        🔒 Processed entirely in your browser. Files never leave your device.
-      </p>
+      <p style={{ fontSize: "12px", color: "#9ca3af", margin: 0 }}>🔒 Processed entirely in your browser. Files never leave your device.</p>
 
       {totalPages && pages.length > 0 && (
         <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
           <span style={{ fontSize: "14px", color: "#111", fontWeight: 500 }}>Drag pages to reorder:</span>
           <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
             {pages.map((pageNum, index) => (
-              <div
-                key={`${pageNum}-${index}`}
-                draggable
-                onDragStart={() => handleDragStart(index)}
-                onDragOver={(e) => handleDragOver(e, index)}
-                onDragEnd={handleDragEnd}
-                style={{ padding: "10px 16px", background: dragIndex === index ? "#dbeafe" : "#f9fafb", border: "1px solid", borderColor: dragIndex === index ? "#2563eb" : "#e5e7eb", borderRadius: "8px", cursor: "grab", fontSize: "14px", fontWeight: 500, color: "#333", userSelect: "none" }}
-              >
+              <div key={`${pageNum}-${index}`} draggable onDragStart={() => handleDragStart(index)} onDragOver={(e) => handleDragOver(e, index)} onDragEnd={handleDragEnd} style={{ padding: "10px 16px", background: dragIndex === index ? "#dbeafe" : "#f9fafb", border: "1px solid", borderColor: dragIndex === index ? "#2563eb" : "#e5e7eb", borderRadius: "8px", cursor: "grab", fontSize: "14px", fontWeight: 500, color: "#333", userSelect: "none" }}>
                 Page {pageNum}
               </div>
             ))}

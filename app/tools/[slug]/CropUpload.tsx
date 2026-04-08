@@ -241,35 +241,37 @@ export default function CropUpload() {
     }, 300);
 
     try {
-      const formData = new FormData();
-      formData.append("file", file);
-      const cropsData: Record<number, { top: number; bottom: number; left: number; right: number }> = {};
+      const { PDFDocument } = await import("pdf-lib");
       const scale = pdfScaleRef.current;
       const { width: cw, height: ch } = canvasSizeRef.current;
-      for (let i = 1; i <= totalPages; i++) {
-        const box = allCropsRef.current[i] ?? allCropsRef.current[currentPage];
-        if (box) {
-          cropsData[i] = {
-            left: Math.round(box.x / scale), top: Math.round(box.y / scale),
-            right: Math.round((cw - box.x - box.width) / scale),
-            bottom: Math.round((ch - box.y - box.height) / scale),
-          };
-        }
-      }
-      formData.append("crops", JSON.stringify(cropsData));
-      const res = await fetch("/api/crop-pdf", { method: "POST", body: formData });
+
+      const arrayBuffer = await file.arrayBuffer();
+      const pdfDoc = await PDFDocument.load(arrayBuffer, { ignoreEncryption: true });
+      const pages = pdfDoc.getPages();
+
+      pages.forEach((page, index) => {
+        const pageNum = index + 1;
+        const box = allCropsRef.current[pageNum] ?? allCropsRef.current[currentPage];
+        if (!box) return;
+        const { width, height } = page.getSize();
+        const left = Math.round(box.x / scale);
+        const top = Math.round(box.y / scale);
+        const right = Math.round((cw - box.x - box.width) / scale);
+        const bottom = Math.round((ch - box.y - box.height) / scale);
+        page.setCropBox(left, bottom, width - left - right, height - top - bottom);
+      });
+
       clearInterval(interval);
-      if (!res.ok) {
-        const err = await res.json();
-        throw new Error(err.error ?? "Unknown error");
-      }
       setProgress(100);
-      const blob = await res.blob();
+
+      const newBytes = await pdfDoc.save({ useObjectStreams: true });
+      const blob = new Blob([new Uint8Array(newBytes)], { type: "application/pdf" });
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
       a.download = `cropped-${file.name}`;
       a.click();
+
       setStatus("done");
       onConversionSuccess();
       ToolTracking.processSuccess(TOOL_NAME, PROCESSING_TYPE);

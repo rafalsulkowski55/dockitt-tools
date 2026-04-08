@@ -59,17 +59,15 @@ export default function RotateUpload() {
       setProgress((p) => (p < 85 ? p + 5 : p));
     }, 300);
     try {
-      const formData = new FormData();
-      formData.append("file", file);
-      formData.append("angle", angle);
-      const res = await fetch("/api/rotate-pdf", { method: "POST", body: formData });
+      const { PDFDocument, degrees } = await import("pdf-lib");
+      const arrayBuffer = await file.arrayBuffer();
+      const pdfDoc = await PDFDocument.load(arrayBuffer, { ignoreEncryption: true });
+      const pages = pdfDoc.getPages();
+      pages.forEach(page => page.setRotation(degrees(parseInt(angle))));
       clearInterval(interval);
       setProgress(100);
-      if (!res.ok) {
-        const err = await res.json();
-        throw new Error(err.error ?? "Unknown error");
-      }
-      const blob = await res.blob();
+      const newBytes = await pdfDoc.save();
+      const blob = new Blob([new Uint8Array(newBytes)], { type: "application/pdf" });
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;

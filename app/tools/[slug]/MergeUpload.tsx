@@ -66,16 +66,18 @@ export default function MergeUpload() {
       setProgress((p) => (p < 85 ? p + 5 : p));
     }, 300);
     try {
-      const formData = new FormData();
-      files.forEach((file) => formData.append("files", file));
-      const res = await fetch("/api/merge-pdf", { method: "POST", body: formData });
+      const { PDFDocument } = await import("pdf-lib");
+      const mergedDoc = await PDFDocument.create();
+      for (const file of files) {
+        const arrayBuffer = await file.arrayBuffer();
+        const pdf = await PDFDocument.load(arrayBuffer, { ignoreEncryption: true });
+        const pages = await mergedDoc.copyPages(pdf, pdf.getPageIndices());
+        pages.forEach(page => mergedDoc.addPage(page));
+      }
       clearInterval(interval);
       setProgress(100);
-      if (!res.ok) {
-        const err = await res.json();
-        throw new Error(err.error ?? "Unknown error");
-      }
-      const blob = await res.blob();
+      const newBytes = await mergedDoc.save();
+      const blob = new Blob([new Uint8Array(newBytes)], { type: "application/pdf" });
       const url = URL.createObjectURL(blob);
       setDownloadUrl(url);
       setStatus("done");
@@ -102,139 +104,61 @@ export default function MergeUpload() {
   return (
     <>
       {showPricingModal && <PricingModal onClose={() => setShowPricingModal(false)} />}
-
       <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
 
-        <div
-          onDrop={handleDrop}
-          onDragOver={handleDragOver}
-          onClick={() => inputRef.current?.click()}
-          style={{
-            border: "2px dashed #bfdbfe", borderRadius: "12px",
-            padding: "24px", textAlign: "center",
-            background: "#f8faff", cursor: "pointer",
-          }}
-        >
-          <div style={{ fontSize: "13px", color: "#666", marginBottom: "12px" }}>
-            Drag & drop your PDFs here or
-          </div>
-          <label
-            htmlFor="merge-upload"
-            style={{
-              display: "inline-flex", alignItems: "center", justifyContent: "center",
-              padding: "10px 20px", background: "#2563eb", color: "#ffffff",
-              borderRadius: "10px", fontWeight: 600, cursor: "pointer", fontSize: "14px",
-            }}
-            onClick={(e) => e.stopPropagation()}
-          >
+        <div onDrop={handleDrop} onDragOver={handleDragOver} onClick={() => inputRef.current?.click()} style={{ border: "2px dashed #bfdbfe", borderRadius: "12px", padding: "24px", textAlign: "center", background: "#f8faff", cursor: "pointer" }}>
+          <div style={{ fontSize: "13px", color: "#666", marginBottom: "12px" }}>Drag & drop your PDFs here or</div>
+          <label htmlFor="merge-upload" style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", padding: "10px 20px", background: "#2563eb", color: "#ffffff", borderRadius: "10px", fontWeight: 600, cursor: "pointer", fontSize: "14px" }} onClick={(e) => e.stopPropagation()}>
             Choose PDFs
           </label>
-          <input
-            id="merge-upload"
-            ref={inputRef}
-            type="file"
-            accept=".pdf"
-            multiple
-            style={{ display: "none" }}
-            onChange={handleFileChange}
-          />
-          {files.length > 0 && (
-            <div style={{ marginTop: "12px", fontSize: "14px", color: "#444" }}>
-              📄 {files.length} file(s) selected
-            </div>
-          )}
+          <input id="merge-upload" ref={inputRef} type="file" accept=".pdf" multiple style={{ display: "none" }} onChange={handleFileChange} />
+          {files.length > 0 && <div style={{ marginTop: "12px", fontSize: "14px", color: "#444" }}>📄 {files.length} file(s) selected</div>}
         </div>
 
         <div style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "12px", color: "#555" }}>
-          <span>🔒</span>
-          Processed entirely in your browser. Files never leave your device.
+          <span>🔒</span>Processed entirely in your browser. Files never leave your device.
         </div>
 
         {files.length > 0 && (
           <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
             {files.map((file, index) => (
-              <div
-                key={index}
-                style={{
-                  display: "flex", alignItems: "center", justifyContent: "space-between",
-                  padding: "10px 14px", background: "#f9fafb",
-                  border: "1px solid #e5e7eb", borderRadius: "8px", fontSize: "14px",
-                }}
-              >
-                <span style={{ color: "#333" }}>
-                  {index + 1}. {file.name} <span style={{ color: "#999" }}>({formatSize(file.size)})</span>
-                </span>
-                <button
-                  onClick={() => removeFile(index)}
-                  style={{
-                    background: "none", border: "none", color: "#999",
-                    cursor: "pointer", fontSize: "16px", padding: "0 4px",
-                  }}
-                >
-                  ✕
-                </button>
+              <div key={index} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 14px", background: "#f9fafb", border: "1px solid #e5e7eb", borderRadius: "8px", fontSize: "14px" }}>
+                <span style={{ color: "#333" }}>{index + 1}. {file.name} <span style={{ color: "#999" }}>({formatSize(file.size)})</span></span>
+                <button onClick={() => removeFile(index)} style={{ background: "none", border: "none", color: "#999", cursor: "pointer", fontSize: "16px", padding: "0 4px" }}>✕</button>
               </div>
             ))}
           </div>
         )}
 
-        <button
-          disabled={files.length < 2 || status === "processing"}
-          onClick={handleProcess}
-          style={{
-            padding: "12px 24px",
-            background: files.length >= 2 && status !== "processing" ? "#2563eb" : "#d1d5db",
-            color: "#ffffff", border: "none", borderRadius: "10px",
-            fontWeight: 600, fontSize: "15px",
-            cursor: files.length >= 2 && status !== "processing" ? "pointer" : "not-allowed",
-            width: "fit-content",
-          }}
-        >
+        <button disabled={files.length < 2 || status === "processing"} onClick={handleProcess} style={{ padding: "12px 24px", background: files.length >= 2 && status !== "processing" ? "#2563eb" : "#d1d5db", color: "#ffffff", border: "none", borderRadius: "10px", fontWeight: 600, fontSize: "15px", cursor: files.length >= 2 && status !== "processing" ? "pointer" : "not-allowed", width: "fit-content" }}>
           {status === "processing" ? "Processing..." : "Merge PDFs"}
         </button>
 
         {status === "processing" && (
           <div>
             <div style={{ display: "flex", justifyContent: "space-between", fontSize: "13px", color: "#666", marginBottom: "6px" }}>
-              <span>Processing...</span>
-              <span>{progress}%</span>
+              <span>Processing...</span><span>{progress}%</span>
             </div>
             <div style={{ background: "#e5e7eb", borderRadius: "99px", height: "6px", overflow: "hidden" }}>
-              <div style={{
-                height: "100%", width: `${progress}%`, background: "#2563eb",
-                borderRadius: "99px", transition: "width 0.3s ease",
-              }} />
+              <div style={{ height: "100%", width: `${progress}%`, background: "#2563eb", borderRadius: "99px", transition: "width 0.3s ease" }} />
             </div>
           </div>
         )}
 
         {status === "error" && (
-          <div style={{
-            padding: "14px 16px", background: "#fef2f2", color: "#dc2626",
-            border: "1px solid #fecaca", borderRadius: "10px", fontSize: "14px",
-          }}>
+          <div style={{ padding: "14px 16px", background: "#fef2f2", color: "#dc2626", border: "1px solid #fecaca", borderRadius: "10px", fontSize: "14px" }}>
             Something went wrong. Please try again.
           </div>
         )}
 
         {status === "done" && (
-          <div style={{
-            padding: "14px 16px", background: "#eff6ff", color: "#1d4ed8",
-            border: "1px solid #bfdbfe", borderRadius: "10px", fontSize: "14px",
-          }}>
+          <div style={{ padding: "14px 16px", background: "#eff6ff", color: "#1d4ed8", border: "1px solid #bfdbfe", borderRadius: "10px", fontSize: "14px" }}>
             Merge complete. Your files have been combined into one PDF.
           </div>
         )}
 
         {status === "done" && downloadUrl && (
-          <button
-            onClick={handleDownload}
-            style={{
-              padding: "12px 24px", background: "#16a34a", color: "#ffffff",
-              border: "none", borderRadius: "10px", fontWeight: 600, fontSize: "15px",
-              cursor: "pointer", width: "fit-content",
-            }}
-          >
+          <button onClick={handleDownload} style={{ padding: "12px 24px", background: "#16a34a", color: "#ffffff", border: "none", borderRadius: "10px", fontWeight: 600, fontSize: "15px", cursor: "pointer", width: "fit-content" }}>
             Download PDF
           </button>
         )}

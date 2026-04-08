@@ -57,24 +57,27 @@ export default function WatermarkUpload() {
     }, 300);
 
     try {
-      const formData = new FormData();
-      formData.append("file", file);
-      formData.append("text", text);
-
-      const res = await fetch("/api/watermark-pdf", {
-        method: "POST",
-        body: formData,
+      const { PDFDocument, rgb, degrees, StandardFonts } = await import("pdf-lib");
+      const arrayBuffer = await file.arrayBuffer();
+      const pdfDoc = await PDFDocument.load(arrayBuffer, { ignoreEncryption: true });
+      const helveticaFont = await pdfDoc.embedFont(StandardFonts.Helvetica);
+      const pages = pdfDoc.getPages();
+      pages.forEach(page => {
+        const { width, height } = page.getSize();
+        page.drawText(text, {
+          x: width / 2 - (text.length * 12),
+          y: height / 2,
+          size: 48,
+          font: helveticaFont,
+          color: rgb(0.8, 0.8, 0.8),
+          opacity: 0.3,
+          rotate: degrees(45),
+        });
       });
-
       clearInterval(interval);
-
-      if (!res.ok) {
-        const err = await res.json();
-        throw new Error(err.error ?? "Unknown error");
-      }
-
       setProgress(100);
-      const blob = await res.blob();
+      const newBytes = await pdfDoc.save();
+      const blob = new Blob([new Uint8Array(newBytes)], { type: "application/pdf" });
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
@@ -100,93 +103,38 @@ export default function WatermarkUpload() {
       {showPricingModal && <PricingModal onClose={() => setShowPricingModal(false)} />}
       <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
 
-      <div
-        onClick={() => inputRef.current?.click()}
-        onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
-        onDragLeave={() => setDragOver(false)}
-        onDrop={handleDrop}
-        style={{
-          border: `2px dashed ${dragOver ? "#2563eb" : "#bfdbfe"}`,
-          background: dragOver ? "#e0eeff" : "#f8faff",
-          borderRadius: "12px",
-          padding: "32px 24px",
-          textAlign: "center",
-          cursor: "pointer",
-          transition: "all 0.15s",
-        }}
-      >
+      <div onClick={() => inputRef.current?.click()} onDragOver={(e) => { e.preventDefault(); setDragOver(true); }} onDragLeave={() => setDragOver(false)} onDrop={handleDrop} style={{ border: `2px dashed ${dragOver ? "#2563eb" : "#bfdbfe"}`, background: dragOver ? "#e0eeff" : "#f8faff", borderRadius: "12px", padding: "32px 24px", textAlign: "center", cursor: "pointer", transition: "all 0.15s" }}>
         <div style={{ fontSize: "28px", marginBottom: "8px" }}>📄</div>
         {file ? (
           <p style={{ fontSize: "14px", color: "#111", fontWeight: 500, margin: 0 }}>{file.name}</p>
         ) : (
           <>
-            <p style={{ fontSize: "14px", color: "#374151", fontWeight: 500, margin: "0 0 4px" }}>
-              Drag & drop your PDF here
-            </p>
+            <p style={{ fontSize: "14px", color: "#374151", fontWeight: 500, margin: "0 0 4px" }}>Drag & drop your PDF here</p>
             <p style={{ fontSize: "13px", color: "#9ca3af", margin: 0 }}>or click to browse</p>
           </>
         )}
-        <input
-          ref={inputRef}
-          type="file"
-          accept=".pdf"
-          style={{ display: "none" }}
-          onChange={handleFileChange}
-        />
+        <input ref={inputRef} type="file" accept=".pdf" style={{ display: "none" }} onChange={handleFileChange} />
       </div>
 
-      <button
-        onClick={() => inputRef.current?.click()}
-        style={{
-          padding: "11px 20px", background: "#2563eb", color: "#fff",
-          border: "none", borderRadius: "8px", fontWeight: 500,
-          fontSize: "14px", cursor: "pointer", width: "fit-content",
-        }}
-      >
+      <button onClick={() => inputRef.current?.click()} style={{ padding: "11px 20px", background: "#2563eb", color: "#fff", border: "none", borderRadius: "8px", fontWeight: 500, fontSize: "14px", cursor: "pointer", width: "fit-content" }}>
         Choose PDF
       </button>
 
-      <p style={{ fontSize: "12px", color: "#9ca3af", margin: 0 }}>
-        🔒 Processed entirely in your browser. Files never leave your device.
-      </p>
+      <p style={{ fontSize: "12px", color: "#9ca3af", margin: 0 }}>🔒 Processed entirely in your browser. Files never leave your device.</p>
 
       <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
         <label style={{ fontSize: "13px", color: "#4b5563" }}>Watermark text:</label>
-        <input
-          type="text"
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-          placeholder="e.g. CONFIDENTIAL"
-          style={{
-            padding: "11px 14px", border: "1px solid #d1d5db",
-            borderRadius: "8px", fontSize: "14px",
-            maxWidth: "300px", outline: "none",
-          }}
-        />
+        <input type="text" value={text} onChange={(e) => setText(e.target.value)} placeholder="e.g. CONFIDENTIAL" style={{ padding: "11px 14px", border: "1px solid #d1d5db", borderRadius: "8px", fontSize: "14px", maxWidth: "300px", outline: "none" }} />
       </div>
 
-      <button
-        disabled={!isReady}
-        onClick={handleProcess}
-        style={{
-          padding: "12px 20px",
-          background: isReady ? "#2563eb" : "#d1d5db",
-          color: "#fff", border: "none", borderRadius: "8px",
-          fontWeight: 500, fontSize: "14px",
-          cursor: isReady ? "pointer" : "not-allowed",
-          width: "fit-content",
-        }}
-      >
+      <button disabled={!isReady} onClick={handleProcess} style={{ padding: "12px 20px", background: isReady ? "#2563eb" : "#d1d5db", color: "#fff", border: "none", borderRadius: "8px", fontWeight: 500, fontSize: "14px", cursor: isReady ? "pointer" : "not-allowed", width: "fit-content" }}>
         {status === "processing" ? "Adding watermark..." : "Add Watermark"}
       </button>
 
       {status === "processing" && (
         <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
           <div style={{ background: "#e5e7eb", borderRadius: "100px", height: "6px", overflow: "hidden" }}>
-            <div style={{
-              height: "100%", borderRadius: "100px", background: "#2563eb",
-              width: `${progress}%`, transition: "width 0.3s ease",
-            }} />
+            <div style={{ height: "100%", borderRadius: "100px", background: "#2563eb", width: `${progress}%`, transition: "width 0.3s ease" }} />
           </div>
           <p style={{ fontSize: "12px", color: "#6b7280", margin: 0 }}>{Math.round(progress)}%</p>
         </div>

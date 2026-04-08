@@ -52,6 +52,10 @@ export default function ExtractPagesUpload() {
     e.preventDefault();
   }
 
+  function parsePageNumbers(input: string, total: number): number[] {
+    return input.split(",").map(s => parseInt(s.trim())).filter(n => !isNaN(n) && n >= 1 && n <= total);
+  }
+
   async function handleProcess() {
     if (!file) return;
     if (!checkLimit()) return;
@@ -64,19 +68,21 @@ export default function ExtractPagesUpload() {
       setProgress((p) => (p < 85 ? p + 5 : p));
     }, 300);
     try {
-      const formData = new FormData();
-      formData.append("file", file);
-      formData.append("pages", pages);
-      const res = await fetch("/api/extract-pdf-pages", { method: "POST", body: formData });
+      const { PDFDocument } = await import("pdf-lib");
+      const arrayBuffer = await file.arrayBuffer();
+      const srcDoc = await PDFDocument.load(arrayBuffer, { ignoreEncryption: true });
+      const total = srcDoc.getPageCount();
+      setTotalPages(total);
+      const pageNums = parsePageNumbers(pages, total);
+      if (pageNums.length === 0) throw new Error("No valid page numbers specified.");
+      const newDoc = await PDFDocument.create();
+      const pageIndices = pageNums.map(n => n - 1);
+      const copiedPages = await newDoc.copyPages(srcDoc, pageIndices);
+      copiedPages.forEach(page => newDoc.addPage(page));
       clearInterval(interval);
       setProgress(100);
-      if (!res.ok) {
-        const err = await res.json();
-        throw new Error(err.error ?? "Unknown error");
-      }
-      const total = parseInt(res.headers.get("X-Total-Pages") ?? "0");
-      if (total > 0) setTotalPages(total);
-      const blob = await res.blob();
+      const newBytes = await newDoc.save();
+      const blob = new Blob([new Uint8Array(newBytes)], { type: "application/pdf" });
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
@@ -99,115 +105,52 @@ export default function ExtractPagesUpload() {
       {showPricingModal && <PricingModal onClose={() => setShowPricingModal(false)} />}
       <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
 
-      <div
-        onDrop={handleDrop}
-        onDragOver={handleDragOver}
-        onClick={() => inputRef.current?.click()}
-        style={{
-          border: "2px dashed #bfdbfe", borderRadius: "12px",
-          padding: "24px", textAlign: "center",
-          background: "#f8faff", cursor: "pointer",
-        }}
-      >
-        <div style={{ fontSize: "13px", color: "#666", marginBottom: "12px" }}>
-          Drag & drop your PDF here or
-        </div>
-        <label
-          htmlFor="extract-pages-upload"
-          style={{
-            display: "inline-flex", alignItems: "center", justifyContent: "center",
-            padding: "10px 20px", background: "#2563eb", color: "#ffffff",
-            borderRadius: "10px", fontWeight: 600, cursor: "pointer", fontSize: "14px",
-          }}
-          onClick={(e) => e.stopPropagation()}
-        >
+      <div onDrop={handleDrop} onDragOver={handleDragOver} onClick={() => inputRef.current?.click()} style={{ border: "2px dashed #bfdbfe", borderRadius: "12px", padding: "24px", textAlign: "center", background: "#f8faff", cursor: "pointer" }}>
+        <div style={{ fontSize: "13px", color: "#666", marginBottom: "12px" }}>Drag & drop your PDF here or</div>
+        <label htmlFor="extract-pages-upload" style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", padding: "10px 20px", background: "#2563eb", color: "#ffffff", borderRadius: "10px", fontWeight: 600, cursor: "pointer", fontSize: "14px" }} onClick={(e) => e.stopPropagation()}>
           Choose PDF
         </label>
-        <input
-          id="extract-pages-upload"
-          ref={inputRef}
-          type="file"
-          accept=".pdf"
-          style={{ display: "none" }}
-          onChange={handleFileChange}
-        />
-        {file && (
-          <div style={{ marginTop: "12px", fontSize: "14px", color: "#444" }}>
-            📄 {file.name}
-          </div>
-        )}
+        <input id="extract-pages-upload" ref={inputRef} type="file" accept=".pdf" style={{ display: "none" }} onChange={handleFileChange} />
+        {file && <div style={{ marginTop: "12px", fontSize: "14px", color: "#444" }}>📄 {file.name}</div>}
       </div>
 
       <div style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "12px", color: "#555" }}>
-        <span>🔒</span>
-        Processed entirely in your browser. Files never leave your device.
+        <span>🔒</span>Processed entirely in your browser. Files never leave your device.
       </div>
 
       {file && (
         <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
           <label style={{ fontSize: "14px", color: "#444" }}>
             Pages to extract (e.g. 1, 3, 5):
-            {totalPages && (
-              <span style={{ color: "#999", marginLeft: "8px" }}>(PDF has {totalPages} pages)</span>
-            )}
+            {totalPages && <span style={{ color: "#999", marginLeft: "8px" }}>(PDF has {totalPages} pages)</span>}
           </label>
-          <input
-            type="text"
-            value={pages}
-            onChange={(e) => setPages(e.target.value)}
-            placeholder="1, 3, 5"
-            style={{
-              padding: "10px 14px", border: "1px solid #d1d5db",
-              borderRadius: "8px", fontSize: "14px", width: "200px",
-            }}
-          />
+          <input type="text" value={pages} onChange={(e) => setPages(e.target.value)} placeholder="1, 3, 5" style={{ padding: "10px 14px", border: "1px solid #d1d5db", borderRadius: "8px", fontSize: "14px", width: "200px" }} />
         </div>
       )}
 
-      <button
-        disabled={!file || !pages.trim() || status === "processing"}
-        onClick={handleProcess}
-        style={{
-          padding: "12px 24px",
-          background: file && pages.trim() && status !== "processing" ? "#2563eb" : "#d1d5db",
-          color: "#ffffff", border: "none", borderRadius: "10px",
-          fontWeight: 600, fontSize: "15px",
-          cursor: file && pages.trim() && status !== "processing" ? "pointer" : "not-allowed",
-          width: "fit-content",
-        }}
-      >
+      <button disabled={!file || !pages.trim() || status === "processing"} onClick={handleProcess} style={{ padding: "12px 24px", background: file && pages.trim() && status !== "processing" ? "#2563eb" : "#d1d5db", color: "#ffffff", border: "none", borderRadius: "10px", fontWeight: 600, fontSize: "15px", cursor: file && pages.trim() && status !== "processing" ? "pointer" : "not-allowed", width: "fit-content" }}>
         {status === "processing" ? "Processing..." : "Extract Pages"}
       </button>
 
       {status === "processing" && (
         <div>
           <div style={{ display: "flex", justifyContent: "space-between", fontSize: "13px", color: "#666", marginBottom: "6px" }}>
-            <span>Processing...</span>
-            <span>{progress}%</span>
+            <span>Processing...</span><span>{progress}%</span>
           </div>
           <div style={{ background: "#e5e7eb", borderRadius: "99px", height: "6px", overflow: "hidden" }}>
-            <div style={{
-              height: "100%", width: `${progress}%`, background: "#2563eb",
-              borderRadius: "99px", transition: "width 0.3s ease",
-            }} />
+            <div style={{ height: "100%", width: `${progress}%`, background: "#2563eb", borderRadius: "99px", transition: "width 0.3s ease" }} />
           </div>
         </div>
       )}
 
       {status === "error" && (
-        <div style={{
-          padding: "14px 16px", background: "#fef2f2", color: "#dc2626",
-          border: "1px solid #fecaca", borderRadius: "10px", fontSize: "14px",
-        }}>
+        <div style={{ padding: "14px 16px", background: "#fef2f2", color: "#dc2626", border: "1px solid #fecaca", borderRadius: "10px", fontSize: "14px" }}>
           {errorMessage || "Something went wrong. Please try again."}
         </div>
       )}
 
       {status === "done" && (
-        <div style={{
-          padding: "14px 16px", background: "#eff6ff", color: "#1d4ed8",
-          border: "1px solid #bfdbfe", borderRadius: "10px", fontSize: "14px",
-        }}>
+        <div style={{ padding: "14px 16px", background: "#eff6ff", color: "#1d4ed8", border: "1px solid #bfdbfe", borderRadius: "10px", fontSize: "14px" }}>
           ✅ Done. Your extracted pages have been downloaded.
         </div>
       )}
