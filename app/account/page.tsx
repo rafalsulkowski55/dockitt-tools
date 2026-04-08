@@ -171,7 +171,7 @@ export default function AccountPage() {
         </div>
 
         {/* Account Settings */}
-        <div style={{ background: "#fff", borderRadius: "12px", padding: "24px", boxShadow: "0 1px 4px rgba(0,0,0,0.06)" }}>
+        <div id="settings" style={{ background: "#fff", borderRadius: "12px", padding: "24px", boxShadow: "0 1px 4px rgba(0,0,0,0.06)" }}>
           <div style={{ fontSize: "11px", textTransform: "uppercase", letterSpacing: "0.08em", color: "#2563eb", marginBottom: "16px" }}>Account Settings</div>
           <div style={{ fontSize: "14px", color: "#374151", marginBottom: "8px" }}>Email: {email}</div>
           <Link href="/account/change-password" style={{ fontSize: "14px", color: "#2563eb", textDecoration: "none", fontWeight: 500 }}>
