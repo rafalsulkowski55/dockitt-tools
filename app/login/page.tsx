@@ -5,33 +5,28 @@ import { createClient } from "@/lib/supabase";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
-  const [status, setStatus] = useState<"idle" | "loading" | "done" | "error">("idle");
+  const [password, setPassword] = useState("");
+  const [status, setStatus] = useState<"idle" | "loading" | "error">("idle");
   const [message, setMessage] = useState("");
 
   const supabase = createClient();
 
-  async function handleMagicLink() {
-    if (!email.trim()) {
+  async function handleSignIn() {
+    if (!email.trim() || !password.trim()) {
       setStatus("error");
-      setMessage("Please enter your email address.");
+      setMessage("Please enter your email and password.");
       return;
     }
     setStatus("loading");
     setMessage("");
 
-    const { error } = await supabase.auth.signInWithOtp({
-      email,
-      options: {
-        emailRedirectTo: "https://dockitt.com/auth/callback",
-      },
-    });
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
 
     if (error) {
       setStatus("error");
-      setMessage(error.message);
+      setMessage("Invalid email or password.");
     } else {
-      setStatus("done");
-      setMessage("Check your email — we sent you a sign-in link.");
+      window.location.href = "/";
     }
   }
 
@@ -54,7 +49,7 @@ export default function LoginPage() {
           Sign in to Dockitt
         </h1>
         <p style={{ fontSize: "14px", color: "#6b7280", margin: "0 0 24px" }}>
-          No password needed — we'll send you a magic link.
+          Welcome back — sign in to your account.
         </p>
 
         <button
@@ -71,32 +66,39 @@ export default function LoginPage() {
           <div style={{ flex: 1, height: "1px", background: "#e5e7eb" }} />
         </div>
 
-        {status !== "done" ? (
-          <>
-            <input
-              type="email"
-              placeholder="your@email.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && handleMagicLink()}
-              style={{ width: "100%", padding: "12px 16px", borderRadius: "8px", border: "1px solid #d1d5db", fontSize: "14px", outline: "none", boxSizing: "border-box" }}
-            />
-            <button
-              onClick={handleMagicLink}
-              disabled={status === "loading"}
-              style={{ width: "100%", padding: "12px", background: status === "loading" ? "#d1d5db" : "#2563eb", color: "#fff", border: "none", borderRadius: "8px", fontSize: "14px", fontWeight: 600, cursor: status === "loading" ? "not-allowed" : "pointer", marginTop: "12px" }}
-            >
-              {status === "loading" ? "Sending..." : "Send magic link"}
-            </button>
-            {status === "error" && (
-              <p style={{ fontSize: "13px", color: "#dc2626", margin: "12px 0 0" }}>{message}</p>
-            )}
-          </>
-        ) : (
-          <div style={{ background: "#eff6ff", border: "1px solid #bfdbfe", borderRadius: "10px", padding: "20px", textAlign: "center" }}>
-            <p style={{ fontSize: "15px", fontWeight: 600, color: "#1d4ed8", margin: "0 0 6px" }}>Check your inbox!</p>
-            <p style={{ fontSize: "13px", color: "#3b82f6", margin: 0 }}>{message}</p>
-          </div>
+        <input
+          type="email"
+          placeholder="your@email.com"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && handleSignIn()}
+          style={{ width: "100%", padding: "12px 16px", borderRadius: "8px", border: "1px solid #d1d5db", fontSize: "14px", outline: "none", boxSizing: "border-box", marginBottom: "10px" }}
+        />
+        <input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && handleSignIn()}
+          style={{ width: "100%", padding: "12px 16px", borderRadius: "8px", border: "1px solid #d1d5db", fontSize: "14px", outline: "none", boxSizing: "border-box" }}
+        />
+
+        <div style={{ textAlign: "right", marginTop: "8px", marginBottom: "16px" }}>
+          <a href="/auth/reset-password" style={{ fontSize: "13px", color: "#2563eb", textDecoration: "none" }}>
+            Forgot password?
+          </a>
+        </div>
+
+        <button
+          onClick={handleSignIn}
+          disabled={status === "loading"}
+          style={{ width: "100%", padding: "12px", background: status === "loading" ? "#d1d5db" : "#2563eb", color: "#fff", border: "none", borderRadius: "8px", fontSize: "14px", fontWeight: 600, cursor: status === "loading" ? "not-allowed" : "pointer" }}
+        >
+          {status === "loading" ? "Signing in..." : "Sign in"}
+        </button>
+
+        {status === "error" && (
+          <p style={{ fontSize: "13px", color: "#dc2626", margin: "12px 0 0" }}>{message}</p>
         )}
 
       </div>

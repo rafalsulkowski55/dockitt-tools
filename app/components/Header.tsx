@@ -64,21 +64,28 @@ export default function Header() {
                   cursor: "pointer", fontWeight: 500,
                 }}
               >
-                {email} ▾
+                My Account ▾
               </button>
               {dropdownOpen && (
                 <div style={{
                   position: "absolute", right: 0, top: "calc(100% + 8px)",
                   background: "#fff", border: "1px solid #e5e7eb",
                   borderRadius: "10px", boxShadow: "0 4px 16px rgba(0,0,0,0.1)",
-                  minWidth: "160px", overflow: "hidden",
+                  minWidth: "180px", overflow: "hidden",
                 }}>
                   <Link
                     href="/account"
                     onClick={() => setDropdownOpen(false)}
                     style={{ display: "block", padding: "12px 16px", fontSize: "14px", color: "#111", textDecoration: "none" }}
                   >
-                    My Account
+                    My Files
+                  </Link>
+                  <Link
+                    href="/account#settings"
+                    onClick={() => setDropdownOpen(false)}
+                    style={{ display: "block", padding: "12px 16px", fontSize: "14px", color: "#111", textDecoration: "none", borderTop: "1px solid #f3f4f6" }}
+                  >
+                    Account Settings
                   </Link>
                   <button
                     onClick={handleSignOut}
@@ -139,7 +146,8 @@ export default function Header() {
           <Link href="/guides" onClick={() => setMenuOpen(false)} style={{ padding: "12px 16px", fontSize: "15px", color: "#111", textDecoration: "none" }}>Guides</Link>
           {email ? (
             <>
-              <Link href="/account" onClick={() => setMenuOpen(false)} style={{ padding: "12px 16px", fontSize: "15px", color: "#111", textDecoration: "none" }}>My Account</Link>
+              <Link href="/account" onClick={() => setMenuOpen(false)} style={{ padding: "12px 16px", fontSize: "15px", color: "#111", textDecoration: "none" }}>My Files</Link>
+              <Link href="/account#settings" onClick={() => setMenuOpen(false)} style={{ padding: "12px 16px", fontSize: "15px", color: "#111", textDecoration: "none" }}>Account Settings</Link>
               <button onClick={handleSignOut} style={{ textAlign: "left", padding: "12px 16px", fontSize: "15px", color: "#dc2626", background: "none", border: "none", cursor: "pointer" }}>Sign out</button>
             </>
           ) : (
