@@ -8,6 +8,7 @@ interface PricingModalProps {
 
 export default function PricingModal({ onClose }: PricingModalProps) {
   const [email, setEmail] = useState("");
+  const [billing, setBilling] = useState<"monthly" | "yearly">("monthly");
   const [loading, setLoading] = useState<"pay_per_use" | "monthly" | "yearly" | null>(null);
   const [error, setError] = useState("");
 
@@ -46,6 +47,8 @@ export default function PricingModal({ onClose }: PricingModalProps) {
       setLoading(null);
     }
   }
+
+  const premiumPlan = billing === "monthly" ? "monthly" : "yearly";
 
   return (
     <div
@@ -122,63 +125,79 @@ export default function PricingModal({ onClose }: PricingModalProps) {
             </button>
           </div>
 
-          {/* Premium Monthly */}
+          {/* Premium z togglem */}
           <div style={{
             border: "2px solid #2563eb", borderRadius: "10px", padding: "16px",
-            display: "flex", justifyContent: "space-between", alignItems: "center",
             background: "#f8faff",
           }}>
-            <div>
-              <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                <span style={{ fontWeight: 600, fontSize: "15px", color: "#111" }}>Premium Monthly</span>
-                <span style={{ fontSize: "11px", background: "#2563eb", color: "#fff", borderRadius: "4px", padding: "2px 6px", fontWeight: 600 }}>POPULAR</span>
+            {/* Toggle */}
+            <div style={{ display: "flex", justifyContent: "center", marginBottom: "14px" }}>
+              <div style={{
+                display: "flex", background: "#e5e7eb", borderRadius: "8px", padding: "3px", gap: "2px",
+              }}>
+                <button
+                  onClick={() => setBilling("monthly")}
+                  style={{
+                    padding: "5px 16px", borderRadius: "6px", fontSize: "13px", fontWeight: 600,
+                    border: "none", cursor: "pointer",
+                    background: billing === "monthly" ? "#fff" : "transparent",
+                    color: billing === "monthly" ? "#111" : "#6b7280",
+                    boxShadow: billing === "monthly" ? "0 1px 4px rgba(0,0,0,0.1)" : "none",
+                  }}
+                >
+                  Monthly
+                </button>
+                <button
+                  onClick={() => setBilling("yearly")}
+                  style={{
+                    padding: "5px 16px", borderRadius: "6px", fontSize: "13px", fontWeight: 600,
+                    border: "none", cursor: "pointer",
+                    background: billing === "yearly" ? "#fff" : "transparent",
+                    color: billing === "yearly" ? "#111" : "#6b7280",
+                    boxShadow: billing === "yearly" ? "0 1px 4px rgba(0,0,0,0.1)" : "none",
+                  }}
+                >
+                  Yearly
+                </button>
               </div>
-              <div style={{ fontSize: "13px", color: "#6b7280", marginTop: "2px" }}>Monthly · up to 100MB · unlimited conversions</div>
             </div>
-            <button
-              onClick={() => handleCheckout("monthly")}
-              disabled={loading !== null}
-              style={{
-                background: "#2563eb", color: "#fff", border: "none",
-                borderRadius: "8px", padding: "9px 16px", fontSize: "14px",
-                fontWeight: 600, cursor: loading !== null ? "not-allowed" : "pointer",
-                opacity: loading !== null ? 0.7 : 1, whiteSpace: "nowrap",
-              }}
-            >
-              {loading === "monthly" ? "..." : "$4.99/mo"}
-            </button>
-          </div>
 
-          {/* Premium Yearly */}
-          <div style={{
-            border: "1px solid #e5e7eb", borderRadius: "10px", padding: "16px",
-            display: "flex", justifyContent: "space-between", alignItems: "center",
-          }}>
-            <div>
-              <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                <span style={{ fontWeight: 600, fontSize: "15px", color: "#111" }}>Premium Yearly</span>
-                <span style={{ fontSize: "11px", background: "#16a34a", color: "#fff", borderRadius: "4px", padding: "2px 6px", fontWeight: 600 }}>SAVE 17%</span>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <div>
+                <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                  <span style={{ fontWeight: 600, fontSize: "15px", color: "#111" }}>Premium</span>
+                  {billing === "monthly" && (
+                    <span style={{ fontSize: "11px", background: "#2563eb", color: "#fff", borderRadius: "4px", padding: "2px 6px", fontWeight: 600 }}>POPULAR</span>
+                  )}
+                  {billing === "yearly" && (
+                    <span style={{ fontSize: "11px", background: "#16a34a", color: "#fff", borderRadius: "4px", padding: "2px 6px", fontWeight: 600 }}>SAVE 17%</span>
+                  )}
+                </div>
+                <div style={{ fontSize: "13px", color: "#6b7280", marginTop: "2px" }}>
+                  {billing === "monthly"
+                    ? "Monthly · up to 100MB · unlimited conversions"
+                    : "Yearly · up to 100MB · unlimited conversions"}
+                </div>
               </div>
-              <div style={{ fontSize: "13px", color: "#6b7280", marginTop: "2px" }}>Yearly · up to 100MB · unlimited conversions</div>
+              <button
+                onClick={() => handleCheckout(premiumPlan)}
+                disabled={loading !== null}
+                style={{
+                  background: "#2563eb", color: "#fff", border: "none",
+                  borderRadius: "8px", padding: "9px 16px", fontSize: "14px",
+                  fontWeight: 600, cursor: loading !== null ? "not-allowed" : "pointer",
+                  opacity: loading !== null ? 0.7 : 1, whiteSpace: "nowrap",
+                }}
+              >
+                {loading === premiumPlan ? "..." : billing === "monthly" ? "$4.99/mo" : "$49.99/yr"}
+              </button>
             </div>
-            <button
-              onClick={() => handleCheckout("yearly")}
-              disabled={loading !== null}
-              style={{
-                background: "#2563eb", color: "#fff", border: "none",
-                borderRadius: "8px", padding: "9px 16px", fontSize: "14px",
-                fontWeight: 600, cursor: loading !== null ? "not-allowed" : "pointer",
-                opacity: loading !== null ? 0.7 : 1, whiteSpace: "nowrap",
-              }}
-            >
-              {loading === "yearly" ? "..." : "$49.99/yr"}
-            </button>
           </div>
 
         </div>
 
         <p style={{ fontSize: "12px", color: "#9ca3af", margin: "16px 0 0", textAlign: "center" }}>
-          After payment you'll receive a magic link to activate your account.
+          🔒 Secure payment · After purchase you'll receive login details by email.
         </p>
       </div>
     </div>
