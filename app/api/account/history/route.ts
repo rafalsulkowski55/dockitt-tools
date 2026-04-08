@@ -19,9 +19,9 @@ export async function GET(req: NextRequest) {
     }
 
     const result = await pool.query(
-      `SELECT tool_slug, original_filename, created_at, storage_key
+      `SELECT tool_slug, original_filename, created_at, storage_key, expires_at, deleted_at
        FROM stored_files
-       WHERE user_id = $1 AND kind = 'input'
+       WHERE user_id = $1 AND kind = 'output' AND deleted_at IS NULL
        ORDER BY created_at DESC
        LIMIT 20`,
       [user.id]

@@ -17,6 +17,8 @@ interface HistoryItem {
   original_filename: string;
   created_at: string;
   storage_key: string;
+  expires_at: string | null;
+  deleted_at: string | null;
 }
 
 export default function AccountPage() {
