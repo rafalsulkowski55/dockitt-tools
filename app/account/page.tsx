@@ -142,7 +142,7 @@ export default function AccountPage() {
                   </div>
                   <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
                     <div style={{ fontSize: "12px", color: "#9ca3af" }}>{new Date(item.created_at).toLocaleDateString()}</div>
-                    {item.storage_key && (
+                    {item.storage_key && item.expires_at && new Date(item.expires_at) > new Date() && (
                       <button
                         onClick={async () => {
                           const res = await fetch(`/api/files/download?storageKey=${encodeURIComponent(item.storage_key)}`);
