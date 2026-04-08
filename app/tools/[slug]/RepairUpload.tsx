@@ -93,7 +93,7 @@ export default function RepairUpload() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           filename: file.name,
-          mimeType: file.type,
+          contentType: file.type,
           sizeBytes: file.size,
           toolSlug: TOOL_NAME,
         }),
