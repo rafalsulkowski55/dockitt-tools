@@ -99,6 +99,7 @@ export default function Header() {
           ) : (
             <Link
               href="/login"
+              title="Sign in to access your file history and manage your subscription"
               style={{
                 fontSize: "14px", fontWeight: 600, color: "#fff",
                 background: "#2563eb", borderRadius: "8px",
