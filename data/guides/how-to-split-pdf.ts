@@ -45,7 +45,7 @@ export const howToSplitPdf = {
     },
     {
       question: "Is there a file size limit for splitting?",
-      answer: "Files up to 4.5MB can be processed directly. For larger files, try compressing the PDF first to bring it under the limit.",
+      answer: "Files up to 10MB can be processed directly. For larger files, try compressing the PDF first to bring it under the limit.",
     },
     {
       question: "Can I split a PDF on mobile?",

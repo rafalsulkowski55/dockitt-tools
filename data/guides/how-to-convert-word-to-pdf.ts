@@ -50,7 +50,7 @@ export const howToConvertWordToPdf = {
     },
     {
       question: "Is there a file size limit for Word to PDF conversion?",
-      answer: "Files up to 4.5MB can be processed. If your document is larger — for example because it contains many high-resolution images — try compressing the images within Word before converting, or split the document into smaller sections.",
+      answer: "Files up to 10MB can be processed. If your document is larger — for example because it contains many high-resolution images — try compressing the images within Word before converting, or split the document into smaller sections.",
     },
     {
       question: "Will the PDF be editable after conversion?",

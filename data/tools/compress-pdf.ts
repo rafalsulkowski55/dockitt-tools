@@ -22,7 +22,7 @@ export const compressPdfTool = {
   },
   relatedTools: ["merge-pdf", "split-pdf"],
   howTo: [
-  "Click 'Choose PDF' and select the PDF file you want to compress from your device. Files up to 4.5MB are supported.",
+  "Click 'Choose PDF' and select the PDF file you want to compress from your device. Files up to 10MB are supported.",
   "Click 'Process PDF' to start the compression. The tool will optimise the internal structure of your file without altering any content.",
   "Once processing is complete, click the download button to save your compressed PDF. The file will be smaller than the original and identical in appearance.",
   ],
@@ -41,7 +41,7 @@ export const compressPdfTool = {
     },
     {
       question: "What is the maximum file size I can compress?",
-      answer: "Files up to 4.5MB can be processed directly. This limit is set by the server infrastructure used to process the file. If your PDF is larger than 4.5MB, try splitting it into smaller sections first, compressing each section, then merging them back together.",
+      answer: "Files up to 10MB can be processed directly. This limit is set by the server infrastructure used to process the file. If your PDF is larger than10MB, try splitting it into smaller sections first, compressing each section, then merging them back together.",
     },
     {
       question: "Is it free to compress a PDF online?",

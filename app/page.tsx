@@ -180,9 +180,9 @@ export default function Home() {
 
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: "16px" }}>
           {[
-            { num: "01", icon: "📂", title: "Upload your file", text: "Drag & drop or click to select your PDF. Your file stays on your device and is never sent to a server." },
-            { num: "02", icon: "⚙️", title: "Process instantly", text: "Choose what you want to do — compress, merge, split, convert. Processing starts immediately in your browser." },
-            { num: "03", icon: "⬇️", title: "Download result", text: "Get your processed file right away. No email required, no waiting — just click download and you're done." },
+            { num: "01", icon: "📂", title: "Upload your file", text: "Drag & drop or click to select your PDF. Most tools process files entirely in your browser, no upload needed." },
+            { num: "02", icon: "⚙️", title: "Process instantly", text: "Choose what you want to do — compress, merge, split, convert. Browser tools start immediately; server tools process securely and delete your file right after." },
+            { num: "03", icon: "⬇️", title: "Download result", text: "Get your processed file right away. No email required, no waiting, just click download and you're done." },
           ].map((step) => (
             <div key={step.num} style={{
               background: "#fff", border: "1px solid #e5e7eb", borderRadius: "12px",

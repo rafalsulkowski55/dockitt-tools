@@ -33,7 +33,7 @@ const categoryMeta: Record<string, {
       },
       {
         question: "Is there a file size limit for these PDF tools?",
-        answer: "Files up to 4.5MB can be processed directly. This limit comes from the Vercel serverless function payload limit for tools that require server-side processing. For tools that run entirely in the browser — such as Merge PDF, Split PDF, Rotate PDF, and Compress PDF — the practical limit is higher and depends on your device's available memory. If your file exceeds the limit for a server-side tool, try compressing it first to bring it under the threshold, or split it into smaller sections.",
+        answer: "Files up to 10MB can be processed directly. This limit comes from the Vercel serverless function payload limit for tools that require server-side processing. For tools that run entirely in the browser — such as Merge PDF, Split PDF, Rotate PDF, and Compress PDF — the practical limit is higher and depends on your device's available memory. If your file exceeds the limit for a server-side tool, try compressing it first to bring it under the threshold, or split it into smaller sections.",
       },
     ],
   },

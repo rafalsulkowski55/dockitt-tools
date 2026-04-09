@@ -49,7 +49,7 @@ export const splitPdfTool = {
     },
     {
       question: "Is there a page limit for splitting?",
-      answer: "There is no limit on the number of pages you can extract, as long as the page range falls within the total number of pages in the document. The only file size constraint is the 4.5MB upload limit. If your file is larger, try compressing it first before splitting.",
+      answer: "There is no limit on the number of pages you can extract, as long as the page range falls within the total number of pages in the document. The only file size constraint is the10MB upload limit. If your file is larger, try compressing it first before splitting.",
     },
   ],
 };

@@ -25,7 +25,7 @@ export const howToConvertPdfToWord = {
     },
     {
       problem: "The file is taking a long time to convert.",
-      solution: "PDF to Word conversion runs on the server and involves LibreOffice processing your file. Large PDFs or documents with complex formatting take longer. Files up to 4.5MB are supported — if your file is larger, try compressing it first using the Dockitt Compress PDF tool.",
+      solution: "PDF to Word conversion runs on the server and involves LibreOffice processing your file. Large PDFs or documents with complex formatting take longer. Files up to 10MB are supported — if your file is larger, try compressing it first using the Dockitt Compress PDF tool.",
     },
     {
       problem: "The converted document contains garbled text or strange characters.",
