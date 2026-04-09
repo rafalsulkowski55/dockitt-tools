@@ -81,7 +81,7 @@ export default function Header() {
                     My Files
                   </Link>
                   <Link
-                    href="/account#settings"
+                    href="/account/settings"
                     onClick={() => setDropdownOpen(false)}
                     style={{ display: "block", padding: "12px 16px", fontSize: "14px", color: "#111", textDecoration: "none", borderTop: "1px solid #f3f4f6" }}
                   >
@@ -147,7 +147,7 @@ export default function Header() {
           {email ? (
             <>
               <Link href="/account" onClick={() => setMenuOpen(false)} style={{ padding: "12px 16px", fontSize: "15px", color: "#111", textDecoration: "none" }}>My Files</Link>
-              <Link href="/account#settings" onClick={() => setMenuOpen(false)} style={{ padding: "12px 16px", fontSize: "15px", color: "#111", textDecoration: "none" }}>Account Settings</Link>
+              <Link href="/account/settings" onClick={() => setMenuOpen(false)} style={{ padding: "12px 16px", fontSize: "15px", color: "#111", textDecoration: "none" }}>Account Settings</Link>
               <button onClick={handleSignOut} style={{ textAlign: "left", padding: "12px 16px", fontSize: "15px", color: "#dc2626", background: "none", border: "none", cursor: "pointer" }}>Sign out</button>
             </>
           ) : (
