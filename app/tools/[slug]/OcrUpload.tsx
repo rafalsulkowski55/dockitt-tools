@@ -200,7 +200,7 @@ export default function OcrUpload() {
 
       <div style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "12px", color: "#6b7280" }}>
         <span>🔐</span>
-        Processed securely on our server. Files are automatically deleted after 30 minutes.
+        Processed securely on our server. Files are automatically Your file is deleted immediately after processing..
       </div>
 
       <div style={{ background: "#f8faff", border: "1px solid #bfdbfe", borderRadius: "8px", padding: "12px 14px" }}>

@@ -200,7 +200,7 @@ export default function RepairUpload() {
 
       <div style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "12px", color: "#6b7280" }}>
         <span>🔐</span>
-        Processed securely on our server. Files are automatically deleted after 30 minutes.
+        Processed securely on our server. Files are automatically Your file is deleted immediately after processing..
       </div>
 
       <button

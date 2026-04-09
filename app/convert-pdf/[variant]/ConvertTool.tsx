@@ -289,7 +289,7 @@ export default function ConvertTool({ variant }: Props) {
 
         <p style={{ fontSize: "12px", color: "#9ca3af", margin: 0 }}>
           {processingType === "server"
-            ? "🔐 Processed securely on our server. Files are automatically deleted after 30 minutes."
+            ? "🔐 Processed securely on our server. Files are automatically Your file is deleted immediately after processing.."
             : "🔒 Processed entirely in your browser. Files never leave your device."}
         </p>
 
