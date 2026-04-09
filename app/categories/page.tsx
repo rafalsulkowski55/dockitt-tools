@@ -1,43 +1,45 @@
 import Link from "next/link";
+import { getAllTools } from "@/lib/tools";
+import { getAllConvertVariants } from "@/data/convert/variants";
 
-const CATEGORIES = [
-  {
-    slug: "core",
-    name: "Core PDF Tools",
-    description: "Essential tools for everyday PDF tasks — merge, split, compress, rotate and more.",
-    icon: "⚙️",
-    count: 5,
-  },
-  {
-    slug: "security",
-    name: "PDF Security Tools",
-    description: "Protect, unlock, sign and watermark your PDF files quickly and for free.",
-    icon: "🔐",
-    count: 4,
-  },
-  {
-    slug: "utility",
-    name: "PDF Utility Tools",
-    description: "Advanced PDF utilities — crop, OCR, repair, reorder pages and more.",
-    icon: "🛠️",
-    count: 5,
-  },
-  {
-    slug: "convert",
-    name: "Convert PDF",
-    description: "Convert PDFs to images and Word documents, or convert images and Word files to PDF.",
-    icon: "🔄",
-    count: 6,
-    href: "/convert-pdf",
-  },
-];
+const TOOL_ICONS: Record<string, string> = {
+  "compress-pdf": "📦",
+  "merge-pdf": "🔗",
+  "split-pdf": "✂️",
+  "rotate-pdf": "🔄",
+  "delete-pdf-pages": "🗑️",
+  "extract-pdf-pages": "📤",
+  "protect-pdf": "🔐",
+  "unlock-pdf": "🔓",
+  "watermark-pdf": "💧",
+  "sign-pdf": "✍️",
+  "crop-pdf": "✂️",
+  "repair-pdf": "🔧",
+  "ocr-pdf": "🔍",
+  "reorder-pdf-pages": "🔀",
+};
+
+const CATEGORY_LABELS: Record<string, string> = {
+  core: "Core PDF Tools",
+  security: "PDF Security Tools",
+  utility: "PDF Utility Tools",
+};
 
 export const metadata = {
-  title: "PDF Tool Categories — Dockitt",
-  description: "Browse all free PDF tools by category — core tools, security, utilities, and conversions.",
+  title: "All PDF Tools — Dockitt",
+  description: "Browse all free PDF tools — merge, split, compress, convert, protect and more.",
 };
 
 export default function CategoriesPage() {
+  const tools = getAllTools();
+  const convertVariants = getAllConvertVariants();
+
+  const grouped: Record<string, typeof tools> = {};
+  for (const tool of tools) {
+    if (!grouped[tool.category]) grouped[tool.category] = [];
+    grouped[tool.category].push(tool);
+  }
+
   return (
     <main style={{ background: "#f9fafb", minHeight: "100vh" }}>
       <div style={{ maxWidth: "960px", margin: "0 auto", padding: "48px 24px" }}>
@@ -45,45 +47,66 @@ export default function CategoriesPage() {
         {/* Header */}
         <div style={{ marginBottom: "36px" }}>
           <p style={{ fontSize: "11px", fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", color: "#2563eb", marginBottom: "8px" }}>
-            Categories
+            All Tools
           </p>
           <h1 style={{ fontSize: "clamp(22px, 4vw, 32px)", fontWeight: 700, color: "#0f0f0f", letterSpacing: "-0.015em", marginBottom: "8px", borderLeft: "3px solid #2563eb", paddingLeft: "12px" }}>
-            Browse PDF tools by category
+            Browse all PDF tools
           </h1>
           <p style={{ fontSize: "15px", color: "#4b5563", margin: 0 }}>
-            All tools are free, require no signup, and run directly in your browser.
+            All tools are free, require no signup, and most run directly in your browser.
           </p>
         </div>
 
-        {/* Categories grid */}
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: "12px" }}>
-          {CATEGORIES.map((cat) => (
-            <Link
-              key={cat.slug}
-              href={cat.href ?? `/categories/${cat.slug}`}
-              style={{ textDecoration: "none" }}
-            >
-              <div style={{
-                background: "#fff", border: "1px solid #e5e7eb",
-                borderRadius: "12px", padding: "24px 20px",
-                display: "flex", flexDirection: "column", gap: "10px",
-                height: "100%",
-              }}>
-                <div style={{ fontSize: "28px" }}>{cat.icon}</div>
-                <div>
-                  <p style={{ fontSize: "15px", fontWeight: 600, color: "#111", marginBottom: "6px" }}>
-                    {cat.name}
-                  </p>
-                  <p style={{ fontSize: "13px", color: "#6b7280", lineHeight: 1.5, margin: "0 0 12px" }}>
-                    {cat.description}
-                  </p>
-                  <p style={{ fontSize: "12px", color: "#2563eb", fontWeight: 500, margin: 0 }}>
-                    {cat.count} tools →
-                  </p>
+        {/* Grouped tool categories */}
+        {Object.entries(grouped).map(([category, categoryTools]) => (
+          <div key={category} style={{ marginBottom: "40px" }}>
+            <h2 style={{ fontSize: "16px", fontWeight: 700, color: "#111", marginBottom: "14px", borderLeft: "3px solid #2563eb", paddingLeft: "12px" }}>
+              {CATEGORY_LABELS[category] ?? category}
+            </h2>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))", gap: "10px" }}>
+              {categoryTools.map((tool) => (
+                <Link key={tool.slug} href={`/tools/${tool.slug}`} style={{ textDecoration: "none" }}>
+                  <div style={{
+                    background: "#fff", border: "1px solid #e5e7eb",
+                    borderRadius: "12px", padding: "16px",
+                    display: "flex", flexDirection: "column", gap: "8px",
+                    height: "100%",
+                  }}>
+                    <span style={{ fontSize: "20px" }}>{TOOL_ICONS[tool.slug] ?? "📄"}</span>
+                    <div>
+                      <p style={{ fontSize: "13px", fontWeight: 600, color: "#111", marginBottom: "3px" }}>{tool.name}</p>
+                      <p style={{ fontSize: "12px", color: "#9ca3af", lineHeight: 1.4, margin: 0 }}>{tool.shortDescription}</p>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        ))}
+
+        {/* Convert PDF section */}
+        <div style={{ marginBottom: "40px" }}>
+          <h2 style={{ fontSize: "16px", fontWeight: 700, color: "#111", marginBottom: "14px", borderLeft: "3px solid #2563eb", paddingLeft: "12px" }}>
+            Convert PDF
+          </h2>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))", gap: "10px" }}>
+            {convertVariants.map((variant) => (
+              <Link key={variant.slug} href={`/convert-pdf/${variant.slug}`} style={{ textDecoration: "none" }}>
+                <div style={{
+                  background: "#fff", border: "1px solid #e5e7eb",
+                  borderRadius: "12px", padding: "16px",
+                  display: "flex", flexDirection: "column", gap: "8px",
+                  height: "100%",
+                }}>
+                  <span style={{ fontSize: "20px" }}>🔄</span>
+                  <div>
+                    <p style={{ fontSize: "13px", fontWeight: 600, color: "#111", marginBottom: "3px" }}>{variant.name}</p>
+                    <p style={{ fontSize: "12px", color: "#9ca3af", lineHeight: 1.4, margin: 0 }}>{variant.description}</p>
+                  </div>
                 </div>
-              </div>
-            </Link>
-          ))}
+              </Link>
+            ))}
+          </div>
         </div>
 
       </div>
