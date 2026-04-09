@@ -48,9 +48,20 @@ export default function LoginPage() {
         <h1 style={{ fontSize: "22px", fontWeight: 700, color: "#111", margin: "0 0 8px" }}>
           Sign in to Dockitt
         </h1>
-        <p style={{ fontSize: "14px", color: "#6b7280", margin: "0 0 24px" }}>
+        <p style={{ fontSize: "14px", color: "#6b7280", margin: "0 0 16px" }}>
           Welcome back — sign in to your account.
         </p>
+
+        <div style={{ background: "#f8faff", border: "1px solid #bfdbfe", borderRadius: "10px", padding: "14px 16px", marginBottom: "24px" }}>
+          <p style={{ fontSize: "12px", fontWeight: 600, color: "#1d4ed8", margin: "0 0 8px" }}>With an account you get:</p>
+          <div style={{ display: "flex", flexDirection: "column", gap: "5px" }}>
+            {["Access your converted files anytime", "File history for 7 days (Premium)", "Manage your subscription"].map((item) => (
+              <div key={item} style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "12px", color: "#374151" }}>
+                <span style={{ color: "#2563eb", fontWeight: 700 }}>✓</span> {item}
+              </div>
+            ))}
+          </div>
+        </div>
 
         <button
           onClick={handleGoogle}
