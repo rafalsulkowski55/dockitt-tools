@@ -120,6 +120,7 @@ export default function AccountSettingsPage() {
           <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
             <Link href="/privacy-policy" style={{ fontSize: "14px", color: "#2563eb", textDecoration: "none" }}>Privacy Policy →</Link>
             <Link href="/terms" style={{ fontSize: "14px", color: "#2563eb", textDecoration: "none" }}>Terms & Conditions →</Link>
+            <a href="mailto:hello@dockitt.com" style={{ fontSize: "14px", color: "#2563eb", textDecoration: "none" }}>Contact us →</a>
           </div>
         </div>
 
