@@ -39,13 +39,29 @@ export async function POST(req: NextRequest) {
 
     const supabase = createAdminClient();
 
-    // Znajdź lub stwórz usera
-    const { data: { users } } = await supabase.auth.admin.listUsers();
-    let authUser = users.find(u => u.email === email) ?? null;
-    let isNewUser = false;
-    let tempPassword: string = generatePassword();
+    // Znajdź usera przez profiles (wydajne) zamiast listUsers()
+    const { data: existingProfile } = await supabase
+      .from("profiles")
+      .select("id")
+      .eq("email", email)
+      .single();
 
-    if (!authUser) {
+    let userId: string | null = null;
+    let isNewUser = false;
+    const tempPassword: string = generatePassword();
+
+    if (existingProfile?.id) {
+      // Istniejący user — zmień hasło żeby zalogować
+      userId = existingProfile.id;
+      const { error: updateError } = await supabase.auth.admin.updateUserById(
+        userId!,
+        { password: tempPassword }
+      );
+      if (updateError) {
+        console.error("Error updating user password:", updateError);
+      }
+    } else {
+      // Nowy user
       isNewUser = true;
       const { data: newUser, error: createError } = await supabase.auth.admin.createUser({
         email,
@@ -56,19 +72,9 @@ export async function POST(req: NextRequest) {
         console.error("Error creating user:", createError);
         return NextResponse.json({ error: "Failed to create user" }, { status: 500 });
       }
-      authUser = newUser.user ?? null;
-    } else {
-      // Istniejący user — zmień hasło żeby zalogować
-      const { error: updateError } = await supabase.auth.admin.updateUserById(
-        authUser.id,
-        { password: tempPassword }
-      );
-      if (updateError) {
-        console.error("Error updating user password:", updateError);
-      }
+      userId = newUser.user?.id ?? null;
     }
 
-    const userId = authUser?.id ?? null;
     if (!userId) {
       return NextResponse.json({ error: "No user ID" }, { status: 500 });
     }
@@ -106,7 +112,6 @@ export async function POST(req: NextRequest) {
     if (signInError || !signInData?.session) {
       console.error("Error signing in:", signInError);
     } else {
-      console.log("Inserting pending session for:", email, "stripe session:", stripeSessionId);
       await supabase.from("pending_sessions").insert({
         stripe_session_id: stripeSessionId,
         access_token: signInData.session.access_token,
@@ -146,7 +151,7 @@ export async function POST(req: NextRequest) {
             <table style="width: 100%; font-size: 14px; color: #555;">
               <tr><td style="padding: 4px 0;">Email:</td><td style="padding: 4px 0;">${email}</td></tr>
               <tr><td style="padding: 4px 0;">Plan:</td><td style="padding: 4px 0;">${planLabel}</td></tr>
-              <tr><td style="padding: 4px 0;">${activeUntil}</td></tr>
+              <tr><td style="padding: 4px 0;" colspan="2">${activeUntil}</td></tr>
             </table>
 
             ${isNewUser ? `
