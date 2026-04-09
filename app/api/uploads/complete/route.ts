@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getFileRecord, updateFileStatus } from "@/lib/db";
+import { createClient } from "@/lib/supabase-server";
 
 export async function POST(req: NextRequest) {
   try {
@@ -16,12 +17,20 @@ export async function POST(req: NextRequest) {
 
     await updateFileStatus(storageKey, "processing");
 
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
     const RAILWAY_API_URL = process.env.RAILWAY_API_URL || "https://dockitt-api-production.up.railway.app";
 
     const jobRes = await fetch(`${RAILWAY_API_URL}/process`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ storageKey, toolSlug, processingParams }),
+      body: JSON.stringify({
+        storageKey,
+        toolSlug,
+        processingParams,
+        userId: user?.id ?? null,
+      }),
     });
 
     if (!jobRes.ok) {
