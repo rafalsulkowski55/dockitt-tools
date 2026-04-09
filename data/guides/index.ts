@@ -21,9 +21,7 @@ import { howToConvertWordToPdf } from './how-to-convert-word-to-pdf'
 import { howToEditPdfPages } from './how-to-edit-pdf-pages'
 
 export const guides = [
-  howToEditPdfPages, 
-  howToCompressPdf,
-  howToMergePdf,
+  howToEditPdfPages,
   howToCompressPdf,
   howToMergePdf,
   howToSplitPdf,
