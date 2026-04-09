@@ -1,17 +1,23 @@
+import React from "react";
 import Link from "next/link";
 import { getAllTools } from "@/lib/tools";
+import {
+  FileArchive, GitMerge, Scissors, RotateCw, Lock, Unlock,
+  Droplets, ScanText, FileText, FileOutput, Zap, UserX,
+  Smartphone, ShieldCheck, FolderOpen, Settings, Download,
+} from "lucide-react";
 
 const POPULAR_TOOLS = [
-  { slug: "compress-pdf", icon: "📦", bg: "#eff6ff" },
-  { slug: "merge-pdf", icon: "🔗", bg: "#f0fdf4" },
-  { slug: "split-pdf", icon: "✂️", bg: "#fefce8" },
-  { slug: "rotate-pdf", icon: "🔄", bg: "#fdf4ff" },
-  { slug: "protect-pdf", icon: "🔐", bg: "#fef2f2" },
-  { slug: "unlock-pdf", icon: "🔓", bg: "#fff7ed" },
-  { slug: "watermark-pdf", icon: "💧", bg: "#fefce8" },
-  { slug: "ocr-pdf", icon: "🔍", bg: "#f0fdf4" },
-  { slug: "pdf-to-word", icon: "📝", bg: "#fff7ed" },
-  { slug: "word-to-pdf", icon: "📄", bg: "#eff6ff" },
+  { slug: "compress-pdf", Icon: FileArchive, bg: "#eff6ff", color: "#2563eb" },
+  { slug: "merge-pdf", Icon: GitMerge, bg: "#f0fdf4", color: "#16a34a" },
+  { slug: "split-pdf", Icon: Scissors, bg: "#fefce8", color: "#ca8a04" },
+  { slug: "rotate-pdf", Icon: RotateCw, bg: "#fdf4ff", color: "#9333ea" },
+  { slug: "protect-pdf", Icon: Lock, bg: "#fef2f2", color: "#dc2626" },
+  { slug: "unlock-pdf", Icon: Unlock, bg: "#fff7ed", color: "#ea580c" },
+  { slug: "watermark-pdf", Icon: Droplets, bg: "#fefce8", color: "#ca8a04" },
+  { slug: "ocr-pdf", Icon: ScanText, bg: "#f0fdf4", color: "#16a34a" },
+  { slug: "pdf-to-word", Icon: FileText, bg: "#fff7ed", color: "#ea580c" },
+  { slug: "word-to-pdf", Icon: FileOutput, bg: "#eff6ff", color: "#2563eb" },
 ];
 
 const POPULAR_TOOL_HREFS: Record<string, string> = {
@@ -35,35 +41,35 @@ const USE_CASES = [
 ];
 
 const WHY_ITEMS = [
-  { icon: "⚡", title: "Fast processing", text: "Most operations complete in under 5 seconds." },
-  { icon: "🚫", title: "No signup required", text: "Just open, upload, and download. No account needed." },
-  { icon: "📱", title: "Works on any device", text: "Desktop, tablet, or phone — it works everywhere." },
-  { icon: "🔒", title: "Privacy focused", text: "Files are never stored or shared. Processed and gone." },
+  { Icon: Zap, title: "Fast processing", text: "Most operations complete in under 5 seconds.", color: "#ca8a04", bg: "#fefce8" },
+  { Icon: UserX, title: "No signup required", text: "Just open, upload, and download. No account needed.", color: "#dc2626", bg: "#fef2f2" },
+  { Icon: Smartphone, title: "Works on any device", text: "Desktop, tablet, or phone — it works everywhere.", color: "#9333ea", bg: "#fdf4ff" },
+  { Icon: ShieldCheck, title: "Privacy focused", text: "Files are never stored or shared. Processed and gone.", color: "#16a34a", bg: "#f0fdf4" },
 ];
 
 const QUICK_TOOLS = [
-  { slug: "compress-pdf", label: "Compress", icon: "📦", href: "/tools/compress-pdf" },
-  { slug: "merge-pdf", label: "Merge", icon: "🔗", href: "/tools/merge-pdf" },
-  { slug: "split-pdf", label: "Split", icon: "✂️", href: "/tools/split-pdf" },
-  { slug: "pdf-to-word", label: "PDF → Word", icon: "📝", href: "/convert-pdf/pdf-to-word" },
-  { slug: "word-to-pdf", label: "Word → PDF", icon: "📄", href: "/convert-pdf/word-to-pdf" },
-  { slug: "protect-pdf", label: "Protect", icon: "🔐", href: "/tools/protect-pdf" },
-  { slug: "rotate-pdf", label: "Rotate", icon: "🔄", href: "/tools/rotate-pdf" },
-  { slug: "ocr-pdf", label: "OCR", icon: "🔍", href: "/tools/ocr-pdf" },
+  { slug: "compress-pdf", label: "Compress", Icon: FileArchive, href: "/tools/compress-pdf" },
+  { slug: "merge-pdf", label: "Merge", Icon: GitMerge, href: "/tools/merge-pdf" },
+  { slug: "split-pdf", label: "Split", Icon: Scissors, href: "/tools/split-pdf" },
+  { slug: "pdf-to-word", label: "PDF to Word", Icon: FileText, href: "/convert-pdf/pdf-to-word" },
+  { slug: "word-to-pdf", label: "Word to PDF", Icon: FileOutput, href: "/convert-pdf/word-to-pdf" },
+  { slug: "protect-pdf", label: "Protect", Icon: Lock, href: "/tools/protect-pdf" },
+  { slug: "rotate-pdf", label: "Rotate", Icon: RotateCw, href: "/tools/rotate-pdf" },
+  { slug: "ocr-pdf", label: "OCR", Icon: ScanText, href: "/tools/ocr-pdf" },
 ];
 
 export default function Home() {
   const allTools = getAllTools();
 
-  const popularTools = POPULAR_TOOLS.map(({ slug, icon, bg }) => {
+  const popularTools = POPULAR_TOOLS.map(({ slug, Icon, bg, color }) => {
     const tool = allTools.find((t) => t.slug === slug);
-    return tool ? { ...tool, icon, bg } : null;
-  }).filter(Boolean) as (ReturnType<typeof getAllTools>[0] & { icon: string; bg: string })[];
+    return tool ? { ...tool, Icon, bg, color } : null;
+  }).filter(Boolean) as (ReturnType<typeof getAllTools>[0] & { Icon: React.ElementType; bg: string; color: string })[];
 
   return (
     <main style={{ background: "#f9fafb" }}>
 
-      {/* ── HERO ── */}
+      {/* HERO */}
       <section style={{ maxWidth: "760px", margin: "0 auto", padding: "8px 24px 48px", textAlign: "center" }}>
         <div style={{
           display: "inline-flex", alignItems: "center", gap: "6px",
@@ -72,7 +78,7 @@ export default function Home() {
           borderRadius: "100px", marginBottom: "16px",
           border: "1px solid #bfdbfe",
         }}>
-          🔒 No signup · Works in your browser · Files stay private
+          No signup · Works in your browser · Files stay private
         </div>
 
         <h1 style={{
@@ -116,14 +122,14 @@ export default function Home() {
                 textDecoration: "none", color: "#111",
                 fontSize: "13px", fontWeight: 500,
               }}>
-                <span style={{ fontSize: "16px" }}>{t.icon}</span>
+                <t.Icon size={15} color="#2563eb" strokeWidth={2} />
                 {t.label}
               </Link>
             ))}
           </div>
           <div style={{ borderTop: "1px solid #e5e7eb", marginTop: "16px", paddingTop: "14px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
             <p style={{ fontSize: "13px", color: "#9ca3af", margin: 0 }}>
-              🔒 Browser tools run locally · Server tools delete files instantly
+              Browser tools run locally · Server tools delete files instantly
             </p>
             <Link href="/categories" style={{ fontSize: "13px", color: "#2563eb", textDecoration: "none", fontWeight: 500 }}>
               See all 20 tools →
@@ -134,7 +140,7 @@ export default function Home() {
 
       <hr style={{ border: "none", borderTop: "1px solid #e5e7eb", margin: 0 }} />
 
-      {/* ── POPULAR TOOLS ── */}
+      {/* POPULAR TOOLS */}
       <section style={{ maxWidth: "960px", margin: "0 auto", padding: "44px 24px" }}>
         <p style={{ fontSize: "11px", fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", color: "#2563eb", marginBottom: "8px" }}>Tools</p>
         <h2 style={{ fontSize: "clamp(18px, 3vw, 26px)", fontWeight: 700, color: "#0f0f0f", letterSpacing: "-0.015em", marginBottom: "6px", borderLeft: "3px solid #2563eb", paddingLeft: "12px" }}>
@@ -154,8 +160,8 @@ export default function Home() {
                   background: "#fff", border: "1px solid #e5e7eb", borderRadius: "12px",
                   padding: "18px 14px", display: "flex", flexDirection: "column", gap: "10px",
                 }}>
-                  <div style={{ width: "34px", height: "34px", borderRadius: "8px", background: tool.bg, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "17px" }}>
-                    {tool.icon}
+                  <div style={{ width: "34px", height: "34px", borderRadius: "8px", background: tool.bg, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <tool.Icon size={17} color={tool.color} strokeWidth={2} />
                   </div>
                   <div>
                     <p style={{ fontSize: "13px", fontWeight: 600, color: "#111", marginBottom: "3px" }}>{tool.name}</p>
@@ -170,7 +176,7 @@ export default function Home() {
 
       <hr style={{ border: "none", borderTop: "1px solid #e5e7eb", margin: 0 }} />
 
-      {/* ── HOW IT WORKS ── */}
+      {/* HOW IT WORKS */}
       <section style={{ maxWidth: "960px", margin: "0 auto", padding: "44px 24px" }}>
         <p style={{ fontSize: "11px", fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", color: "#2563eb", marginBottom: "8px" }}>How it works</p>
         <h2 style={{ fontSize: "clamp(18px, 3vw, 26px)", fontWeight: 700, color: "#0f0f0f", letterSpacing: "-0.015em", marginBottom: "6px", borderLeft: "3px solid #2563eb", paddingLeft: "12px" }}>
@@ -180,9 +186,9 @@ export default function Home() {
 
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: "16px" }}>
           {[
-            { num: "01", icon: "📂", title: "Upload your file", text: "Drag & drop or click to select your PDF. Most tools process files entirely in your browser, no upload needed." },
-            { num: "02", icon: "⚙️", title: "Process instantly", text: "Choose what you want to do — compress, merge, split, convert. Browser tools start immediately; server tools process securely and delete your file right after." },
-            { num: "03", icon: "⬇️", title: "Download result", text: "Get your processed file right away. No email required, no waiting, just click download and you're done." },
+            { num: "01", Icon: FolderOpen, title: "Upload your file", text: "Drag & drop or click to select your PDF. Most tools process files entirely in your browser, no upload needed." },
+            { num: "02", Icon: Settings, title: "Process instantly", text: "Choose what you want to do — compress, merge, split, convert. Browser tools start immediately; server tools process securely and delete your file right after." },
+            { num: "03", Icon: Download, title: "Download result", text: "Get your processed file right away. No email required, no waiting, just click download and you're done." },
           ].map((step) => (
             <div key={step.num} style={{
               background: "#fff", border: "1px solid #e5e7eb", borderRadius: "12px",
@@ -192,7 +198,9 @@ export default function Home() {
                 <div style={{ width: "28px", height: "28px", borderRadius: "7px", background: "#2563eb", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "11px", fontWeight: 700, flexShrink: 0 }}>
                   {step.num}
                 </div>
-                <span style={{ fontSize: "22px" }}>{step.icon}</span>
+                <div style={{ width: "32px", height: "32px", borderRadius: "8px", background: "#eff6ff", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  <step.Icon size={16} color="#2563eb" strokeWidth={2} />
+                </div>
               </div>
               <p style={{ fontSize: "14px", fontWeight: 600, color: "#111", margin: 0 }}>{step.title}</p>
               <p style={{ fontSize: "13px", color: "#4b5563", lineHeight: 1.55, margin: 0 }}>{step.text}</p>
@@ -203,14 +211,13 @@ export default function Home() {
 
       <hr style={{ border: "none", borderTop: "1px solid #e5e7eb", margin: 0 }} />
 
-      {/* ── SOCIAL PROOF ── */}
+      {/* SOCIAL PROOF */}
       <section style={{ maxWidth: "960px", margin: "0 auto", padding: "44px 24px" }}>
         <p style={{ fontSize: "11px", fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", color: "#2563eb", marginBottom: "8px" }}>Trusted by users worldwide</p>
         <h2 style={{ fontSize: "clamp(18px, 3vw, 26px)", fontWeight: 700, color: "#0f0f0f", letterSpacing: "-0.015em", marginBottom: "24px", borderLeft: "3px solid #2563eb", paddingLeft: "12px" }}>
           Simple tools that get the job done
         </h2>
 
-        {/* Stats */}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))", gap: "10px", marginBottom: "32px" }}>
           {[
             { value: "20+", label: "Free PDF tools" },
@@ -225,7 +232,6 @@ export default function Home() {
           ))}
         </div>
 
-        {/* Testimonials */}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: "10px" }}>
           {[
             { text: "Finally a PDF tool that doesn't ask me to create an account. Compressed a 40MB file to 4MB in seconds.", author: "Marketing manager", stars: 5 },
@@ -250,7 +256,7 @@ export default function Home() {
 
       <hr style={{ border: "none", borderTop: "1px solid #e5e7eb", margin: 0 }} />
 
-      {/* ── WHY DOCKITT ── */}
+      {/* WHY DOCKITT */}
       <section style={{ maxWidth: "960px", margin: "0 auto", padding: "44px 24px" }}>
         <p style={{ fontSize: "11px", fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", color: "#2563eb", marginBottom: "8px" }}>Why Dockitt</p>
         <h2 style={{ fontSize: "clamp(18px, 3vw, 26px)", fontWeight: 700, color: "#0f0f0f", letterSpacing: "-0.015em", marginBottom: "6px", borderLeft: "3px solid #2563eb", paddingLeft: "12px" }}>
@@ -258,10 +264,12 @@ export default function Home() {
         </h2>
         <p style={{ fontSize: "14px", color: "#4b5563", marginBottom: "24px" }}>No distractions. No bloat. Just PDF tools that do the job.</p>
 
-       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: "10px" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: "10px" }}>
           {WHY_ITEMS.map((item) => (
             <div key={item.title} style={{ display: "flex", alignItems: "flex-start", gap: "12px", background: "#fff", borderRadius: "10px", padding: "16px", border: "1px solid #e5e7eb" }}>
-              <span style={{ fontSize: "20px", flexShrink: 0 }}>{item.icon}</span>
+              <div style={{ width: "34px", height: "34px", borderRadius: "8px", background: item.bg, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                <item.Icon size={17} color={item.color} strokeWidth={2} />
+              </div>
               <div>
                 <p style={{ fontSize: "14px", fontWeight: 600, color: "#111", marginBottom: "3px" }}>{item.title}</p>
                 <p style={{ fontSize: "13px", color: "#4b5563", margin: 0, lineHeight: 1.5 }}>{item.text}</p>
@@ -273,7 +281,7 @@ export default function Home() {
 
       <hr style={{ border: "none", borderTop: "1px solid #e5e7eb", margin: 0 }} />
 
-      {/* ── USE CASES ── */}
+      {/* USE CASES */}
       <section style={{ maxWidth: "960px", margin: "0 auto", padding: "44px 24px" }}>
         <p style={{ fontSize: "11px", fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", color: "#2563eb", marginBottom: "8px" }}>Use cases</p>
         <h2 style={{ fontSize: "clamp(18px, 3vw, 26px)", fontWeight: 700, color: "#0f0f0f", letterSpacing: "-0.015em", marginBottom: "6px", borderLeft: "3px solid #2563eb", paddingLeft: "12px" }}>
@@ -298,20 +306,20 @@ export default function Home() {
 
       <hr style={{ border: "none", borderTop: "1px solid #e5e7eb", margin: 0 }} />
 
-      {/* ── SEO DESCRIPTION ── */}
+      {/* SEO DESCRIPTION */}
       <section style={{ maxWidth: "960px", margin: "0 auto", padding: "44px 24px" }}>
         <div style={{ background: "#fff", border: "1px solid #e5e7eb", borderLeft: "3px solid #2563eb", borderRadius: "12px", padding: "24px 28px" }}>
           <p style={{ fontSize: "15px", color: "#4b5563", lineHeight: 1.75, margin: 0 }}>
             <strong style={{ color: "#111" }}>Dockitt</strong> is a simple online tool that helps you work with PDF files quickly and easily.
             You can compress, merge, split and convert PDFs without installing anything.
-            Most tools run directly in your browser. For tools that require server processing such as compression, OCR, and PDF to Word files are sent over an encrypted connection and deleted immediately after processing.
+            Most tools run directly in your browser. For tools that require server processing such as compression, OCR, and PDF to Word, files are sent over an encrypted connection and deleted immediately after processing.
             Whether you need to shrink a PDF for email, combine multiple documents, or convert a file to Word,
-            Dockitt handles it in second.
+            Dockitt handles it in seconds.
           </p>
         </div>
       </section>
 
-      {/* ── FINAL CTA ── */}
+      {/* FINAL CTA */}
       <section style={{ textAlign: "center", padding: "56px 24px", background: "#f3f4f6", borderTop: "1px solid #e5e7eb" }}>
         <h2 style={{ fontSize: "clamp(18px, 3.5vw, 28px)", fontWeight: 700, color: "#0f0f0f", letterSpacing: "-0.015em", marginBottom: "8px" }}>
           Start working with your PDF now
