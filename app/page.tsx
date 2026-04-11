@@ -7,19 +7,6 @@ import {
   Smartphone, ShieldCheck, FolderOpen, Settings, Download,
 } from "lucide-react";
 
-const POPULAR_TOOLS = [
-  { slug: "compress-pdf", Icon: FileArchive, bg: "#eff6ff", color: "#2563eb" },
-  { slug: "merge-pdf", Icon: GitMerge, bg: "#f0fdf4", color: "#16a34a" },
-  { slug: "split-pdf", Icon: Scissors, bg: "#fefce8", color: "#ca8a04" },
-  { slug: "rotate-pdf", Icon: RotateCw, bg: "#fdf4ff", color: "#9333ea" },
-  { slug: "protect-pdf", Icon: Lock, bg: "#fef2f2", color: "#dc2626" },
-  { slug: "unlock-pdf", Icon: Unlock, bg: "#fff7ed", color: "#ea580c" },
-  { slug: "watermark-pdf", Icon: Droplets, bg: "#fefce8", color: "#ca8a04" },
-  { slug: "ocr-pdf", Icon: ScanText, bg: "#f0fdf4", color: "#16a34a" },
-  { slug: "pdf-to-word", Icon: FileText, bg: "#fff7ed", color: "#ea580c" },
-  { slug: "word-to-pdf", Icon: FileOutput, bg: "#eff6ff", color: "#2563eb" },
-];
-
 const POPULAR_TOOL_HREFS: Record<string, string> = {
   "pdf-to-word": "/convert-pdf/pdf-to-word",
   "word-to-pdf": "/convert-pdf/word-to-pdf",
@@ -48,24 +35,56 @@ const WHY_ITEMS = [
 ];
 
 const QUICK_TOOLS = [
-  { slug: "compress-pdf", label: "Compress", Icon: FileArchive, href: "/tools/compress-pdf" },
-  { slug: "merge-pdf", label: "Merge", Icon: GitMerge, href: "/tools/merge-pdf" },
-  { slug: "split-pdf", label: "Split", Icon: Scissors, href: "/tools/split-pdf" },
-  { slug: "pdf-to-word", label: "PDF to Word", Icon: FileText, href: "/convert-pdf/pdf-to-word" },
-  { slug: "word-to-pdf", label: "Word to PDF", Icon: FileOutput, href: "/convert-pdf/word-to-pdf" },
-  { slug: "protect-pdf", label: "Protect", Icon: Lock, href: "/tools/protect-pdf" },
-  { slug: "rotate-pdf", label: "Rotate", Icon: RotateCw, href: "/tools/rotate-pdf" },
-  { slug: "ocr-pdf", label: "OCR", Icon: ScanText, href: "/tools/ocr-pdf" },
+  { slug: "compress-pdf", label: "Compress", Icon: FileArchive, href: "/tools/compress-pdf", popular: true },
+  { slug: "merge-pdf", label: "Merge", Icon: GitMerge, href: "/tools/merge-pdf", popular: false },
+  { slug: "split-pdf", label: "Split", Icon: Scissors, href: "/tools/split-pdf", popular: false },
+  { slug: "pdf-to-word", label: "PDF to Word", Icon: FileText, href: "/convert-pdf/pdf-to-word", popular: false },
+  { slug: "word-to-pdf", label: "Word to PDF", Icon: FileOutput, href: "/convert-pdf/word-to-pdf", popular: false },
+  { slug: "protect-pdf", label: "Protect", Icon: Lock, href: "/tools/protect-pdf", popular: false },
+  { slug: "rotate-pdf", label: "Rotate", Icon: RotateCw, href: "/tools/rotate-pdf", popular: false },
+  { slug: "ocr-pdf", label: "OCR", Icon: ScanText, href: "/tools/ocr-pdf", popular: false },
+];
+
+const CATEGORIES = [
+  {
+    slug: "core",
+    name: "Core PDF Tools",
+    desc: "Compress, merge, split, rotate and more.",
+    icon: FileArchive,
+    color: "#2563eb",
+    bg: "#eff6ff",
+    href: "/categories/core",
+  },
+  {
+    slug: "convert",
+    name: "Convert PDF",
+    desc: "PDF to Word, JPG, PNG and back.",
+    icon: FileText,
+    color: "#ea580c",
+    bg: "#fff7ed",
+    href: "/convert-pdf",
+  },
+  {
+    slug: "security",
+    name: "PDF Security",
+    desc: "Protect, unlock, sign and watermark.",
+    icon: Lock,
+    color: "#dc2626",
+    bg: "#fef2f2",
+    href: "/categories/security",
+  },
+  {
+    slug: "utility",
+    name: "PDF Utilities",
+    desc: "OCR, repair, crop and reorder pages.",
+    icon: ScanText,
+    color: "#16a34a",
+    bg: "#f0fdf4",
+    href: "/categories/utility",
+  },
 ];
 
 export default function Home() {
-  const allTools = getAllTools();
-
-  const popularTools = POPULAR_TOOLS.map(({ slug, Icon, bg, color }) => {
-    const tool = allTools.find((t) => t.slug === slug);
-    return tool ? { ...tool, Icon, bg, color } : null;
-  }).filter(Boolean) as (ReturnType<typeof getAllTools>[0] & { Icon: React.ElementType; bg: string; color: string })[];
-
   return (
     <main style={{ background: "#f9fafb" }}>
 
@@ -118,11 +137,24 @@ export default function Home() {
               <Link key={t.slug} href={t.href} style={{
                 display: "flex", alignItems: "center", gap: "8px",
                 padding: "10px 12px", borderRadius: "8px",
-                border: "1px solid #e5e7eb", background: "#f9fafb",
+                border: t.popular ? "1.5px solid #2563eb" : "1px solid #e5e7eb",
+                background: t.popular ? "#eff6ff" : "#f9fafb",
                 textDecoration: "none", color: "#111",
                 fontSize: "13px", fontWeight: 500,
+                position: "relative",
               }}>
-                <t.Icon size={15} color="#2563eb" strokeWidth={2} />
+                {t.popular && (
+                  <span style={{
+                    position: "absolute", top: "-8px", right: "8px",
+                    background: "#2563eb", color: "#fff",
+                    fontSize: "9px", fontWeight: 700,
+                    padding: "2px 6px", borderRadius: "4px",
+                    letterSpacing: "0.05em",
+                  }}>
+                    POPULAR
+                  </span>
+                )}
+                <t.Icon size={15} color={t.popular ? "#2563eb" : "#6b7280"} strokeWidth={2} />
                 {t.label}
               </Link>
             ))}
@@ -140,37 +172,35 @@ export default function Home() {
 
       <hr style={{ border: "none", borderTop: "1px solid #e5e7eb", margin: 0 }} />
 
-      {/* POPULAR TOOLS */}
+      {/* CATEGORIES */}
       <section style={{ maxWidth: "960px", margin: "0 auto", padding: "44px 24px" }}>
         <p style={{ fontSize: "11px", fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", color: "#2563eb", marginBottom: "8px" }}>Tools</p>
         <h2 style={{ fontSize: "clamp(18px, 3vw, 26px)", fontWeight: 700, color: "#0f0f0f", letterSpacing: "-0.015em", marginBottom: "6px", borderLeft: "3px solid #2563eb", paddingLeft: "12px" }}>
-          Popular PDF tools
+          Browse by category
         </h2>
         <p style={{ fontSize: "14px", color: "#4b5563", marginBottom: "24px" }}>
-          Everything you need to work with PDF files, no installation required.{" "}
-          <Link href="/convert-pdf" style={{ color: "#2563eb", textDecoration: "none" }}>Convert PDF →</Link>
+          Everything you need to work with PDF files, no installation required.
         </p>
 
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(170px, 1fr))", gap: "10px" }}>
-          {popularTools.map((tool) => {
-            const href = POPULAR_TOOL_HREFS[tool.slug] ?? `/tools/${tool.slug}`;
-            return (
-              <Link key={tool.slug} href={href} style={{ textDecoration: "none" }}>
-                <div style={{
-                  background: "#fff", border: "1px solid #e5e7eb", borderRadius: "12px",
-                  padding: "18px 14px", display: "flex", flexDirection: "column", gap: "10px",
-                }}>
-                  <div style={{ width: "34px", height: "34px", borderRadius: "8px", background: tool.bg, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                    <tool.Icon size={17} color={tool.color} strokeWidth={2} />
-                  </div>
-                  <div>
-                    <p style={{ fontSize: "13px", fontWeight: 600, color: "#111", marginBottom: "3px" }}>{tool.name}</p>
-                    <p style={{ fontSize: "12px", color: "#9ca3af", lineHeight: 1.4, margin: 0 }}>{tool.shortDescription}</p>
-                  </div>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: "12px" }}>
+          {CATEGORIES.map((cat) => (
+            <Link key={cat.slug} href={cat.href} style={{ textDecoration: "none" }}>
+              <div style={{
+                background: "#fff", border: "1px solid #e5e7eb", borderRadius: "12px",
+                padding: "20px", display: "flex", flexDirection: "column", gap: "12px",
+                height: "100%",
+              }}>
+                <div style={{ width: "38px", height: "38px", borderRadius: "10px", background: cat.bg, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  <cat.icon size={19} color={cat.color} strokeWidth={2} />
                 </div>
-              </Link>
-            );
-          })}
+                <div>
+                  <p style={{ fontSize: "14px", fontWeight: 700, color: "#111", margin: "0 0 4px" }}>{cat.name}</p>
+                  <p style={{ fontSize: "13px", color: "#6b7280", margin: 0, lineHeight: 1.4 }}>{cat.desc}</p>
+                </div>
+                <p style={{ fontSize: "13px", color: "#2563eb", fontWeight: 500, margin: 0 }}>Browse tools →</p>
+              </div>
+            </Link>
+          ))}
         </div>
       </section>
 
@@ -204,51 +234,6 @@ export default function Home() {
               </div>
               <p style={{ fontSize: "14px", fontWeight: 600, color: "#111", margin: 0 }}>{step.title}</p>
               <p style={{ fontSize: "13px", color: "#4b5563", lineHeight: 1.55, margin: 0 }}>{step.text}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <hr style={{ border: "none", borderTop: "1px solid #e5e7eb", margin: 0 }} />
-
-      {/* SOCIAL PROOF */}
-      <section style={{ maxWidth: "960px", margin: "0 auto", padding: "44px 24px" }}>
-        <p style={{ fontSize: "11px", fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", color: "#2563eb", marginBottom: "8px" }}>Trusted by users worldwide</p>
-        <h2 style={{ fontSize: "clamp(18px, 3vw, 26px)", fontWeight: 700, color: "#0f0f0f", letterSpacing: "-0.015em", marginBottom: "24px", borderLeft: "3px solid #2563eb", paddingLeft: "12px" }}>
-          Simple tools that get the job done
-        </h2>
-
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))", gap: "10px", marginBottom: "32px" }}>
-          {[
-            { value: "20+", label: "Free PDF tools" },
-            { value: "100%", label: "Free to use" },
-            { value: "0", label: "Sign-ups required" },
-            { value: "30s", label: "Average processing time" },
-          ].map((stat) => (
-            <div key={stat.label} style={{ background: "#fff", border: "1px solid #e5e7eb", borderRadius: "12px", padding: "20px 16px", textAlign: "center" }}>
-              <p style={{ fontSize: "28px", fontWeight: 700, color: "#2563eb", margin: "0 0 4px" }}>{stat.value}</p>
-              <p style={{ fontSize: "12px", color: "#6b7280", margin: 0 }}>{stat.label}</p>
-            </div>
-          ))}
-        </div>
-
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: "10px" }}>
-          {[
-            { text: "Finally a PDF tool that doesn't ask me to create an account. Compressed a 40MB file to 4MB in seconds.", author: "Marketing manager", stars: 5 },
-            { text: "I use the Merge PDF tool every week to combine reports. It's the fastest online tool I've found.", author: "Financial analyst", stars: 5 },
-            { text: "Converted a scanned PDF to Word using OCR and it worked perfectly. Saved me hours of retyping.", author: "Legal assistant", stars: 5 },
-            { text: "The PDF to Word converter actually preserves the formatting. Other tools I tried were a mess.", author: "Freelance consultant", stars: 5 },
-            { text: "Quick, clean, no ads, no signup. Does exactly what it says. I recommended it to my whole team.", author: "Project coordinator", stars: 5 },
-            { text: "Used it to protect a contract PDF with a password before emailing it. Took about 10 seconds total.", author: "Small business owner", stars: 5 },
-          ].map((review, i) => (
-            <div key={i} style={{ background: "#fff", border: "1px solid #e5e7eb", borderRadius: "12px", padding: "18px 16px", display: "flex", flexDirection: "column", gap: "10px" }}>
-              <div style={{ display: "flex", gap: "2px" }}>
-                {Array.from({ length: review.stars }).map((_, s) => (
-                  <span key={s} style={{ color: "#f59e0b", fontSize: "13px" }}>★</span>
-                ))}
-              </div>
-              <p style={{ fontSize: "13px", color: "#374151", lineHeight: 1.6, margin: 0 }}>"{review.text}"</p>
-              <p style={{ fontSize: "12px", color: "#9ca3af", margin: 0 }}>{review.author}</p>
             </div>
           ))}
         </div>
@@ -306,7 +291,7 @@ export default function Home() {
 
       <hr style={{ border: "none", borderTop: "1px solid #e5e7eb", margin: 0 }} />
 
-      {/* SEO DESCRIPTION */}
+      {/* SEO DESCRIPTION — tylko raz */}
       <section style={{ maxWidth: "960px", margin: "0 auto", padding: "44px 24px" }}>
         <div style={{ background: "#fff", border: "1px solid #e5e7eb", borderLeft: "3px solid #2563eb", borderRadius: "12px", padding: "24px 28px" }}>
           <p style={{ fontSize: "15px", color: "#4b5563", lineHeight: 1.75, margin: 0 }}>
