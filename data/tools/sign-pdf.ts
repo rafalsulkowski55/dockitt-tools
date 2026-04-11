@@ -19,7 +19,7 @@ export const signPdfTool = {
     input: "pdf",
     output: "pdf",
   },
-  relatedTools: ["protect-pdf", "watermark-pdf"],
+  relatedTools: ["protect-pdf", "watermark-pdf", "compress-pdf", "merge-pdf"],
   howTo: [
     "Click 'Choose PDF' and select the document you need to sign.",
     "Draw your signature in the signature area using your mouse on desktop, or your finger or stylus on a touchscreen.",

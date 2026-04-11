@@ -19,7 +19,7 @@ export const mergePdfTool = {
     input: "pdf",
     output: "pdf",
   },
-  relatedTools: ["split-pdf", "compress-pdf"],
+  relatedTools: ["split-pdf", "compress-pdf", "reorder-pdf-pages", "extract-pdf-pages"],
   howTo: [
   "Click 'Choose PDFs' and select all the PDF files you want to combine. You can select multiple files at once from your device.",
   "Arrange the files in the order you want them to appear in the final document. The pages will follow the sequence shown.",

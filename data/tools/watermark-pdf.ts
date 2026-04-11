@@ -19,7 +19,7 @@ export const watermarkPdfTool = {
     input: "pdf",
     output: "pdf",
   },
-  relatedTools: ["protect-pdf", "sign-pdf"],
+  relatedTools: ["protect-pdf", "sign-pdf", "compress-pdf", "merge-pdf"],
   howTo: [
    "Click 'Choose PDF' and select the file you want to watermark.",
    "Enter the watermark text you want to add. Common choices include DRAFT, CONFIDENTIAL, SAMPLE, or your name and company.",

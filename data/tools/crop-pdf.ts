@@ -19,7 +19,7 @@ export const cropPdfTool = {
     input: "pdf",
     output: "pdf",
   },
-  relatedTools: ["rotate-pdf", "split-pdf"],
+  relatedTools: ["rotate-pdf", "compress-pdf", "split-pdf", "delete-pdf-pages"],
   howTo: [
    "Click 'Choose PDF' and select the file whose pages you want to crop.",
    "Use the interactive crop frame to set the area you want to keep, or enter specific margin values for each side of the page.",

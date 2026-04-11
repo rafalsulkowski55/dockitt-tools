@@ -19,7 +19,7 @@ export const unlockPdfTool = {
     input: "pdf",
     output: "pdf",
   },
-  relatedTools: ["protect-pdf", "repair-pdf"],
+  relatedTools: ["protect-pdf", "compress-pdf", "repair-pdf", "merge-pdf"],
   howTo: [
    "Click 'Choose PDF' and select the password-protected PDF file you want to unlock.",
    "Enter the current password for the document. The tool requires the correct password to remove protection.",

@@ -19,7 +19,7 @@ export const deletePdfPagesTool = {
     input: "pdf",
     output: "pdf",
   },
-  relatedTools: ["split-pdf", "extract-pdf-pages"],
+  relatedTools: ["extract-pdf-pages", "split-pdf", "reorder-pdf-pages", "merge-pdf"],
   howTo: [
     "Click 'Choose PDF' and select the file you want to edit.",
     "Enter the page numbers you want to delete, separated by commas. For example: 2, 5, 8 will remove those three pages.",

@@ -19,7 +19,7 @@ export const repairPdfTool = {
     input: "pdf",
     output: "pdf",
   },
-  relatedTools: ["compress-pdf", "unlock-pdf"],
+  relatedTools: ["compress-pdf", "unlock-pdf", "ocr-pdf", "merge-pdf"],
   howTo: [
     "Click 'Choose PDF' and select the damaged or corrupted file you want to repair.",
     "Click 'Repair PDF' and wait while Ghostscript rebuilds the internal structure of the file.",

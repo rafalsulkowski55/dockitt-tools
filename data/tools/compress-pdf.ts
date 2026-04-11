@@ -20,7 +20,7 @@ export const compressPdfTool = {
     input: "pdf",
     output: "pdf",
   },
-  relatedTools: ["merge-pdf", "split-pdf"],
+  relatedTools: ["merge-pdf", "split-pdf", "repair-pdf", "protect-pdf"],
   howTo: [
   "Click 'Choose PDF' and select the PDF file you want to compress from your device. Files up to 10MB are supported.",
   "Click 'Process PDF' to start the compression. The tool will optimise the internal structure of your file without altering any content.",

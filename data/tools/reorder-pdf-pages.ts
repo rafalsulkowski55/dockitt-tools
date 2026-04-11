@@ -19,7 +19,7 @@ export const reorderPdfPagesTool = {
     input: "pdf",
     output: "pdf",
   },
-  relatedTools: ["extract-pdf-pages", "delete-pdf-pages"],
+  relatedTools: ["merge-pdf", "delete-pdf-pages", "extract-pdf-pages", "split-pdf"],
   howTo: [
     "Click 'Choose PDF' and select the file whose pages you want to reorder.",
     "The tool will display thumbnail previews of all pages. Drag and drop the thumbnails into the order you want.",

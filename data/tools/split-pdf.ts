@@ -19,7 +19,7 @@ export const splitPdfTool = {
     input: "pdf",
     output: "pdf",
   },
-  relatedTools: ["merge-pdf", "extract-pdf-pages"],
+  relatedTools: ["merge-pdf", "compress-pdf", "extract-pdf-pages", "delete-pdf-pages"],
   howTo: [
   "Click 'Choose PDF' and select the PDF file you want to split.",
   "Enter the page range you want to extract. For example, enter 1 and 5 to get pages 1 through 5 as a new document.",

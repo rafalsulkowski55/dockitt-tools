@@ -19,7 +19,7 @@ export const extractPdfPagesTool = {
     input: "pdf",
     output: "pdf",
   },
-  relatedTools: ["split-pdf", "reorder-pdf-pages"],
+  relatedTools: ["split-pdf", "delete-pdf-pages", "reorder-pdf-pages", "merge-pdf"],
   howTo: [
     "Click 'Choose PDF' and select the file you want to extract pages from.",
     "Enter the individual page numbers you want to extract, separated by commas. For example: 1, 4, 7, 12.",

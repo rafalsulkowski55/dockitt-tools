@@ -19,7 +19,7 @@ export const protectPdfTool = {
     input: "pdf",
     output: "pdf",
   },
-  relatedTools: ["unlock-pdf", "watermark-pdf"],
+  relatedTools: ["unlock-pdf", "watermark-pdf", "sign-pdf", "compress-pdf"],
   howTo: [
    "Click 'Choose PDF' and select the file you want to password protect.",
    "Enter the password you want to set. Use at least 12 characters combining letters, numbers, and symbols for strong protection.",

@@ -19,7 +19,7 @@ export const ocrPdfTool = {
     input: "pdf",
     output: "pdf",
   },
-  relatedTools: ["repair-pdf", "compress-pdf"],
+  relatedTools: ["repair-pdf", "compress-pdf", "split-pdf", "merge-pdf"],
   howTo: [
     "Click 'Choose PDF' and select your scanned PDF document.",
     "Click 'Run OCR' and wait while Tesseract analyses each page and adds an invisible text layer to the document.",
