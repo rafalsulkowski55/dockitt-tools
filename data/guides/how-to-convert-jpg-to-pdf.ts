@@ -1,7 +1,7 @@
 export const howToConvertJpgToPdf = {
   slug: "how-to-convert-jpg-to-pdf",
   title: "How to Convert JPG Images to PDF Online",
-  description: "Learn how to convert one or more JPG images to a PDF file online. Combine photos into a single document, free and without any software.",
+  description: "Learn how to convert one or more JPG images to a PDF file online. Combine photos into a single document, without any software.",
   intro: "There are many situations where you need to turn JPG images into a PDF document. You photographed a multi-page paper document with your phone and need to send it as a single file. You have product photos that need to be compiled into a catalogue. You scanned receipts or invoices as images and need to submit them as a PDF. You simply need to send multiple images to someone in a format that preserves their order and opens on every device without issues.",
   introList: [
     "Convert phone photos of a paper document into a single PDF to email or upload",
@@ -138,6 +138,6 @@ export const howToConvertJpgToPdf = {
   ],
   ctaText: "Ready to convert your JPG images to PDF? Use the free Dockitt tool below.",
   ctaLinks: [
-    { name: "JPG to PDF", slug: "convert-pdf/jpg-to-pdf", description: "Convert JPG images to PDF online for free" },
+    { name: "JPG to PDF", slug: "convert-pdf/jpg-to-pdf", description: "Convert JPG images to PDF online " },
   ],
 }

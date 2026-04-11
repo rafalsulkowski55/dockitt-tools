@@ -27,7 +27,7 @@ const CATEGORY_LABELS: Record<string, string> = {
 
 export const metadata = {
   title: "All PDF Tools — Dockitt",
-  description: "Browse all free PDF tools — merge, split, compress, convert, protect and more.",
+  description: "Browse all PDF tools — merge, split, compress, convert, protect and more.",
 };
 
 export default function CategoriesPage() {

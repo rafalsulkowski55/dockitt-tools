@@ -1,7 +1,7 @@
 export const howToProtectPdf = {
   slug: "how-to-protect-pdf",
   title: "How to Password Protect a PDF Online",
-  description: "Learn how to add a password to a PDF file online. Secure your documents free and without any software.",
+  description: "Learn how to add a password to a PDF file online. Secure your documents without any software.",
   intro: "Adding a password to a PDF is one of the most effective ways to control who can access your document. Once a PDF is password protected, anyone who tries to open it will be prompted to enter the password before the content is visible. Without the correct password, the file is unreadable. This makes password protection the right choice for any document you need to share securely.",
   introList: [
     "Protect a contract or legal document before emailing it to a client",
@@ -142,6 +142,6 @@ export const howToProtectPdf = {
   ],
   ctaText: "Ready to secure your PDF with a password? Use the free Dockitt tool below.",
   ctaLinks: [
-    { name: "Protect PDF", slug: "protect-pdf", description: "Add a password to your PDF online for free" },
+    { name: "Protect PDF", slug: "protect-pdf", description: "Add a password to your PDF online " },
   ],
 }

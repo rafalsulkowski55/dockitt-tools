@@ -10,7 +10,7 @@ export default function PricingPage() {
             Simple, transparent pricing
           </h1>
           <p style={{ fontSize: "16px", color: "#6b7280", margin: 0 }}>
-            Start for free. Upgrade when you need more.
+            Start . Upgrade when you need more.
           </p>
         </div>
 

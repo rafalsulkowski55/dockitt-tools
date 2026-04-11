@@ -1,7 +1,7 @@
 export const howToCropPdf = {
   slug: "how-to-crop-pdf",
   title: "How to Crop PDF Pages Online",
-  description: "Learn how to crop and trim PDF pages online. Remove unwanted margins, borders, and whitespace free and without any software.",
+  description: "Learn how to crop and trim PDF pages online. Remove unwanted margins, borders, and whitespace without any software.",
   intro: "Cropping a PDF removes the visible edges of each page, trimming away margins, whitespace, or unwanted content around the perimeter. It is a simple operation but it solves several common document problems that come up regularly in professional and personal workflows.",
   introList: [
     "Remove large white margins from scanned documents that make the content look small",
@@ -140,6 +140,6 @@ export const howToCropPdf = {
   ],
   ctaText: "Ready to crop your PDF pages? Use the free Dockitt tool below.",
   ctaLinks: [
-    { name: "Crop PDF", slug: "crop-pdf", description: "Trim and crop PDF pages online for free" },
+    { name: "Crop PDF", slug: "crop-pdf", description: "Trim and crop PDF pages online " },
   ],
 }

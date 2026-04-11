@@ -4,7 +4,7 @@ export const signPdfTool = {
   title: "Sign PDF Online",
   description: "Add your handwritten signature to a PDF file online — free, without printing or scanning.",
   longDescription: `Printing a document just to sign it and scan it back is one of the most unnecessary steps in modern document workflows. If you have received a contract, an agreement, or a form that needs your signature, you can sign it directly in your browser using Dockitt. Draw your signature with your mouse or finger, position it on the page, and download the signed PDF in seconds. No printing, no scanning, no PDF editor required. The signature is embedded directly into the page content of the document and cannot be moved or removed without specialist tools.`,
-  shortDescription: "Sign PDF files online for free.",
+  shortDescription: "Sign PDF files online .",
   category: "security",
   type: "process",
   primaryKeyword: "sign pdf",

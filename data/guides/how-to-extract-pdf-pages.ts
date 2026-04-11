@@ -1,7 +1,7 @@
 export const howToExtractPdfPages = {
   slug: "how-to-extract-pdf-pages",
   title: "How to Extract Pages from a PDF Online",
-  description: "Learn how to extract specific pages from a PDF file online. Pick individual pages in any order, free and without any software.",
+  description: "Learn how to extract specific pages from a PDF file online. Pick individual pages in any order, without any software.",
   intro: "Extracting pages from a PDF means selecting specific individual pages and saving them as a new, separate document. Unlike splitting, which works with consecutive page ranges, extracting lets you pick any combination of pages regardless of their position in the document. You can pick page 3, page 7, and page 14 from a 50-page document and get a new PDF containing just those three pages in the order you choose.",
   introList: [
     "Extract specific appendices or annexures from a long report",
@@ -136,6 +136,6 @@ export const howToExtractPdfPages = {
   ],
   ctaText: "Ready to extract specific pages from your PDF? Use the free Dockitt tool below.",
   ctaLinks: [
-    { name: "Extract PDF Pages", slug: "extract-pdf-pages", description: "Pick and extract individual pages from a PDF for free" },
+    { name: "Extract PDF Pages", slug: "extract-pdf-pages", description: "Pick and extract individual pages from a PDF " },
   ],
 }

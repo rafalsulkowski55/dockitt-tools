@@ -100,9 +100,9 @@ function IntroSection({ tool, variant, slug }: {
 }) {
   const subtitles = {
     A: "Upload your file below and get the result in seconds. No sign-up required.",
-    B: "Works directly in your browser. Free to use with no account needed.",
+    B: "Works directly in your browser.  with no account needed.",
     C: "Processes your file instantly. Nothing is stored on our servers after download.",
-    D: "Free, fast, and private. Your files are deleted immediately after processing.",
+    D: "fast, and private. Your files are deleted immediately after processing.",
   }
 
   if (slug === "compress-pdf") {

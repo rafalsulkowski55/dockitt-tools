@@ -39,7 +39,7 @@ const categoryMeta: Record<string, {
   },
   security: {
     name: "PDF Security Tools",
-    description: "Protect, unlock, sign and watermark your PDF files quickly and for free.",
+    description: "Protect, unlock, sign and watermark your PDF files quickly and .",
     faqs: [
       {
         question: "How secure is password protection on a PDF?",

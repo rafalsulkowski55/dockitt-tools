@@ -1,7 +1,7 @@
 export const howToUnlockPdf = {
   slug: "how-to-unlock-pdf",
   title: "How to Unlock a Password Protected PDF Online",
-  description: "Learn how to remove a password from a PDF file online. Unlock protected PDFs free and without any software.",
+  description: "Learn how to remove a password from a PDF file online. Unlock protected PDFs without any software.",
   intro: "A password-protected PDF is useful for security, but the password can become an obstacle when you need to work with the document. You might need to print it, merge it with another file, compress it, or simply open it without being prompted every time. Removing the password from a PDF you have legitimate access to is straightforward, but you do need to know the current password. This tool does not bypass security or crack encryption. It removes the password after you authenticate with the correct one.",
   introList: [
     "Remove a password from a PDF you need to merge, split, or compress",
@@ -141,6 +141,6 @@ export const howToUnlockPdf = {
   ],
   ctaText: "Ready to remove the password from your PDF? Use the free Dockitt tool below.",
   ctaLinks: [
-    { name: "Unlock PDF", slug: "unlock-pdf", description: "Remove password protection from a PDF online for free" },
+    { name: "Unlock PDF", slug: "unlock-pdf", description: "Remove password protection from a PDF online " },
   ],
 }

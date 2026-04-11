@@ -139,6 +139,6 @@ export const howToWatermarkPdf = {
   ],
   ctaText: "Ready to add a watermark to your PDF? Use the free Dockitt tool below.",
   ctaLinks: [
-    { name: "Watermark PDF", slug: "watermark-pdf", description: "Add a text watermark to your PDF online for free" },
+    { name: "Watermark PDF", slug: "watermark-pdf", description: "Add a text watermark to your PDF online " },
   ],
 }

@@ -133,6 +133,6 @@ export const howToConvertPngToPdf = {
   ],
   ctaText: "Ready to convert your PNG images to PDF? Use the free Dockitt tool below.",
   ctaLinks: [
-    { name: "PNG to PDF", slug: "convert-pdf/png-to-pdf", description: "Convert PNG images to PDF online for free" },
+    { name: "PNG to PDF", slug: "convert-pdf/png-to-pdf", description: "Convert PNG images to PDF online " },
   ],
 }

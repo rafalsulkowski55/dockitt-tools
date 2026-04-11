@@ -2,9 +2,9 @@ export const mergePdfTool = {
   slug: "merge-pdf",
   name: "Merge PDF",
   title: "Merge PDF Files Online",
-  description: "Combine multiple PDF files into one document quickly and for free.",
-  longDescription: `Merging PDF files lets you combine multiple documents into a single, organized file. Whether you need to send a contract with attachments, compile a report from several sources, or consolidate scanned pages from different documents, merging is the fastest way to keep everything together. Our free PDF merger lets you upload as many files as you need, arrange them in the right order, and download the result instantly. No account is required, and your files are deleted from our servers immediately after processing.`,
-  shortDescription: "Merge multiple PDF files into one online for free.",
+  description: "Combine multiple PDF files into one document quickly and .",
+  longDescription: `Merging PDF files lets you combine multiple documents into a single, organized file. Whether you need to send a contract with attachments, compile a report from several sources, or consolidate scanned pages from different documents, merging is the fastest way to keep everything together. Our PDF merger lets you upload as many files as you need, arrange them in the right order, and download the result instantly. No account is required, and your files are deleted from our servers immediately after processing.`,
+  shortDescription: "Merge multiple PDF files into one online .",
   category: "core",
   type: "process",
   primaryKeyword: "merge pdf",
@@ -49,7 +49,7 @@ export const mergePdfTool = {
     },
     {
       question: "Is it free to merge PDF files online?",
-      answer: "Yes. Dockitt's PDF merger is completely free with no sign-up required, no watermarks added to your document, and no limit on how many files you can merge.",
+      answer: "Yes. Dockitt's PDF merger is  with no sign-up required, no watermarks added to your document, and no limit on how many files you can merge.",
     },
   ],
 };

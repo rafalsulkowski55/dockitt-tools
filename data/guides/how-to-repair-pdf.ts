@@ -140,6 +140,6 @@ export const howToRepairPdf = {
   ],
   ctaText: "Ready to repair your damaged PDF? Use the free Dockitt tool below.",
   ctaLinks: [
-    { name: "Repair PDF", slug: "repair-pdf", description: "Fix corrupted and damaged PDF files online for free" },
+    { name: "Repair PDF", slug: "repair-pdf", description: "Fix corrupted and damaged PDF files online " },
   ],
 }

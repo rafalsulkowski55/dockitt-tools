@@ -1,7 +1,7 @@
 export const howToReorderPdfPages = {
   slug: "how-to-reorder-pdf-pages",
   title: "How to Reorder Pages in a PDF Online",
-  description: "Learn how to rearrange and reorder pages in a PDF file online. Drag and drop pages into the right order, free and without any software.",
+  description: "Learn how to rearrange and reorder pages in a PDF file online. Drag and drop pages into the right order, without any software.",
   intro: "Page order matters more than people realise until something goes wrong. A scanned multi-page document where the pages came out in the wrong order, a report assembled from multiple sources where sections ended up out of sequence, a presentation PDF where slides need rearranging before sharing. These are all situations where being able to reorder PDF pages quickly saves real time.",
   introList: [
     "Fix a scanned document where pages came out in the wrong order",
@@ -139,6 +139,6 @@ export const howToReorderPdfPages = {
   ],
   ctaText: "Ready to rearrange the pages in your PDF? Use the free Dockitt tool below.",
   ctaLinks: [
-    { name: "Reorder PDF Pages", slug: "reorder-pdf-pages", description: "Rearrange PDF pages online for free" },
+    { name: "Reorder PDF Pages", slug: "reorder-pdf-pages", description: "Rearrange PDF pages online " },
   ],
 }

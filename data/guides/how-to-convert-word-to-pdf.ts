@@ -148,6 +148,6 @@ export const howToConvertWordToPdf = {
   ],
   ctaText: "Ready to convert your Word document to PDF? Use the free Dockitt converter below.",
   ctaLinks: [
-    { name: "Word to PDF", slug: "convert-pdf/word-to-pdf", description: "Convert Word documents to PDF online for free" },
+    { name: "Word to PDF", slug: "convert-pdf/word-to-pdf", description: "Convert Word documents to PDF online " },
   ],
 }

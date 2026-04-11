@@ -1,7 +1,7 @@
 export const howToDeletePdfPages = {
   slug: "how-to-delete-pdf-pages",
   title: "How to Delete Pages from a PDF Online",
-  description: "Learn how to remove unwanted pages from a PDF file online, free and without any software.",
+  description: "Learn how to remove unwanted pages from a PDF file online, without any software.",
   intro: "Sometimes a PDF contains pages you simply do not need. A blank page at the end, a cover sheet you do not want to share, confidential pages that should not be included when sending the document externally, or repeated pages from a scanning error. Rather than rebuilding the entire document, you can remove specific pages in seconds using Dockitt's Delete PDF Pages tool.",
   introList: [
     "Remove a blank page at the end or beginning of a document",
@@ -136,6 +136,6 @@ export const howToDeletePdfPages = {
   ],
   ctaText: "Ready to remove unwanted pages from your PDF? Use the free Dockitt tool below.",
   ctaLinks: [
-    { name: "Delete PDF Pages", slug: "delete-pdf-pages", description: "Remove specific pages from a PDF online for free" },
+    { name: "Delete PDF Pages", slug: "delete-pdf-pages", description: "Remove specific pages from a PDF online " },
   ],
 }

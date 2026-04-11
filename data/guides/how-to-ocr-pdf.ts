@@ -1,7 +1,7 @@
 export const howToOcrPdf = {
   slug: "how-to-ocr-pdf",
   title: "How to Make a Scanned PDF Searchable with OCR",
-  description: "Learn how to use OCR to add a searchable text layer to a scanned PDF, free and without any software.",
+  description: "Learn how to use OCR to add a searchable text layer to a scanned PDF, without any software.",
   intro: "When you scan a physical document, the result is a PDF that looks like text but is actually just an image of text. You cannot search it, you cannot copy text from it, and screen readers cannot read it aloud. This is where OCR comes in. OCR analyses the image of each page, identifies the characters and words, and adds an invisible text layer on top of the image. The result is a PDF that looks identical to the original scan but now behaves like a proper text document.",
   introList: [
     "Make a scanned contract or legal document searchable",
@@ -138,6 +138,6 @@ export const howToOcrPdf = {
   ],
   ctaText: "Ready to make your scanned PDF searchable? Use the free Dockitt OCR tool below.",
   ctaLinks: [
-    { name: "OCR PDF", slug: "ocr-pdf", description: "Add a searchable text layer to scanned PDFs for free" },
+    { name: "OCR PDF", slug: "ocr-pdf", description: "Add a searchable text layer to scanned PDFs " },
   ],
 }

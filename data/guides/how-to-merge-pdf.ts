@@ -1,7 +1,7 @@
 export const howToMergePdf = {
   slug: "how-to-merge-pdf",
   title: "How to Merge PDF Files Online",
-  description: "Learn how to combine multiple PDF files into one document online, free, fast, and without any software.",
+  description: "Learn how to combine multiple PDF files into one document online, fast, and without any software.",
   intro: "Merging PDF files is one of the most common document tasks in both professional and personal life. You might need to combine a cover letter with a resume before sending a job application. You might be assembling a report from sections written by different people. You might have scanned a multi-page document one page at a time and now need to join everything into a single file. Whatever the reason, merging PDFs is straightforward when you have the right tool.",
   introList: [
     "Combine a cover letter and resume into one PDF before applying for a job",

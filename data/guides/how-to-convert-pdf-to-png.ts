@@ -1,7 +1,7 @@
 export const howToConvertPdfToPng = {
   slug: "how-to-convert-pdf-to-png",
   title: "How to Convert a PDF to PNG Online",
-  description: "Learn how to convert PDF pages to PNG images online. Get lossless, high-quality images from any PDF, free and without any software.",
+  description: "Learn how to convert PDF pages to PNG images online. Get lossless, high-quality images from any PDF, without any software.",
   intro: "PNG is the format of choice when image quality and sharpness matter more than file size. Unlike JPG, which uses lossy compression that subtly degrades image quality, PNG uses lossless compression. What you see is exactly what was rendered, with no compression artifacts. This makes PNG the right choice when converting PDF pages that contain sharp text, technical diagrams, line drawings, charts, or any content where crisp edges are important. PNG also supports full transparency, which means pages with transparent backgrounds will convert correctly without being filled with a solid colour.",
   introList: [
     "Convert PDF pages to PNG for use in presentations or documents",
@@ -122,6 +122,6 @@ export const howToConvertPdfToPng = {
   ],
   ctaText: "Ready to convert your PDF pages to PNG images? Use the free Dockitt tool below.",
   ctaLinks: [
-    { name: "PDF to PNG", slug: "convert-pdf/pdf-to-png", description: "Convert PDF pages to PNG images online for free" },
+    { name: "PDF to PNG", slug: "convert-pdf/pdf-to-png", description: "Convert PDF pages to PNG images online " },
   ],
 }

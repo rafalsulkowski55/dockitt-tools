@@ -111,7 +111,7 @@ export const howToCompressPdf = {
     },
     {
       question: "Is it free to compress a PDF online?",
-      answer: "Yes. Dockitt's PDF compressor is completely free to use with no sign-up and no limits on the number of files you can compress.",
+      answer: "Yes. Dockitt's PDF compressor is  to use with no sign-up and no limits on the number of files you can compress.",
     },
     {
       question: "What is the maximum file size I can compress?",
@@ -136,6 +136,6 @@ export const howToCompressPdf = {
   ],
   ctaText: "Ready to reduce your PDF file size? Use the free Dockitt compressor below.",
   ctaLinks: [
-    { name: "Compress PDF", slug: "compress-pdf", description: "Reduce PDF file size online for free" },
+    { name: "Compress PDF", slug: "compress-pdf", description: "Reduce PDF file size online " },
   ],
 }

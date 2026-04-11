@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 export const metadata = {
-  title: "Convert PDF Online — Free PDF Converter",
+  title: "Convert PDF Online — PDF Converter",
   description: "Convert PDF to Word, JPG, PNG, and more. Or convert JPG, PNG, and Word files to PDF. Free, no signup required.",
 };
 

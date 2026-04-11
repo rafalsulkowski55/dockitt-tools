@@ -1,7 +1,7 @@
 export const howToSplitPdf = {
   slug: "how-to-split-pdf",
   title: "How to Split a PDF File Online",
-  description: "Learn how to split a PDF into separate pages or smaller documents online, free and without any software.",
+  description: "Learn how to split a PDF into separate pages or smaller documents online, without any software.",
   intro: "Splitting a PDF means extracting a specific set of pages from a larger document and saving them as a new, separate file. It is one of the most practical PDF tasks because it solves a very common problem: you have a large document but only need to share, submit, or work with part of it.",
   introList: [
     "Extract a single chapter from a long report before sharing it with a colleague",
@@ -142,6 +142,6 @@ export const howToSplitPdf = {
   ],
   ctaText: "Ready to split your PDF? Use the free Dockitt tool below.",
   ctaLinks: [
-    { name: "Split PDF", slug: "split-pdf", description: "Extract pages from a PDF online for free" },
+    { name: "Split PDF", slug: "split-pdf", description: "Extract pages from a PDF online " },
   ],
 }

@@ -1,7 +1,7 @@
 export const howToConvertPdfToJpg = {
   slug: "how-to-convert-pdf-to-jpg",
   title: "How to Convert a PDF to JPG Online",
-  description: "Learn how to convert PDF pages to JPG images online. Extract every page as a separate image, free and without any software.",
+  description: "Learn how to convert PDF pages to JPG images online. Extract every page as a separate image, without any software.",
   intro: "Converting a PDF to JPG images is useful in more situations than it might initially seem. You need to embed a page from a PDF into a Word document or PowerPoint presentation and inserting the PDF directly is not working cleanly. You want to share a single page on social media or in a messaging app where PDFs do not preview well. A client needs images of your designs but you only have the PDF version. Whatever the reason, Dockitt converts each page of your PDF into a separate JPG image directly in your browser using PDF.js with no server upload and no software to install.",
   introList: [
     "Extract a PDF page as an image to embed in a Word document or presentation",
@@ -138,6 +138,6 @@ export const howToConvertPdfToJpg = {
   ],
   ctaText: "Ready to convert your PDF pages to JPG images? Use the free Dockitt tool below.",
   ctaLinks: [
-    { name: "PDF to JPG", slug: "convert-pdf/pdf-to-jpg", description: "Convert PDF pages to JPG images online for free" },
+    { name: "PDF to JPG", slug: "convert-pdf/pdf-to-jpg", description: "Convert PDF pages to JPG images online " },
   ],
 }

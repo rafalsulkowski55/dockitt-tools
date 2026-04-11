@@ -1,7 +1,7 @@
 export const howToRotatePdf = {
   slug: "how-to-rotate-pdf",
   title: "How to Rotate PDF Pages Online",
-  description: "Learn how to rotate pages in a PDF file online. Fix upside-down or sideways pages free and without any software.",
+  description: "Learn how to rotate pages in a PDF file online. Fix upside-down or sideways pages without any software.",
   intro: "A PDF with pages in the wrong orientation is one of the most common and most frustrating document problems. Scanned documents frequently come out rotated incorrectly because the paper was fed into the scanner sideways or upside down. PDFs exported from certain applications sometimes have landscape pages mixed in with portrait pages. Whatever the cause, rotating PDF pages is a quick fix when you have the right tool.",
   introList: [
     "Fix a scanned document where all pages came out sideways",
@@ -138,6 +138,6 @@ export const howToRotatePdf = {
   ],
   ctaText: "Ready to fix your PDF orientation? Use the free Dockitt tool below.",
   ctaLinks: [
-    { name: "Rotate PDF", slug: "rotate-pdf", description: "Fix sideways or upside-down PDF pages online for free" },
+    { name: "Rotate PDF", slug: "rotate-pdf", description: "Fix sideways or upside-down PDF pages online " },
   ],
 }

@@ -1,7 +1,7 @@
 export const howToSignPdf = {
   slug: "how-to-sign-pdf",
   title: "How to Sign a PDF Online",
-  description: "Learn how to draw and add your signature to a PDF file online, free, fast, and without printing anything.",
+  description: "Learn how to draw and add your signature to a PDF file online, fast, and without printing anything.",
   intro: "Printing a document just to sign it and scan it back is one of the most unnecessary steps in modern document workflows. If you have received a contract, an agreement, or a form that needs your signature, you can sign it directly in your browser using Dockitt with no printing, no scanning, and no PDF editor required. You draw your signature with your mouse or finger and it gets embedded directly into the PDF page.",
   introList: [
     "Sign a contract or agreement received as a PDF without printing it",
@@ -142,6 +142,6 @@ export const howToSignPdf = {
   ],
   ctaText: "Ready to sign your PDF without printing? Use the free Dockitt tool below.",
   ctaLinks: [
-    { name: "Sign PDF", slug: "sign-pdf", description: "Add your signature to a PDF online for free" },
+    { name: "Sign PDF", slug: "sign-pdf", description: "Add your signature to a PDF online " },
   ],
 }

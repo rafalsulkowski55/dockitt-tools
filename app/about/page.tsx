@@ -37,7 +37,7 @@ export default function AboutPage() {
             What Dockitt does
           </h2>
           <p style={{ fontSize: "16px", color: "#4b5563", lineHeight: 1.75, marginBottom: "16px" }}>
-            Dockitt currently has 20 free PDF tools covering the most common tasks people need:
+            Dockitt currently has 20 PDF tools covering the most common tasks people need:
           </p>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: "8px", marginBottom: "16px" }}>
             {[
