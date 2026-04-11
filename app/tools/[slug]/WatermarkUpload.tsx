@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { ToolTracking } from "@/lib/analytics";
 import { useConversionLimit } from "@/lib/use-conversion-limit";
+import { usePendingFile } from "@/lib/use-pending-file";
 import PricingModal from "@/app/components/PricingModal";
 
 const TOOL_NAME = "watermark-pdf";
@@ -17,82 +18,49 @@ export default function WatermarkUpload() {
   const [dragOver, setDragOver] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const { showPricingModal, setShowPricingModal, checkLimit, checkDownloadLimit, onConversionSuccess } = useConversionLimit();
+  const { showPricingModal, setShowPricingModal, checkDownloadLimit, onConversionSuccess } = useConversionLimit();
 
-  useEffect(() => {
-    ToolTracking.viewTool(TOOL_NAME, PROCESSING_TYPE);
-  }, []);
+  useEffect(() => { ToolTracking.viewTool(TOOL_NAME, PROCESSING_TYPE); }, []);
+
+  usePendingFile((f) => {
+    setFile(f); setStatus("idle"); setErrorMessage(""); setProgress(0);
+    ToolTracking.uploadStarted(TOOL_NAME, PROCESSING_TYPE);
+  });
 
   function handleFile(f: File) {
-    setFile(f);
-    setStatus("idle");
-    setErrorMessage("");
-    setProgress(0);
+    setFile(f); setStatus("idle"); setErrorMessage(""); setProgress(0);
     ToolTracking.uploadStarted(TOOL_NAME, PROCESSING_TYPE);
   }
 
-  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const f = e.target.files?.[0];
-    if (f) handleFile(f);
-  }
-
-  function handleDrop(e: React.DragEvent) {
-    e.preventDefault();
-    setDragOver(false);
-    const f = e.dataTransfer.files?.[0];
-    if (f && f.type === "application/pdf") handleFile(f);
-  }
+  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) { const f = e.target.files?.[0]; if (f) handleFile(f); }
+  function handleDrop(e: React.DragEvent) { e.preventDefault(); setDragOver(false); const f = e.dataTransfer.files?.[0]; if (f && f.type === "application/pdf") handleFile(f); }
 
   async function handleProcess() {
     if (!file || !text.trim()) return;
-    if (!checkLimit()) return;
-
     ToolTracking.processStarted(TOOL_NAME, PROCESSING_TYPE);
-    setStatus("processing");
-    setErrorMessage("");
-    setProgress(0);
-
-    const interval = setInterval(() => {
-      setProgress((p) => (p < 85 ? p + Math.random() * 12 : p));
-    }, 300);
-
+    setStatus("processing"); setErrorMessage(""); setProgress(0);
+    const interval = setInterval(() => { setProgress((p) => (p < 85 ? p + Math.random() * 12 : p)); }, 300);
     try {
       const { PDFDocument, rgb, degrees, StandardFonts } = await import("pdf-lib");
       const arrayBuffer = await file.arrayBuffer();
       const pdfDoc = await PDFDocument.load(arrayBuffer, { ignoreEncryption: true });
       const helveticaFont = await pdfDoc.embedFont(StandardFonts.Helvetica);
-      const pages = pdfDoc.getPages();
-      pages.forEach(page => {
+      pdfDoc.getPages().forEach(page => {
         const { width, height } = page.getSize();
-        page.drawText(text, {
-          x: width / 2 - (text.length * 12),
-          y: height / 2,
-          size: 48,
-          font: helveticaFont,
-          color: rgb(0.8, 0.8, 0.8),
-          opacity: 0.3,
-          rotate: degrees(45),
-        });
+        page.drawText(text, { x: width / 2 - (text.length * 12), y: height / 2, size: 48, font: helveticaFont, color: rgb(0.8, 0.8, 0.8), opacity: 0.3, rotate: degrees(45) });
       });
-      clearInterval(interval);
-      setProgress(100);
+      clearInterval(interval); setProgress(100);
       const newBytes = await pdfDoc.save();
       const blob = new Blob([new Uint8Array(newBytes)], { type: "application/pdf" });
       const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `watermarked-${file.name}`;
-      a.click();
-      setStatus("done");
-      onConversionSuccess();
+      const a = document.createElement("a"); a.href = url; a.download = `watermarked-${file.name}`; a.click();
+      setStatus("done"); onConversionSuccess();
       ToolTracking.processSuccess(TOOL_NAME, PROCESSING_TYPE);
       ToolTracking.downloadClicked(TOOL_NAME, PROCESSING_TYPE);
     } catch (err: unknown) {
       clearInterval(interval);
-      const message = err instanceof Error ? err.message : "Unknown error";
-      setErrorMessage(message);
-      setStatus("error");
-      setProgress(0);
+      setErrorMessage(err instanceof Error ? err.message : "Unknown error");
+      setStatus("error"); setProgress(0);
     }
   }
 
@@ -102,55 +70,42 @@ export default function WatermarkUpload() {
     <>
       {showPricingModal && <PricingModal onClose={() => setShowPricingModal(false)} />}
       <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+        <div onClick={() => inputRef.current?.click()} onDragOver={(e) => { e.preventDefault(); setDragOver(true); }} onDragLeave={() => setDragOver(false)} onDrop={handleDrop} style={{ border: `2px dashed ${dragOver ? "#2563eb" : "#bfdbfe"}`, background: dragOver ? "#e0eeff" : "#f8faff", borderRadius: "12px", padding: "32px 24px", textAlign: "center", cursor: "pointer", transition: "all 0.15s" }}>
+          <div style={{ fontSize: "28px", marginBottom: "8px" }}>📄</div>
+          {file ? (
+            <p style={{ fontSize: "14px", color: "#111", fontWeight: 500, margin: 0 }}>{file.name}</p>
+          ) : (
+            <>
+              <p style={{ fontSize: "14px", color: "#374151", fontWeight: 500, margin: "0 0 4px" }}>Drag & drop your PDF here</p>
+              <p style={{ fontSize: "13px", color: "#9ca3af", margin: 0 }}>or click to browse</p>
+            </>
+          )}
+          <input ref={inputRef} type="file" accept=".pdf" style={{ display: "none" }} onChange={handleFileChange} />
+        </div>
 
-      <div onClick={() => inputRef.current?.click()} onDragOver={(e) => { e.preventDefault(); setDragOver(true); }} onDragLeave={() => setDragOver(false)} onDrop={handleDrop} style={{ border: `2px dashed ${dragOver ? "#2563eb" : "#bfdbfe"}`, background: dragOver ? "#e0eeff" : "#f8faff", borderRadius: "12px", padding: "32px 24px", textAlign: "center", cursor: "pointer", transition: "all 0.15s" }}>
-        <div style={{ fontSize: "28px", marginBottom: "8px" }}>📄</div>
-        {file ? (
-          <p style={{ fontSize: "14px", color: "#111", fontWeight: 500, margin: 0 }}>{file.name}</p>
-        ) : (
-          <>
-            <p style={{ fontSize: "14px", color: "#374151", fontWeight: 500, margin: "0 0 4px" }}>Drag & drop your PDF here</p>
-            <p style={{ fontSize: "13px", color: "#9ca3af", margin: 0 }}>or click to browse</p>
-          </>
-        )}
-        <input ref={inputRef} type="file" accept=".pdf" style={{ display: "none" }} onChange={handleFileChange} />
-      </div>
+        <button onClick={() => inputRef.current?.click()} style={{ padding: "11px 20px", background: "#2563eb", color: "#fff", border: "none", borderRadius: "8px", fontWeight: 500, fontSize: "14px", cursor: "pointer", width: "fit-content" }}>Choose PDF</button>
+        <p style={{ fontSize: "12px", color: "#9ca3af", margin: 0 }}>🔒 Processed entirely in your browser. Files never leave your device.</p>
 
-      <button onClick={() => inputRef.current?.click()} style={{ padding: "11px 20px", background: "#2563eb", color: "#fff", border: "none", borderRadius: "8px", fontWeight: 500, fontSize: "14px", cursor: "pointer", width: "fit-content" }}>
-        Choose PDF
-      </button>
-
-      <p style={{ fontSize: "12px", color: "#9ca3af", margin: 0 }}>🔒 Processed entirely in your browser. Files never leave your device.</p>
-
-      <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-        <label style={{ fontSize: "13px", color: "#4b5563" }}>Watermark text:</label>
-        <input type="text" value={text} onChange={(e) => setText(e.target.value)} placeholder="e.g. CONFIDENTIAL" style={{ padding: "11px 14px", border: "1px solid #d1d5db", borderRadius: "8px", fontSize: "14px", maxWidth: "300px", outline: "none" }} />
-      </div>
-
-      <button disabled={!isReady} onClick={handleProcess} style={{ padding: "12px 20px", background: isReady ? "#2563eb" : "#d1d5db", color: "#fff", border: "none", borderRadius: "8px", fontWeight: 500, fontSize: "14px", cursor: isReady ? "pointer" : "not-allowed", width: "fit-content" }}>
-        {status === "processing" ? "Adding watermark..." : "Add Watermark"}
-      </button>
-
-      {status === "processing" && (
         <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-          <div style={{ background: "#e5e7eb", borderRadius: "100px", height: "6px", overflow: "hidden" }}>
-            <div style={{ height: "100%", borderRadius: "100px", background: "#2563eb", width: `${progress}%`, transition: "width 0.3s ease" }} />
+          <label style={{ fontSize: "13px", color: "#4b5563" }}>Watermark text:</label>
+          <input type="text" value={text} onChange={(e) => setText(e.target.value)} placeholder="e.g. CONFIDENTIAL" style={{ padding: "11px 14px", border: "1px solid #d1d5db", borderRadius: "8px", fontSize: "14px", maxWidth: "300px", outline: "none" }} />
+        </div>
+
+        <button disabled={!isReady} onClick={handleProcess} style={{ padding: "12px 20px", background: isReady ? "#2563eb" : "#d1d5db", color: "#fff", border: "none", borderRadius: "8px", fontWeight: 500, fontSize: "14px", cursor: isReady ? "pointer" : "not-allowed", width: "fit-content" }}>
+          {status === "processing" ? "Adding watermark..." : "Add Watermark"}
+        </button>
+
+        {status === "processing" && (
+          <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+            <div style={{ background: "#e5e7eb", borderRadius: "100px", height: "6px", overflow: "hidden" }}>
+              <div style={{ height: "100%", borderRadius: "100px", background: "#2563eb", width: `${progress}%`, transition: "width 0.3s ease" }} />
+            </div>
+            <p style={{ fontSize: "12px", color: "#6b7280", margin: 0 }}>{Math.round(progress)}%</p>
           </div>
-          <p style={{ fontSize: "12px", color: "#6b7280", margin: 0 }}>{Math.round(progress)}%</p>
-        </div>
-      )}
+        )}
 
-      {status === "error" && (
-        <div style={{ padding: "14px 16px", background: "#fef2f2", color: "#dc2626", border: "1px solid #fecaca", borderRadius: "10px", fontSize: "14px" }}>
-          {errorMessage || "Something went wrong. Please try again."}
-        </div>
-      )}
-
-      {status === "done" && (
-        <div style={{ padding: "14px 16px", background: "#eff6ff", color: "#2563eb", border: "1px solid #bfdbfe", borderRadius: "10px", fontSize: "14px" }}>
-          ✅ Watermark added and PDF downloaded successfully.
-        </div>
-      )}
+        {status === "error" && <div style={{ padding: "14px 16px", background: "#fef2f2", color: "#dc2626", border: "1px solid #fecaca", borderRadius: "10px", fontSize: "14px" }}>{errorMessage || "Something went wrong. Please try again."}</div>}
+        {status === "done" && <div style={{ padding: "14px 16px", background: "#eff6ff", color: "#2563eb", border: "1px solid #bfdbfe", borderRadius: "10px", fontSize: "14px" }}>✅ Watermark added and PDF downloaded successfully.</div>}
       </div>
     </>
   );

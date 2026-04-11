@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { ToolTracking } from "@/lib/analytics";
 import { useConversionLimit } from "@/lib/use-conversion-limit";
+import { usePendingFile } from "@/lib/use-pending-file";
 import PricingModal from "@/app/components/PricingModal";
 
 const TOOL_NAME = "compress-pdf";
@@ -41,6 +42,8 @@ export default function ToolUpload() {
   useEffect(() => {
     ToolTracking.viewTool(TOOL_NAME, PROCESSING_TYPE);
   }, []);
+
+  usePendingFile(handleFileSelect);
 
   function formatSize(bytes: number) {
     if (bytes < 1024) return `${bytes} B`;
@@ -193,7 +196,6 @@ export default function ToolUpload() {
       setProgress(100);
       const result = await completeRes.json();
 
-      // Zapisz pending download w localStorage
       setPendingDownload({
         storageKey,
         filename: `compressed-${file.name}`,

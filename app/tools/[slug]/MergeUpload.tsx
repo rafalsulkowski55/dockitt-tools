@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { ToolTracking } from "@/lib/analytics";
 import { useConversionLimit } from "@/lib/use-conversion-limit";
+import { usePendingFile } from "@/lib/use-pending-file";
 import PricingModal from "@/app/components/PricingModal";
 
 const TOOL_NAME = "merge-pdf";
@@ -17,9 +18,14 @@ export default function MergeUpload() {
 
   const { showPricingModal, setShowPricingModal, checkDownloadLimit, onConversionSuccess } = useConversionLimit();
 
-  useEffect(() => {
-    ToolTracking.viewTool(TOOL_NAME, PROCESSING_TYPE);
-  }, []);
+  useEffect(() => { ToolTracking.viewTool(TOOL_NAME, PROCESSING_TYPE); }, []);
+
+  usePendingFile((f) => {
+    setFiles((prev) => [...prev, f]);
+    setStatus("idle");
+    setDownloadUrl(null);
+    ToolTracking.uploadStarted(TOOL_NAME, PROCESSING_TYPE);
+  });
 
   function formatSize(bytes: number) {
     if (bytes < 1024) return `${bytes} B`;
@@ -45,10 +51,6 @@ export default function MergeUpload() {
     if (dropped.length > 0) ToolTracking.uploadStarted(TOOL_NAME, PROCESSING_TYPE);
   }
 
-  function handleDragOver(e: React.DragEvent<HTMLDivElement>) {
-    e.preventDefault();
-  }
-
   function removeFile(index: number) {
     setFiles((prev) => prev.filter((_, i) => i !== index));
     setStatus("idle");
@@ -57,14 +59,11 @@ export default function MergeUpload() {
 
   async function handleProcess() {
     if (files.length < 2) return;
-
     ToolTracking.processStarted(TOOL_NAME, PROCESSING_TYPE);
     setStatus("processing");
     setDownloadUrl(null);
     setProgress(0);
-    const interval = setInterval(() => {
-      setProgress((p) => (p < 85 ? p + 5 : p));
-    }, 300);
+    const interval = setInterval(() => { setProgress((p) => (p < 85 ? p + 5 : p)); }, 300);
     try {
       const { PDFDocument } = await import("pdf-lib");
       const mergedDoc = await PDFDocument.create();
@@ -78,8 +77,7 @@ export default function MergeUpload() {
       setProgress(100);
       const newBytes = await mergedDoc.save();
       const blob = new Blob([new Uint8Array(newBytes)], { type: "application/pdf" });
-      const url = URL.createObjectURL(blob);
-      setDownloadUrl(url);
+      setDownloadUrl(URL.createObjectURL(blob));
       setStatus("done");
       ToolTracking.processSuccess(TOOL_NAME, PROCESSING_TYPE);
     } catch (err) {
@@ -105,8 +103,7 @@ export default function MergeUpload() {
     <>
       {showPricingModal && <PricingModal onClose={() => setShowPricingModal(false)} />}
       <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-
-        <div onDrop={handleDrop} onDragOver={handleDragOver} onClick={() => inputRef.current?.click()} style={{ border: "2px dashed #bfdbfe", borderRadius: "12px", padding: "24px", textAlign: "center", background: "#f8faff", cursor: "pointer" }}>
+        <div onDrop={handleDrop} onDragOver={(e) => e.preventDefault()} onClick={() => inputRef.current?.click()} style={{ border: "2px dashed #bfdbfe", borderRadius: "12px", padding: "24px", textAlign: "center", background: "#f8faff", cursor: "pointer" }}>
           <div style={{ fontSize: "13px", color: "#666", marginBottom: "12px" }}>Drag & drop your PDFs here or</div>
           <label htmlFor="merge-upload" style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", padding: "10px 20px", background: "#2563eb", color: "#ffffff", borderRadius: "10px", fontWeight: 600, cursor: "pointer", fontSize: "14px" }} onClick={(e) => e.stopPropagation()}>
             Choose PDFs
@@ -145,18 +142,8 @@ export default function MergeUpload() {
           </div>
         )}
 
-        {status === "error" && (
-          <div style={{ padding: "14px 16px", background: "#fef2f2", color: "#dc2626", border: "1px solid #fecaca", borderRadius: "10px", fontSize: "14px" }}>
-            Something went wrong. Please try again.
-          </div>
-        )}
-
-        {status === "done" && (
-          <div style={{ padding: "14px 16px", background: "#eff6ff", color: "#1d4ed8", border: "1px solid #bfdbfe", borderRadius: "10px", fontSize: "14px" }}>
-            Merge complete. Your files have been combined into one PDF.
-          </div>
-        )}
-
+        {status === "error" && <div style={{ padding: "14px 16px", background: "#fef2f2", color: "#dc2626", border: "1px solid #fecaca", borderRadius: "10px", fontSize: "14px" }}>Something went wrong. Please try again.</div>}
+        {status === "done" && <div style={{ padding: "14px 16px", background: "#eff6ff", color: "#1d4ed8", border: "1px solid #bfdbfe", borderRadius: "10px", fontSize: "14px" }}>Merge complete. Your files have been combined into one PDF.</div>}
         {status === "done" && downloadUrl && (
           <button onClick={handleDownload} style={{ padding: "12px 24px", background: "#16a34a", color: "#ffffff", border: "none", borderRadius: "10px", fontWeight: 600, fontSize: "15px", cursor: "pointer", width: "fit-content" }}>
             Download PDF
