@@ -59,41 +59,59 @@ export default function MyFilesPage() {
         <div style={{ background: "#fff", borderRadius: "12px", padding: "24px", boxShadow: "0 1px 4px rgba(0,0,0,0.06)" }}>
           <div style={{ fontSize: "11px", textTransform: "uppercase", letterSpacing: "0.08em", color: "#2563eb", marginBottom: "16px" }}>Recent Conversions</div>
           {history.length === 0 ? (
-            <p style={{ fontSize: "14px", color: "#9ca3af", margin: 0 }}>No conversions yet.</p>
+            <p style={{ fontSize: "14px", color: "#9ca3af", margin: 0 }}>No files yet. Process a PDF to see your history here.</p>
           ) : (
             <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-              {history.map((item, i) => (
-                <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 0", borderBottom: i < history.length - 1 ? "1px solid #f3f4f6" : "none" }}>
-                  <div>
-                    <div style={{ fontSize: "14px", fontWeight: 500, color: "#111" }}>{item.original_filename}</div>
-                    <div style={{ fontSize: "12px", color: "#9ca3af", marginTop: "2px" }}>{item.tool_slug}</div>
+              {history.map((item, i) => {
+                const isExpired = !item.expires_at || new Date(item.expires_at) <= new Date();
+                return (
+                  <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "12px 0", borderBottom: i < history.length - 1 ? "1px solid #f3f4f6" : "none" }}>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontSize: "14px", fontWeight: 500, color: "#111", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                        {item.original_filename}
+                      </div>
+                      <div style={{ fontSize: "12px", color: "#9ca3af", marginTop: "2px", display: "flex", gap: "8px" }}>
+                        <span>{item.tool_slug}</span>
+                        <span>·</span>
+                        <span>{new Date(item.created_at).toLocaleDateString()}</span>
+                        {!isExpired && item.expires_at && (
+                          <>
+                            <span>·</span>
+                            <span>Expires {new Date(item.expires_at).toLocaleDateString()}</span>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                    <div style={{ marginLeft: "12px", flexShrink: 0 }}>
+                      {isExpired ? (
+                        <span style={{ fontSize: "12px", color: "#d1d5db", padding: "6px 12px", border: "1px solid #e5e7eb", borderRadius: "6px" }}>
+                          Expired
+                        </span>
+                      ) : (
+                        <button
+                          onClick={async () => {
+                            const res = await fetch(`/api/files/download?storageKey=${encodeURIComponent(item.storage_key)}`);
+                            const data = await res.json();
+                            if (data.error === "FILE_EXPIRED") {
+                              alert("This file has expired.");
+                              return;
+                            }
+                            if (data.downloadUrl) {
+                              const a = document.createElement("a");
+                              a.href = data.downloadUrl;
+                              a.download = item.original_filename;
+                              a.click();
+                            }
+                          }}
+                          style={{ padding: "6px 12px", background: "#2563eb", color: "#fff", border: "none", borderRadius: "6px", fontSize: "12px", fontWeight: 600, cursor: "pointer" }}
+                        >
+                          ⬇ Download
+                        </button>
+                      )}
+                    </div>
                   </div>
-                  <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-                    <div style={{ fontSize: "12px", color: "#9ca3af" }}>{new Date(item.created_at).toLocaleDateString()}</div>
-                    {item.storage_key && item.expires_at && new Date(item.expires_at) > new Date() && (
-                      <button
-                        onClick={async () => {
-                          const res = await fetch(`/api/files/download?storageKey=${encodeURIComponent(item.storage_key)}`);
-                          const data = await res.json();
-                          if (data.error === "FILE_EXPIRED") {
-                            alert("This file has expired.");
-                            return;
-                          }
-                          if (data.downloadUrl) {
-                            const a = document.createElement("a");
-                            a.href = data.downloadUrl;
-                            a.download = item.original_filename;
-                            a.click();
-                          }
-                        }}
-                        style={{ padding: "6px 12px", background: "#2563eb", color: "#fff", border: "none", borderRadius: "6px", fontSize: "12px", fontWeight: 600, cursor: "pointer" }}
-                      >
-                        ⬇ Download
-                      </button>
-                    )}
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>
