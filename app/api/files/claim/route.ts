@@ -17,7 +17,6 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Sprawdź tier usera
     const { data: profile } = await supabase
       .from("profiles")
       .select("tier")
@@ -27,13 +26,15 @@ export async function POST(req: NextRequest) {
     const isPremium = profile?.tier === "premium";
     const newExpiresAt = isPremium
       ? new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
-      : new Date(Date.now() + 30 * 60 * 1000);
+      : new Date(Date.now() + 48 * 60 * 60 * 1000);
+
+    const outputKeyPrefix = storageKey.replace("uploads/", "outputs/").replace(/\.[^/.]+$/, "");
 
     await pool.query(
       `UPDATE stored_files 
        SET user_id = $1, expires_at = $2
-       WHERE storage_key = $3 AND user_id IS NULL`,
-      [user.id, newExpiresAt, storageKey]
+       WHERE (storage_key = $3 OR storage_key LIKE $4) AND user_id IS NULL`,
+      [user.id, newExpiresAt, storageKey, `${outputKeyPrefix}%`]
     );
 
     return NextResponse.json({ success: true });
