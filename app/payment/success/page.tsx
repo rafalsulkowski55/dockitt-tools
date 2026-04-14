@@ -78,10 +78,18 @@ function PaymentSuccessContent() {
 
     async function handleSuccess() {
       try {
-        const res = await fetch(`/api/stripe/pending-session?session_id=${sessionId}`);
-        const data = await res.json();
+        // Retry logic — webhook może nie zdążyć przed redirectem
+        let res: Response | null = null;
+        let data: Record<string, string> | null = null;
 
-        if (!res.ok || !data.access_token) {
+        for (let attempt = 0; attempt < 8; attempt++) {
+          res = await fetch(`/api/stripe/pending-session?session_id=${sessionId}`);
+          data = await res.json();
+          if (res.ok && data?.access_token) break;
+          await new Promise(r => setTimeout(r, 1500));
+        }
+
+        if (!res?.ok || !data?.access_token) {
           setStatus("error");
           return;
         }
@@ -109,7 +117,6 @@ function PaymentSuccessContent() {
           });
         }
 
-        // Oblicz ścieżkę redirect
         if (pending) {
           const toolPath = pending.toolPath ?? `/tools/${pending.toolSlug}`;
           if (pending.storageKey) {
@@ -126,11 +133,9 @@ function PaymentSuccessContent() {
         setEmail(data.email ?? null);
         setStatus("success");
 
-        // Pokaż upsell tylko dla pay_per_use, po 1.5s
         if (data.tier === "pay_per_use") {
           setTimeout(() => setShowUpsell(true), 1500);
         } else {
-          // Premium — redirect od razu po 2s
           setTimeout(() => {
             clearPendingDownload();
             router.push(pending
