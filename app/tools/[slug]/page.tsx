@@ -171,8 +171,20 @@ export default async function ToolPage({ params }: ToolPageProps) {
     }))
   }
 
+  const bullets = SERVER_SIDE_TOOLS.has(slug)
+    ? [
+        { color: "#16a34a", text: "Your file is deleted immediately after processing" },
+        { color: "#2563eb", text: "Encrypted connection — safe and private" },
+        { color: "#ca8a04", text: "Result ready in seconds" },
+      ]
+    : [
+        { color: "#16a34a", text: "Processed entirely in your browser — never leaves your device" },
+        { color: "#2563eb", text: "No software needed — works in any browser" },
+        { color: "#ca8a04", text: "Fast — most operations complete in seconds" },
+      ];
+
   return (
-    <main style={{ maxWidth: "780px", margin: "0 auto", padding: "40px 20px" }}>
+    <main style={{ background: "#ffffff" }}>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaApp) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaFaq) }} />
 
@@ -180,122 +192,145 @@ export default async function ToolPage({ params }: ToolPageProps) {
         <DownloadHandler />
       </Suspense>
 
-      <div style={{ display: "flex", flexDirection: "column", gap: "40px" }}>
-
-        <div>
-          <Breadcrumbs toolName={tool.name} />
-          <IntroSection tool={tool} variant={variant} slug={slug} />
-        </div>
-
-        <section style={{ ...sectionStyle, boxShadow: "0 1px 2px rgba(0,0,0,0.04)" }}>
-          {SERVER_SIDE_TOOLS.has(slug) ? (
-            <div style={{
-              display: "flex", alignItems: "flex-start", gap: "10px",
-              background: "#fffbeb", border: "1px solid #fde68a",
-              borderRadius: "8px", padding: "12px 14px",
-              marginBottom: "16px", fontSize: "13px", color: "#92400e",
-            }}>
-              <span style={{ flexShrink: 0 }}>🔐</span>
-              <span>
-                <strong>Processed on our secure server.</strong> Your file is sent over an encrypted connection, converted, and deleted immediately. It is never stored or shared.
-              </span>
-            </div>
-          ) : (
-            <div style={{
-              display: "flex", alignItems: "flex-start", gap: "10px",
-              background: "#f0fdf4", border: "1px solid #bbf7d0",
-              borderRadius: "8px", padding: "12px 14px",
-              marginBottom: "16px", fontSize: "13px", color: "#14532d",
-            }}>
-              <span style={{ flexShrink: 0 }}>✅</span>
-              <span>
-                <strong>Processed entirely in your browser.</strong> Your file never leaves your device — no upload, no server, complete privacy.
-              </span>
-            </div>
-          )}
-          <div style={{ border: "2px dashed #bfdbfe", borderRadius: "12px", padding: "32px", background: "#f8faff" }}>
-            <ToolComponent slug={slug} />
-          </div>
-        </section>
-
-        <section style={{ display: "flex", gap: "10px" }}>
-          <Link
-            href={`/categories/${tool.category}`}
-            style={{
-              display: "flex", alignItems: "center", justifyContent: "center",
-              flex: 1, background: "#ffffff", border: "1px solid #2563eb",
-              color: "#2563eb", padding: "10px 18px", borderRadius: "8px",
-              fontSize: "13px", textDecoration: "none", fontWeight: 500,
-            }}
+      {/* HERO — split layout */}
+      <section style={{ background: "#ffffff", borderBottom: "1px solid #e5e7eb" }}>
+        <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "60px 24px" }}>
+          <div
+            style={{ display: "grid", gridTemplateColumns: "42% 58%", gap: "48px", alignItems: "center" }}
+            className="hero-grid"
           >
-            ← {categoryLabel}
-          </Link>
-          <Link
-            href={`/guides/how-to-${tool.slug}`}
-            style={{
-              display: "flex", alignItems: "center", justifyContent: "center",
-              flex: 1, background: "#2563eb", border: "1px solid #2563eb",
-              color: "#ffffff", padding: "10px 18px", borderRadius: "8px",
-              fontSize: "13px", textDecoration: "none", fontWeight: 500,
-            }}
-          >
-            📖 How to {tool.name} →
-          </Link>
-        </section>
-
-        {tool.longDescription && (
-          <section style={sectionStyle}>
-            <p style={{ fontSize: "15px", color: "#444", lineHeight: "1.8", margin: 0 }}>
-              {tool.longDescription}
-            </p>
-          </section>
-        )}
-
-        <section style={sectionStyle}>
-          <h2 style={h2Style}>How to use</h2>
-          <ol style={{ paddingLeft: "20px", margin: 0 }}>
-            {tool.howTo.map((step) => (
-              <li key={step} style={{ marginBottom: "10px", color: "#444" }}>{step}</li>
-            ))}
-          </ol>
-        </section>
-
-        <section style={sectionStyle}>
-          <h2 style={h2Style}>FAQ</h2>
-          <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
-            {tool.faqs.map((faq) => (
-              <div key={faq.question}>
-                <h3 style={{ margin: "0 0 8px 0", fontSize: "17px" }}>{faq.question}</h3>
-                <p style={{ margin: 0, color: "#444" }}>{faq.answer}</p>
+            {/* Lewa */}
+            <div>
+              <Breadcrumbs toolName={tool.name} />
+              <IntroSection tool={tool} variant={variant} slug={slug} />
+              <div style={{ display: "flex", flexDirection: "column", gap: "12px", marginTop: "24px" }}>
+                {bullets.map((b) => (
+                  <div key={b.text} style={{ display: "flex", alignItems: "center", gap: "10px", fontSize: "15px", color: "#374151" }}>
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" style={{ flexShrink: 0 }}>
+                      <circle cx="10" cy="10" r="9" stroke={b.color} strokeWidth="1.5" fill="none" />
+                      <path d="M6 10l3 3 5-5" stroke={b.color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                    {b.text}
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
-        </section>
-
-        {related.length > 0 && (
-          <section style={sectionStyle}>
-            <h2 style={h2Style}>Related Tools</h2>
-            <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-              {related.map((relatedTool) => (
-                <Link
-                  key={relatedTool!.slug}
-                  href={`/tools/${relatedTool!.slug}`}
-                  style={{
-                    display: "flex", flexDirection: "column",
-                    padding: "16px", background: "#f9fafb",
-                    border: "1px solid #e5e7eb", borderRadius: "12px",
-                    textDecoration: "none",
-                  }}
-                >
-                  <span style={{ fontWeight: 600, color: "#2563eb", fontSize: "15px" }}>{relatedTool!.name}</span>
-                  <span style={{ color: "#555", fontSize: "13px", marginTop: "4px" }}>{relatedTool!.shortDescription}</span>
-                </Link>
-              ))}
             </div>
-          </section>
-        )}
 
-      </div>
+            {/* Prawa — upload box */}
+            <div style={{ background: "#ffffff", border: "1px solid #e5e7eb", borderRadius: "16px", overflow: "hidden" }}>
+              {SERVER_SIDE_TOOLS.has(slug) ? (
+                <div style={{
+                  display: "flex", alignItems: "flex-start", gap: "10px",
+                  background: "#fffbeb", border: "none", borderBottom: "1px solid #fde68a",
+                  padding: "12px 16px", fontSize: "13px", color: "#92400e",
+                }}>
+                  <span style={{ flexShrink: 0 }}>🔐</span>
+                  <span><strong>Processed on our secure server.</strong> Your file is sent over an encrypted connection, converted, and deleted immediately.</span>
+                </div>
+              ) : (
+                <div style={{
+                  display: "flex", alignItems: "flex-start", gap: "10px",
+                  background: "#f0fdf4", border: "none", borderBottom: "1px solid #bbf7d0",
+                  padding: "12px 16px", fontSize: "13px", color: "#14532d",
+                }}>
+                  <span style={{ flexShrink: 0 }}>✅</span>
+                  <span><strong>Processed entirely in your browser.</strong> Your file never leaves your device — no upload, no server, complete privacy.</span>
+                </div>
+              )}
+              <div style={{ padding: "24px" }}>
+                <ToolComponent slug={slug} />
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* CONTENT — poniżej hero */}
+      <section style={{ background: "#f9fafb" }}>
+        <div style={{ maxWidth: "780px", margin: "0 auto", padding: "40px 24px" }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: "32px" }}>
+
+            <section style={{ display: "flex", gap: "10px" }}>
+              <Link
+                href={`/categories/${tool.category}`}
+                style={{
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  flex: 1, background: "#ffffff", border: "1px solid #2563eb",
+                  color: "#2563eb", padding: "10px 18px", borderRadius: "8px",
+                  fontSize: "13px", textDecoration: "none", fontWeight: 500,
+                }}
+              >
+                ← {categoryLabel}
+              </Link>
+              <Link
+                href={`/guides/how-to-${tool.slug}`}
+                style={{
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  flex: 1, background: "#2563eb", border: "1px solid #2563eb",
+                  color: "#ffffff", padding: "10px 18px", borderRadius: "8px",
+                  fontSize: "13px", textDecoration: "none", fontWeight: 500,
+                }}
+              >
+                📖 How to {tool.name} →
+              </Link>
+            </section>
+
+            {tool.longDescription && (
+              <section style={sectionStyle}>
+                <p style={{ fontSize: "15px", color: "#444", lineHeight: "1.8", margin: 0 }}>
+                  {tool.longDescription}
+                </p>
+              </section>
+            )}
+
+            <section style={sectionStyle}>
+              <h2 style={h2Style}>How to use</h2>
+              <ol style={{ paddingLeft: "20px", margin: 0 }}>
+                {tool.howTo.map((step) => (
+                  <li key={step} style={{ marginBottom: "10px", color: "#444" }}>{step}</li>
+                ))}
+              </ol>
+            </section>
+
+            <section style={sectionStyle}>
+              <h2 style={h2Style}>FAQ</h2>
+              <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+                {tool.faqs.map((faq) => (
+                  <div key={faq.question}>
+                    <h3 style={{ margin: "0 0 8px 0", fontSize: "17px" }}>{faq.question}</h3>
+                    <p style={{ margin: 0, color: "#444" }}>{faq.answer}</p>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            {related.length > 0 && (
+              <section style={sectionStyle}>
+                <h2 style={h2Style}>Related Tools</h2>
+                <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+                  {related.map((relatedTool) => (
+                    <Link
+                      key={relatedTool!.slug}
+                      href={`/tools/${relatedTool!.slug}`}
+                      style={{
+                        display: "flex", flexDirection: "column",
+                        padding: "16px", background: "#f9fafb",
+                        border: "1px solid #e5e7eb", borderRadius: "12px",
+                        textDecoration: "none",
+                      }}
+                    >
+                      <span style={{ fontWeight: 600, color: "#2563eb", fontSize: "15px" }}>{relatedTool!.name}</span>
+                      <span style={{ color: "#555", fontSize: "13px", marginTop: "4px" }}>{relatedTool!.shortDescription}</span>
+                    </Link>
+                  ))}
+                </div>
+              </section>
+            )}
+
+          </div>
+        </div>
+      </section>
+
     </main>
   );
 }
