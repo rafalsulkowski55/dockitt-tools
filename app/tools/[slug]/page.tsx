@@ -84,14 +84,14 @@ const categoryLabels: Record<string, string> = {
   core: "Core PDF Tools",
   security: "PDF Security Tools",
   utility: "PDF Utility Tools",
-}
+};
 
 const introVariants: Record<string, "A" | "B" | "C" | "D"> = {
   "compress-pdf": "A", "merge-pdf": "B", "split-pdf": "A", "rotate-pdf": "C",
   "delete-pdf-pages": "B", "protect-pdf": "D", "unlock-pdf": "A",
   "watermark-pdf": "D", "sign-pdf": "C", "crop-pdf": "B", "repair-pdf": "A",
   "ocr-pdf": "C", "extract-pdf-pages": "B", "reorder-pdf-pages": "D",
-}
+};
 
 function IntroSection({ tool, variant, slug }: {
   tool: { title: string; description: string; name: string; primaryKeyword: string };
@@ -100,31 +100,35 @@ function IntroSection({ tool, variant, slug }: {
 }) {
   const subtitles = {
     A: "Upload your file below and get the result in seconds. No sign-up required.",
-    B: "Works directly in your browser.  with no account needed.",
+    B: "Works directly in your browser with no account needed.",
     C: "Processes your file instantly. Nothing is stored on our servers after download.",
-    D: "fast, and private. Your files are deleted immediately after processing.",
-  }
+    D: "Fast, and private. Your files are deleted immediately after processing.",
+  };
 
   if (slug === "compress-pdf") {
     return (
       <section>
-        <h1 style={{ fontSize: "32px", fontWeight: 700, marginBottom: "12px" }}>
+        <h1 style={{ fontSize: "clamp(24px, 4vw, 36px)", fontWeight: 700, lineHeight: 1.15, letterSpacing: "-0.02em", marginBottom: "12px", marginTop: 0 }}>
           Reduce PDF file size for email, forms and uploads
         </h1>
-        <p style={{ fontSize: "18px", color: "#444", margin: "0 0 12px 0" }}>
+        <p style={{ fontSize: "18px", color: "#4b5563", lineHeight: 1.6, margin: 0 }}>
           Make large PDF files smaller so you can send them by email or upload them without size errors. No signup required.
         </p>
       </section>
-    )
+    );
   }
 
   return (
     <section>
-      <h1 style={{ fontSize: "32px", fontWeight: 700, marginBottom: "12px" }}>{tool.title}</h1>
-      <p style={{ fontSize: "18px", color: "#444", margin: "0 0 12px 0" }}>{tool.description}</p>
-      <p style={{ fontSize: "15px", color: "#555", margin: 0 }}>{subtitles[variant]}</p>
+      <h1 style={{ fontSize: "clamp(24px, 4vw, 36px)", fontWeight: 700, lineHeight: 1.15, letterSpacing: "-0.02em", marginBottom: "12px", marginTop: 0 }}>
+        {tool.title}
+      </h1>
+      <p style={{ fontSize: "18px", color: "#4b5563", lineHeight: 1.6, marginBottom: "8px", marginTop: 0 }}>
+        {tool.description}
+      </p>
+      <p style={{ fontSize: "15px", color: "#6b7280", margin: 0 }}>{subtitles[variant]}</p>
     </section>
-  )
+  );
 }
 
 const sectionStyle = {
@@ -132,14 +136,14 @@ const sectionStyle = {
   border: "1px solid #e5e7eb",
   borderRadius: "16px",
   padding: "24px",
-}
+};
 
 const h2Style = {
   marginTop: 0,
   fontSize: "20px",
   borderLeft: "3px solid #2563eb",
   paddingLeft: "12px",
-}
+};
 
 export default async function ToolPage({ params }: ToolPageProps) {
   const { slug } = await params;
@@ -159,7 +163,7 @@ export default async function ToolPage({ params }: ToolPageProps) {
     "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
     "description": tool.description,
     "url": `https://www.dockitt.com/tools/${slug}`,
-  }
+  };
 
   const schemaFaq = {
     "@context": "https://schema.org",
@@ -167,9 +171,9 @@ export default async function ToolPage({ params }: ToolPageProps) {
     "mainEntity": tool.faqs.map((faq) => ({
       "@type": "Question",
       "name": faq.question,
-      "acceptedAnswer": { "@type": "Answer", "text": faq.answer }
-    }))
-  }
+      "acceptedAnswer": { "@type": "Answer", "text": faq.answer },
+    })),
+  };
 
   const bullets = SERVER_SIDE_TOOLS.has(slug)
     ? [
@@ -192,15 +196,15 @@ export default async function ToolPage({ params }: ToolPageProps) {
         <DownloadHandler />
       </Suspense>
 
-      {/* HERO — split layout */}
+      {/* HERO */}
       <section style={{ background: "#ffffff", borderBottom: "1px solid #e5e7eb" }}>
         <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "60px 24px" }}>
           <div
-            style={{ display: "grid", gridTemplateColumns: "42% 58%", gap: "48px", alignItems: "center" }}
+            style={{ display: "grid", gridTemplateColumns: "42% 58%", gap: "48px", alignItems: "start" }}
             className="hero-grid"
           >
-            {/* Lewa */}
-            <div>
+            {/* Lewa — sticky na górze */}
+            <div style={{ alignSelf: "start" }}>
               <Breadcrumbs toolName={tool.name} />
               <IntroSection tool={tool} variant={variant} slug={slug} />
               <div style={{ display: "flex", flexDirection: "column", gap: "12px", marginTop: "24px" }}>
@@ -217,11 +221,11 @@ export default async function ToolPage({ params }: ToolPageProps) {
             </div>
 
             {/* Prawa — upload box */}
-            <div style={{ background: "#ffffff", border: "1px solid #e5e7eb", borderRadius: "16px", overflow: "hidden" }}>
+            <div style={{ alignSelf: "start", background: "#ffffff", border: "1px solid #e5e7eb", borderRadius: "16px", overflow: "hidden" }}>
               {SERVER_SIDE_TOOLS.has(slug) ? (
                 <div style={{
                   display: "flex", alignItems: "flex-start", gap: "10px",
-                  background: "#fffbeb", border: "none", borderBottom: "1px solid #fde68a",
+                  background: "#fffbeb", borderBottom: "1px solid #fde68a",
                   padding: "12px 16px", fontSize: "13px", color: "#92400e",
                 }}>
                   <span style={{ flexShrink: 0 }}>🔐</span>
@@ -230,7 +234,7 @@ export default async function ToolPage({ params }: ToolPageProps) {
               ) : (
                 <div style={{
                   display: "flex", alignItems: "flex-start", gap: "10px",
-                  background: "#f0fdf4", border: "none", borderBottom: "1px solid #bbf7d0",
+                  background: "#f0fdf4", borderBottom: "1px solid #bbf7d0",
                   padding: "12px 16px", fontSize: "13px", color: "#14532d",
                 }}>
                   <span style={{ flexShrink: 0 }}>✅</span>
@@ -245,7 +249,7 @@ export default async function ToolPage({ params }: ToolPageProps) {
         </div>
       </section>
 
-      {/* CONTENT — poniżej hero */}
+      {/* CONTENT */}
       <section style={{ background: "#f9fafb" }}>
         <div style={{ maxWidth: "780px", margin: "0 auto", padding: "40px 24px" }}>
           <div style={{ display: "flex", flexDirection: "column", gap: "32px" }}>
@@ -330,7 +334,6 @@ export default async function ToolPage({ params }: ToolPageProps) {
           </div>
         </div>
       </section>
-
     </main>
   );
 }
