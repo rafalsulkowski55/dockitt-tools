@@ -7,7 +7,7 @@ import {
   FileArchive, GitMerge, Scissors, RotateCw, Lock,
   ScanText, FileText, FileOutput, Zap, Layers,
   Smartphone, ShieldCheck, FolderOpen, Settings, Download,
-  ChevronDown, ChevronUp, X,
+  X,
 } from "lucide-react";
 
 const USE_CASES = [
@@ -109,12 +109,53 @@ function UploadBox() {
   const inputRef = useRef<HTMLInputElement>(null);
   const [file, setFile] = useState<File | null>(null);
   const [dragOver, setDragOver] = useState(false);
-  const [openCategory, setOpenCategory] = useState<string | null>(null);
+
+  const TOOLS_COLUMNS = [
+    {
+      label: "Core",
+      tools: [
+        { name: "Compress PDF", desc: "Reduce file size", slug: "compress-pdf" },
+        { name: "Merge PDF", desc: "Combine PDFs", slug: "merge-pdf" },
+        { name: "Split PDF", desc: "Extract pages", slug: "split-pdf" },
+        { name: "Rotate PDF", desc: "Fix orientation", slug: "rotate-pdf" },
+        { name: "Delete pages", desc: "Remove pages", slug: "delete-pdf-pages" },
+      ],
+    },
+    {
+      label: "Convert",
+      tools: [
+        { name: "PDF to Word", desc: "Editable .docx", slug: "pdf-to-word", href: "/convert-pdf/pdf-to-word" },
+        { name: "Word to PDF", desc: "From .docx", slug: "word-to-pdf", href: "/convert-pdf/word-to-pdf" },
+        { name: "PDF to JPG", desc: "Pages as images", slug: "pdf-to-jpg", href: "/convert-pdf/pdf-to-jpg" },
+        { name: "PDF to PNG", desc: "High quality", slug: "pdf-to-png", href: "/convert-pdf/pdf-to-png" },
+        { name: "JPG to PDF", desc: "Images to PDF", slug: "jpg-to-pdf", href: "/convert-pdf/jpg-to-pdf" },
+        { name: "PNG to PDF", desc: "Images to PDF", slug: "png-to-pdf", href: "/convert-pdf/png-to-pdf" },
+      ],
+    },
+    {
+      label: "Security",
+      tools: [
+        { name: "Protect PDF", desc: "Add password", slug: "protect-pdf" },
+        { name: "Unlock PDF", desc: "Remove password", slug: "unlock-pdf" },
+        { name: "Watermark PDF", desc: "Add text or image", slug: "watermark-pdf" },
+        { name: "Sign PDF", desc: "Add signature", slug: "sign-pdf" },
+      ],
+    },
+    {
+      label: "Utilities",
+      tools: [
+        { name: "OCR PDF", desc: "Make searchable", slug: "ocr-pdf" },
+        { name: "Repair PDF", desc: "Fix corrupted files", slug: "repair-pdf" },
+        { name: "Crop PDF", desc: "Trim margins", slug: "crop-pdf" },
+        { name: "Reorder pages", desc: "Drag to rearrange", slug: "reorder-pdf-pages" },
+        { name: "Extract pages", desc: "Save specific pages", slug: "extract-pdf-pages" },
+      ],
+    },
+  ];
 
   const handleFile = useCallback((f: File) => {
     if (f.type !== "application/pdf") return;
     setFile(f);
-    setOpenCategory(null);
   }, []);
 
   const handleDrop = (e: React.DragEvent) => {
@@ -192,7 +233,6 @@ function UploadBox() {
 
   return (
     <div style={{ border: "1px solid #e5e7eb", borderRadius: "16px", background: "#ffffff", overflow: "hidden" }}>
-      {/* File info bar */}
       <div style={{
         background: "#f0fdf4", padding: "12px 16px",
         display: "flex", justifyContent: "space-between", alignItems: "center",
@@ -205,68 +245,46 @@ function UploadBox() {
           </div>
         </div>
         <button
-          onClick={() => { setFile(null); setOpenCategory(null); }}
+          onClick={() => setFile(null)}
           style={{ background: "none", border: "none", cursor: "pointer", color: "#6b7280", padding: "4px" }}
         >
           <X size={18} />
         </button>
       </div>
 
-      {/* Tool selection */}
       <div style={{ padding: "16px" }}>
-        <p style={{ fontSize: "16px", fontWeight: 700, color: "#111", margin: "0 0 12px" }}>
+        <p style={{ fontSize: "13px", fontWeight: 600, color: "#6b7280", textTransform: "uppercase", letterSpacing: "0.05em", margin: "0 0 12px" }}>
           What do you want to do?
         </p>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
-          {CATEGORIES_TOOLS.map((cat) => (
-            <div key={cat.slug}>
-              <div
-                onClick={() => setOpenCategory(openCategory === cat.slug ? null : cat.slug)}
-                style={{
-                  background: openCategory === cat.slug ? "#eff6ff" : "#f9fafb",
-                  border: `1px solid ${openCategory === cat.slug ? "#2563eb" : "#e5e7eb"}`,
-                  borderRadius: "12px",
-                  padding: "14px",
-                  cursor: "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  gap: "8px",
-                }}
-              >
-                <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                  <cat.icon size={18} color={cat.color} strokeWidth={2} />
-                  <span style={{ fontSize: "13px", fontWeight: 600, color: "#111" }}>{cat.name}</span>
-                </div>
-                {openCategory === cat.slug ? <ChevronUp size={14} color="#6b7280" /> : <ChevronDown size={14} color="#6b7280" />}
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(4, minmax(0, 1fr))", gap: "8px" }}>
+          {TOOLS_COLUMNS.map((col) => (
+            <div key={col.label}>
+              <p style={{ margin: "0 0 6px", fontSize: "11px", fontWeight: 600, color: "#9ca3af", textTransform: "uppercase", letterSpacing: "0.04em" }}>
+                {col.label}
+              </p>
+              <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+                {col.tools.map((tool) => (
+                  <div
+                    key={tool.slug}
+                    onClick={() => goToTool(tool.slug, (tool as { href?: string }).href)}
+                    style={{
+                      padding: "8px 10px", borderRadius: "8px", cursor: "pointer",
+                      background: "#f9fafb", border: "1px solid #e5e7eb",
+                    }}
+                    onMouseEnter={(e) => {
+                      (e.currentTarget as HTMLDivElement).style.background = "#eff6ff";
+                      (e.currentTarget as HTMLDivElement).style.borderColor = "#2563eb";
+                    }}
+                    onMouseLeave={(e) => {
+                      (e.currentTarget as HTMLDivElement).style.background = "#f9fafb";
+                      (e.currentTarget as HTMLDivElement).style.borderColor = "#e5e7eb";
+                    }}
+                  >
+                    <p style={{ margin: "0 0 1px", fontSize: "12px", fontWeight: 600, color: "#111" }}>{tool.name}</p>
+                    <p style={{ margin: 0, fontSize: "11px", color: "#6b7280" }}>{tool.desc}</p>
+                  </div>
+                ))}
               </div>
-
-              {openCategory === cat.slug && (
-                <div style={{ marginTop: "6px", display: "flex", flexDirection: "column", gap: "4px" }}>
-                  {cat.tools.map((tool) => (
-                    <div
-                      key={tool.slug}
-                      onClick={() => goToTool(tool.slug, (tool as { href?: string }).href)}
-                      style={{
-                        padding: "10px 12px", borderRadius: "8px",
-                        cursor: "pointer", display: "flex", alignItems: "center", gap: "8px",
-                        background: "#f9fafb", border: "1px solid #e5e7eb",
-                      }}
-                      onMouseEnter={(e) => {
-                        (e.currentTarget as HTMLDivElement).style.background = "#eff6ff";
-                        (e.currentTarget as HTMLDivElement).style.borderColor = "#2563eb";
-                      }}
-                      onMouseLeave={(e) => {
-                        (e.currentTarget as HTMLDivElement).style.background = "#f9fafb";
-                        (e.currentTarget as HTMLDivElement).style.borderColor = "#e5e7eb";
-                      }}
-                    >
-                      <span style={{ fontSize: "13px", fontWeight: 600, color: "#111" }}>{tool.name}</span>
-                      <span style={{ fontSize: "12px", color: "#6b7280" }}>— {tool.desc}</span>
-                    </div>
-                  ))}
-                </div>
-              )}
             </div>
           ))}
         </div>
