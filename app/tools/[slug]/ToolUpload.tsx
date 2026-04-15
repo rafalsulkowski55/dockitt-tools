@@ -22,10 +22,7 @@ const PRESETS: { id: Preset; label: string; subtext: string }[] = [
 
 function Spinner() {
   return (
-    <svg
-      width="20" height="20" viewBox="0 0 20 20"
-      style={{ animation: "spin 0.8s linear infinite", flexShrink: 0 }}
-    >
+    <svg width="20" height="20" viewBox="0 0 20 20" style={{ animation: "spin 0.8s linear infinite", flexShrink: 0 }}>
       <style>{`@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>
       <circle cx="10" cy="10" r="8" fill="none" stroke="#d1d5db" strokeWidth="2.5" />
       <path d="M10 2 a8 8 0 0 1 8 8" fill="none" stroke="#2563eb" strokeWidth="2.5" strokeLinecap="round" />
@@ -122,19 +119,16 @@ export default function ToolUpload() {
     generatePreview(f);
   }
 
-  async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const f = e.target.files?.[0] ?? null;
     if (f) handleFileSelect(f);
+    e.target.value = "";
   }
 
   function handleDrop(e: React.DragEvent<HTMLDivElement>) {
     e.preventDefault();
     const f = e.dataTransfer.files?.[0] ?? null;
     if (f) handleFileSelect(f);
-  }
-
-  function handleDragOver(e: React.DragEvent<HTMLDivElement>) {
-    e.preventDefault();
   }
 
   function handleReset() {
@@ -147,6 +141,7 @@ export default function ToolUpload() {
     setPreviewUrl(null);
     setErrorMessage("");
     setPreset("email");
+    if (inputRef.current) inputRef.current.value = "";
   }
 
   async function handleProcess() {
@@ -257,19 +252,25 @@ export default function ToolUpload() {
     <>
       {showPricingModal && <PricingModal onClose={() => setShowPricingModal(false)} />}
 
+      <input
+        ref={inputRef}
+        type="file"
+        accept=".pdf"
+        style={{ display: "none" }}
+        onChange={handleFileChange}
+      />
+
       <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
 
         {/* Drop zone */}
         <div
           onDrop={handleDrop}
-          onDragOver={handleDragOver}
-          onClick={() => !file && inputRef.current?.click()}
+          onDragOver={(e) => e.preventDefault()}
           style={{
             border: "2px dashed #bfdbfe",
             borderRadius: "12px",
             padding: "20px",
             background: "#f8faff",
-            cursor: file ? "default" : "pointer",
           }}
         >
           {file ? (
@@ -289,38 +290,45 @@ export default function ToolUpload() {
                 <p style={{ fontSize: "14px", fontWeight: 600, color: "#111", margin: "0 0 2px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{fileName}</p>
                 <p style={{ fontSize: "12px", color: "#9ca3af", margin: 0 }}>{fileSize}</p>
                 <button
-                  onClick={(e) => { e.stopPropagation(); inputRef.current?.click(); }}
+                  onClick={() => inputRef.current?.click()}
                   style={{ fontSize: "12px", color: "#2563eb", background: "none", border: "none", cursor: "pointer", padding: 0, marginTop: "4px" }}
                 >
                   Click to change file
                 </button>
               </div>
-              {/* X button */}
               <button
-                onClick={(e) => { e.stopPropagation(); handleReset(); }}
+                onClick={handleReset}
                 style={{
                   background: "#f3f4f6", border: "1px solid #e5e7eb", borderRadius: "6px",
                   width: "28px", height: "28px", display: "flex", alignItems: "center",
-                  justifyContent: "center", cursor: "pointer", flexShrink: 0, color: "#6b7280",
-                  fontSize: "14px", lineHeight: 1,
+                  justifyContent: "center", cursor: "pointer", flexShrink: 0,
+                  color: "#6b7280", fontSize: "14px", lineHeight: 1,
                 }}
               >
                 ✕
               </button>
             </div>
           ) : (
-            <div style={{ textAlign: "center" }}>
-              <div style={{ fontSize: "13px", color: "#666", marginBottom: "10px" }}>Drag & drop your PDF here or</div>
-              <label
-                style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", padding: "10px 20px", background: "#2563eb", color: "#ffffff", borderRadius: "10px", fontWeight: 600, cursor: "pointer", fontSize: "14px" }}
-                onClick={(e) => e.stopPropagation()}
+            <div style={{ textAlign: "center", padding: "8px 0" }}>
+              <div style={{ fontSize: "13px", color: "#666", marginBottom: "10px" }}>
+                Drag & drop your PDF here or
+              </div>
+              <button
+                onClick={() => inputRef.current?.click()}
+                style={{
+                  display: "inline-flex", alignItems: "center", justifyContent: "center",
+                  padding: "10px 20px", background: "#2563eb", color: "#ffffff",
+                  borderRadius: "10px", fontWeight: 600, cursor: "pointer",
+                  fontSize: "14px", border: "none",
+                }}
               >
                 Choose PDF
-              </label>
-              <p style={{ fontSize: "12px", color: "#9ca3af", margin: "8px 0 0" }}>Maximum file size: 10MB</p>
+              </button>
+              <p style={{ fontSize: "12px", color: "#9ca3af", margin: "8px 0 0" }}>
+                Maximum file size: 10MB
+              </p>
             </div>
           )}
-          <input ref={inputRef} type="file" accept=".pdf" style={{ display: "none" }} onChange={handleFileChange} />
         </div>
 
         {/* Compression presets */}
