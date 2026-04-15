@@ -11,6 +11,16 @@ const PROCESSING_TYPE = "browser" as const;
 
 type CropBox = { x: number; y: number; width: number; height: number };
 
+function Spinner() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 20 20" style={{ animation: "spin 0.8s linear infinite", flexShrink: 0 }}>
+      <style>{`@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>
+      <circle cx="10" cy="10" r="8" fill="none" stroke="#d1d5db" strokeWidth="2.5" />
+      <path d="M10 2 a8 8 0 0 1 8 8" fill="none" stroke="#2563eb" strokeWidth="2.5" strokeLinecap="round" />
+    </svg>
+  );
+}
+
 export default function CropUpload() {
   const [file, setFile] = useState<File | null>(null);
   const [totalPages, setTotalPages] = useState(0);
@@ -20,7 +30,6 @@ export default function CropUpload() {
   const [errorMessage, setErrorMessage] = useState("");
   const [appliedToAll, setAppliedToAll] = useState(false);
   const [progress, setProgress] = useState(0);
-  const [dragOver, setDragOver] = useState(false);
 
   const previewCanvasRef = useRef<HTMLCanvasElement>(null);
   const overlayCanvasRef = useRef<HTMLCanvasElement>(null);
@@ -93,8 +102,14 @@ export default function CropUpload() {
     await renderPage(1);
   }
 
-  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) { const f = e.target.files?.[0]; if (f) handleFile(f); }
-  function handleDrop(e: React.DragEvent) { e.preventDefault(); setDragOver(false); const f = e.dataTransfer.files?.[0]; if (f && f.type === "application/pdf") handleFile(f); }
+  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) { const f = e.target.files?.[0]; if (f) handleFile(f); e.target.value = ""; }
+  function handleDrop(e: React.DragEvent) { e.preventDefault(); const f = e.dataTransfer.files?.[0]; if (f && f.type === "application/pdf") handleFile(f); }
+
+  function handleReset() {
+    setFile(null); setStatus("idle"); setErrorMessage(""); setCropBox(null);
+    setCurrentPage(1); setProgress(0); allCropsRef.current = {};
+    if (inputRef.current) inputRef.current.value = "";
+  }
 
   async function goToPage(pageNum: number) {
     if (cropBoxRef.current) allCropsRef.current[currentPage] = cropBoxRef.current;
@@ -168,11 +183,11 @@ export default function CropUpload() {
     const interval = setInterval(() => { setProgress((p) => (p < 85 ? p + Math.random() * 12 : p)); }, 300);
     try {
       const { PDFDocument } = await import("pdf-lib");
-      const scale = pdfScaleRef.current; const { width: cw, height: ch } = canvasSizeRef.current;
+      const scale = pdfScaleRef.current; const { height: ch } = canvasSizeRef.current;
       const pdfDoc = await PDFDocument.load(await file.arrayBuffer(), { ignoreEncryption: true });
       pdfDoc.getPages().forEach((page, index) => {
         const pageNum = index + 1; const box = allCropsRef.current[pageNum] ?? allCropsRef.current[currentPage]; if (!box) return;
-        const { width, height } = page.getSize();
+        const { height } = page.getSize();
         page.setCropBox(Math.round(box.x / scale), Math.round((ch - box.y - box.height) / scale), Math.round(box.width / scale), Math.round(box.height / scale));
       });
       clearInterval(interval); setProgress(100);
@@ -193,42 +208,101 @@ export default function CropUpload() {
   return (
     <>
       {showPricingModal && <PricingModal onClose={() => setShowPricingModal(false)} />}
-      <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-        <div onClick={() => inputRef.current?.click()} onDragOver={(e) => { e.preventDefault(); setDragOver(true); }} onDragLeave={() => setDragOver(false)} onDrop={handleDrop} style={{ border: `2px dashed ${dragOver ? "#2563eb" : "#bfdbfe"}`, background: dragOver ? "#e0eeff" : "#f8faff", borderRadius: "12px", padding: "32px 24px", textAlign: "center", cursor: "pointer", transition: "all 0.15s" }}>
-          <div style={{ fontSize: "28px", marginBottom: "8px" }}>📄</div>
-          {file ? <p style={{ fontSize: "14px", color: "#111", fontWeight: 500, margin: 0 }}>{file.name}</p> : (<><p style={{ fontSize: "14px", color: "#374151", fontWeight: 500, margin: "0 0 4px" }}>Drag & drop your PDF here</p><p style={{ fontSize: "13px", color: "#9ca3af", margin: 0 }}>or click to browse</p></>)}
-          <input ref={inputRef} type="file" accept=".pdf" style={{ display: "none" }} onChange={handleFileChange} />
+      <input ref={inputRef} type="file" accept=".pdf" style={{ display: "none" }} onChange={handleFileChange} />
+
+      <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
+
+        {/* Drop zone */}
+        <div
+          onDrop={handleDrop}
+          onDragOver={(e) => e.preventDefault()}
+          style={{ border: "2px dashed #bfdbfe", borderRadius: "12px", padding: "16px", background: "#f8faff" }}
+        >
+          {file ? (
+            <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+              <div style={{ width: "40px", height: "52px", borderRadius: "6px", background: "#eff6ff", border: "1px solid #bfdbfe", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, fontSize: "10px", fontWeight: 700, color: "#2563eb" }}>PDF</div>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <p style={{ fontSize: "13px", fontWeight: 600, color: "#111", margin: "0 0 2px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{file.name}</p>
+                <button onClick={() => inputRef.current?.click()} style={{ fontSize: "11px", color: "#2563eb", background: "none", border: "none", cursor: "pointer", padding: 0 }}>Change file</button>
+              </div>
+              <button onClick={handleReset} style={{ background: "#f3f4f6", border: "1px solid #e5e7eb", borderRadius: "6px", width: "26px", height: "26px", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", flexShrink: 0, color: "#6b7280", fontSize: "13px" }}>✕</button>
+            </div>
+          ) : (
+            <div style={{ textAlign: "center", padding: "8px 0" }}>
+              <div style={{ fontSize: "13px", color: "#666", marginBottom: "10px" }}>Drag & drop your PDF here or</div>
+              <button onClick={() => inputRef.current?.click()} style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", padding: "10px 20px", background: "#2563eb", color: "#fff", borderRadius: "10px", fontWeight: 600, cursor: "pointer", fontSize: "14px", border: "none" }}>
+                Choose PDF
+              </button>
+            </div>
+          )}
         </div>
 
-        <button onClick={() => inputRef.current?.click()} style={{ padding: "11px 20px", background: "#2563eb", color: "#fff", border: "none", borderRadius: "8px", fontWeight: 500, fontSize: "14px", cursor: "pointer", width: "fit-content" }}>Choose PDF</button>
-        <p style={{ fontSize: "12px", color: "#9ca3af", margin: 0 }}>🔒 Processed entirely in your browser. Files never leave your device.</p>
-
+        {/* Page navigation */}
         {file && totalPages > 1 && (
-          <div style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap" }}>
-            <button onClick={() => goToPage(Math.max(1, currentPage - 1))} disabled={currentPage === 1} style={{ padding: "8px 14px", borderRadius: "8px", border: "1px solid #e5e7eb", background: "#fff", cursor: currentPage === 1 ? "not-allowed" : "pointer", fontSize: "14px" }}>← Prev</button>
-            <span style={{ fontSize: "14px", color: "#555" }}>Page {currentPage} of {totalPages}</span>
-            <button onClick={() => goToPage(Math.min(totalPages, currentPage + 1))} disabled={currentPage === totalPages} style={{ padding: "8px 14px", borderRadius: "8px", border: "1px solid #e5e7eb", background: "#fff", cursor: currentPage === totalPages ? "not-allowed" : "pointer", fontSize: "14px" }}>Next →</button>
-            <button onClick={applyToAllPages} style={{ padding: "8px 14px", borderRadius: "8px", border: "1px solid #2563eb", background: appliedToAll ? "#16a34a" : "#eff6ff", color: appliedToAll ? "#fff" : "#2563eb", cursor: "pointer", fontSize: "13px", transition: "all 0.2s" }}>{appliedToAll ? "✓ Applied to all pages" : "Apply to all pages"}</button>
+          <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
+            <button onClick={() => goToPage(Math.max(1, currentPage - 1))} disabled={currentPage === 1} style={{ padding: "6px 12px", borderRadius: "8px", border: "1px solid #e5e7eb", background: "#fff", cursor: currentPage === 1 ? "not-allowed" : "pointer", fontSize: "13px" }}>← Prev</button>
+            <span style={{ fontSize: "13px", color: "#555" }}>Page {currentPage} of {totalPages}</span>
+            <button onClick={() => goToPage(Math.min(totalPages, currentPage + 1))} disabled={currentPage === totalPages} style={{ padding: "6px 12px", borderRadius: "8px", border: "1px solid #e5e7eb", background: "#fff", cursor: currentPage === totalPages ? "not-allowed" : "pointer", fontSize: "13px" }}>Next →</button>
+            <button onClick={applyToAllPages} style={{ padding: "6px 12px", borderRadius: "8px", border: "1px solid #2563eb", background: appliedToAll ? "#16a34a" : "#eff6ff", color: appliedToAll ? "#fff" : "#2563eb", cursor: "pointer", fontSize: "12px", transition: "all 0.2s" }}>
+              {appliedToAll ? "✓ Applied to all" : "Apply to all pages"}
+            </button>
           </div>
         )}
 
+        {/* Canvas preview */}
         {file && totalPages > 0 && (
           <>
             <div style={{ position: "relative", display: "inline-block", maxWidth: "100%", borderRadius: "8px", overflow: "hidden", border: "1px solid #bfdbfe" }}>
               <canvas ref={previewCanvasRef} style={{ display: "block", maxWidth: "100%" }} />
               <canvas ref={overlayCanvasRef} onMouseDown={handleMouseDown} onMouseMove={handleMouseMove} onMouseUp={handleMouseUp} onMouseLeave={handleMouseUp} style={{ position: "absolute", top: 0, left: 0, maxWidth: "100%", cursor: "default" }} />
             </div>
-            <p style={{ fontSize: "13px", color: "#6b7280", margin: 0 }}>Drag the crop box or its handles to adjust. The dark area will be removed.</p>
+            <p style={{ fontSize: "12px", color: "#6b7280", margin: 0 }}>Drag the crop box or its handles to adjust. The dark area will be removed.</p>
           </>
         )}
 
-        <button disabled={!isReady} onClick={handleProcess} style={{ padding: "12px 20px", background: isReady ? "#2563eb" : "#d1d5db", color: "#fff", border: "none", borderRadius: "8px", fontWeight: 500, fontSize: "14px", cursor: isReady ? "pointer" : "not-allowed", width: "fit-content" }}>
-          {status === "processing" ? "Cropping..." : "Crop PDF"}
-        </button>
+        {/* Process button + spinner */}
+        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+          <button
+            disabled={!isReady}
+            onClick={handleProcess}
+            style={{ padding: "10px 20px", background: isReady ? "#2563eb" : "#d1d5db", color: "#fff", border: "none", borderRadius: "8px", fontWeight: 600, fontSize: "14px", cursor: isReady ? "pointer" : "not-allowed" }}
+          >
+            {status === "processing" ? "Cropping..." : "Crop PDF"}
+          </button>
+          {status === "processing" && <Spinner />}
+        </div>
 
-        {status === "processing" && (<div style={{ display: "flex", flexDirection: "column", gap: "6px" }}><div style={{ background: "#e5e7eb", borderRadius: "100px", height: "6px", overflow: "hidden" }}><div style={{ height: "100%", borderRadius: "100px", background: "#2563eb", width: `${progress}%`, transition: "width 0.3s ease" }} /></div><p style={{ fontSize: "12px", color: "#6b7280", margin: 0 }}>{Math.round(progress)}%</p></div>)}
-        {status === "error" && <div style={{ padding: "14px 16px", background: "#fef2f2", color: "#dc2626", border: "1px solid #fecaca", borderRadius: "10px", fontSize: "14px" }}>{errorMessage || "Something went wrong. Please try again."}</div>}
-        {status === "done" && <div style={{ padding: "14px 16px", background: "#eff6ff", color: "#2563eb", border: "1px solid #bfdbfe", borderRadius: "10px", fontSize: "14px" }}>✅ PDF cropped and downloaded successfully.</div>}
+        {/* Progress bar */}
+        {status === "processing" && (
+          <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", fontSize: "12px", color: "#6b7280" }}>
+              <span>Cropping your PDF...</span>
+              <span>{Math.round(progress)}%</span>
+            </div>
+            <div style={{ background: "#e5e7eb", borderRadius: "99px", height: "5px", overflow: "hidden" }}>
+              <div style={{ height: "100%", width: `${progress}%`, background: "#2563eb", borderRadius: "99px", transition: "width 0.3s ease" }} />
+            </div>
+          </div>
+        )}
+
+        {status === "error" && (
+          <div style={{ padding: "12px 14px", background: "#fef2f2", color: "#dc2626", border: "1px solid #fecaca", borderRadius: "8px", fontSize: "13px" }}>
+            {errorMessage || "Something went wrong. Please try again."}
+          </div>
+        )}
+
+        {status === "done" && (
+          <div style={{ border: "1px solid #bfdbfe", borderRadius: "12px", overflow: "hidden" }}>
+            <div style={{ background: "#eff6ff", padding: "12px 16px" }}>
+              <p style={{ fontSize: "15px", fontWeight: 700, color: "#2563eb", margin: "0 0 2px" }}>✅ PDF cropped successfully</p>
+              <p style={{ fontSize: "12px", color: "#16a34a", margin: 0 }}>Your file has been downloaded</p>
+            </div>
+            <div style={{ padding: "10px 16px", background: "#f9fafb", borderTop: "1px solid #e5e7eb" }}>
+              <button onClick={handleReset} style={{ background: "none", border: "none", cursor: "pointer", padding: 0, fontSize: "12px", color: "#2563eb", fontWeight: 500 }}>→ Crop another PDF</button>
+            </div>
+          </div>
+        )}
+
       </div>
     </>
   );

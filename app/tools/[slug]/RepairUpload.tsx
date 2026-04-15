@@ -12,6 +12,16 @@ const MAX_FILE_SIZE = 10 * 1024 * 1024;
 
 type Status = "idle" | "validating" | "uploading" | "processing" | "done" | "error";
 
+function Spinner() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 20 20" style={{ animation: "spin 0.8s linear infinite", flexShrink: 0 }}>
+      <style>{`@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>
+      <circle cx="10" cy="10" r="8" fill="none" stroke="#d1d5db" strokeWidth="2.5" />
+      <path d="M10 2 a8 8 0 0 1 8 8" fill="none" stroke="#2563eb" strokeWidth="2.5" strokeLinecap="round" />
+    </svg>
+  );
+}
+
 export default function RepairUpload() {
   const [file, setFile] = useState<File | null>(null);
   const [fileName, setFileName] = useState("No file selected");
@@ -25,7 +35,6 @@ export default function RepairUpload() {
   const { showPricingModal, setShowPricingModal, checkDownloadLimit, onConversionSuccess } = useConversionLimit();
 
   useEffect(() => { ToolTracking.viewTool(TOOL_NAME, PROCESSING_TYPE); }, []);
-
   usePendingFile(handleFileSelect);
 
   function formatSize(bytes: number) {
@@ -42,9 +51,14 @@ export default function RepairUpload() {
     ToolTracking.uploadStarted(TOOL_NAME, PROCESSING_TYPE);
   }
 
-  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) { const f = e.target.files?.[0]; if (f) handleFileSelect(f); }
+  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) { const f = e.target.files?.[0]; if (f) handleFileSelect(f); e.target.value = ""; }
   function handleDrop(e: React.DragEvent) { e.preventDefault(); const f = e.dataTransfer.files?.[0]; if (f) handleFileSelect(f); }
-  function handleReset() { setFile(null); setFileName("No file selected"); setFileSize(""); setStatus("idle"); setDownloadUrl(null); setProgress(0); setErrorMessage(""); }
+
+  function handleReset() {
+    setFile(null); setFileName("No file selected"); setFileSize(""); setStatus("idle");
+    setDownloadUrl(null); setProgress(0); setErrorMessage("");
+    if (inputRef.current) inputRef.current.value = "";
+  }
 
   async function handleRepair() {
     if (!file) return;
@@ -76,68 +90,84 @@ export default function RepairUpload() {
     if (!canDownload) return;
     onConversionSuccess();
     ToolTracking.downloadClicked(TOOL_NAME, PROCESSING_TYPE);
-    const a = document.createElement("a"); a.href = downloadUrl; a.download = file?.name ?? "file.pdf"; a.click();
+    const a = document.createElement("a"); a.href = downloadUrl; a.download = `repaired-${file?.name ?? "file.pdf"}`; a.click();
   }
 
   const isProcessing = ["validating", "uploading", "processing"].includes(status);
+  const processingLabel = status === "uploading" ? "Uploading to secure storage..." : status === "processing" ? "Repairing PDF..." : "Validating...";
 
   return (
     <>
       {showPricingModal && <PricingModal onClose={() => setShowPricingModal(false)} />}
-      <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-        <div onClick={() => inputRef.current?.click()} onDragOver={(e) => e.preventDefault()} onDrop={handleDrop} style={{ border: "2px dashed #bfdbfe", background: "#f8faff", borderRadius: "12px", padding: "24px", textAlign: "center", cursor: "pointer" }}>
+      <input ref={inputRef} type="file" accept=".pdf" style={{ display: "none" }} onChange={handleFileChange} />
+
+      <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
+
+        <div onDrop={handleDrop} onDragOver={(e) => e.preventDefault()}
+          style={{ border: "2px dashed #bfdbfe", borderRadius: "12px", padding: "16px", background: "#f8faff" }}>
           {file ? (
-            <div style={{ display: "flex", alignItems: "center", gap: "16px", textAlign: "left" }}>
-              <div style={{ fontSize: "32px" }}>📄</div>
-              <div>
-                <p style={{ fontSize: "14px", fontWeight: 600, color: "#111", margin: "0 0 4px" }}>{fileName}</p>
-                <p style={{ fontSize: "12px", color: "#9ca3af", margin: 0 }}>{fileSize}</p>
-                <p style={{ fontSize: "12px", color: "#2563eb", margin: "4px 0 0" }}>Click to change file</p>
+            <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+              <div style={{ width: "40px", height: "52px", borderRadius: "6px", background: "#eff6ff", border: "1px solid #bfdbfe", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, fontSize: "10px", fontWeight: 700, color: "#2563eb" }}>PDF</div>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <p style={{ fontSize: "13px", fontWeight: 600, color: "#111", margin: "0 0 2px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{fileName}</p>
+                <p style={{ fontSize: "11px", color: "#9ca3af", margin: 0 }}>{fileSize}</p>
+                <button onClick={() => inputRef.current?.click()} style={{ fontSize: "11px", color: "#2563eb", background: "none", border: "none", cursor: "pointer", padding: 0 }}>Change file</button>
               </div>
+              <button onClick={handleReset} style={{ background: "#f3f4f6", border: "1px solid #e5e7eb", borderRadius: "6px", width: "26px", height: "26px", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", flexShrink: 0, color: "#6b7280", fontSize: "13px" }}>✕</button>
             </div>
           ) : (
-            <>
-              <div style={{ fontSize: "13px", color: "#666", marginBottom: "12px" }}>Drag & drop your PDF here or</div>
-              <button onClick={(e) => { e.stopPropagation(); inputRef.current?.click(); }} style={{ display: "inline-flex", alignItems: "center", padding: "10px 20px", background: "#2563eb", color: "#fff", border: "none", borderRadius: "10px", fontWeight: 600, cursor: "pointer", fontSize: "14px" }}>Choose PDF</button>
+            <div style={{ textAlign: "center", padding: "8px 0" }}>
+              <div style={{ fontSize: "13px", color: "#666", marginBottom: "10px" }}>Drag & drop your PDF here or</div>
+              <button onClick={() => inputRef.current?.click()} style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", padding: "10px 20px", background: "#2563eb", color: "#fff", borderRadius: "10px", fontWeight: 600, cursor: "pointer", fontSize: "14px", border: "none" }}>
+                Choose PDF
+              </button>
               <p style={{ fontSize: "12px", color: "#9ca3af", margin: "8px 0 0" }}>Maximum file size: 10MB</p>
-            </>
+            </div>
           )}
-          <input ref={inputRef} type="file" accept=".pdf" style={{ display: "none" }} onChange={handleFileChange} />
         </div>
 
-        <div style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "12px", color: "#6b7280" }}>
-          <span>🔐</span>
-          Processed securely on our server. Your file is deleted immediately after processing.
+        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+          <button disabled={!file || isProcessing} onClick={handleRepair}
+            style={{ padding: "10px 20px", background: file && !isProcessing ? "#2563eb" : "#d1d5db", color: "#fff", border: "none", borderRadius: "8px", fontWeight: 600, fontSize: "14px", cursor: file && !isProcessing ? "pointer" : "not-allowed" }}>
+            {isProcessing ? "Processing..." : "Repair PDF"}
+          </button>
+          {isProcessing && <Spinner />}
         </div>
-
-        <button disabled={!file || isProcessing} onClick={handleRepair} style={{ padding: "12px 24px", background: file && !isProcessing ? "#2563eb" : "#d1d5db", color: "#fff", border: "none", borderRadius: "10px", fontWeight: 600, fontSize: "15px", cursor: file && !isProcessing ? "pointer" : "not-allowed", width: "fit-content" }}>
-          {status === "uploading" ? "Uploading..." : status === "processing" ? "Repairing..." : status === "validating" ? "Validating..." : "Repair PDF"}
-        </button>
 
         {isProcessing && (
-          <div>
-            <div style={{ display: "flex", justifyContent: "space-between", fontSize: "13px", color: "#666", marginBottom: "6px" }}>
-              <span>{status === "uploading" ? "Uploading to secure storage..." : status === "processing" ? "Repairing PDF..." : "Validating..."}</span>
-              <span>{progress}%</span>
+          <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", fontSize: "12px", color: "#6b7280" }}>
+              <span>{processingLabel}</span><span>{progress}%</span>
             </div>
-            <div style={{ background: "#e5e7eb", borderRadius: "99px", height: "6px", overflow: "hidden" }}>
+            <div style={{ background: "#e5e7eb", borderRadius: "99px", height: "5px", overflow: "hidden" }}>
               <div style={{ height: "100%", width: `${progress}%`, background: "#2563eb", borderRadius: "99px", transition: "width 0.3s ease" }} />
             </div>
           </div>
         )}
 
-        {status === "error" && <div style={{ padding: "14px 16px", background: "#fef2f2", color: "#dc2626", border: "1px solid #fecaca", borderRadius: "10px", fontSize: "14px" }}>{errorMessage === "Failed to repair PDF" ? "Could not repair this file. The PDF may be too severely damaged to recover." : errorMessage || "Something went wrong. Please try again."}</div>}
-
-        {status === "done" && downloadUrl && (
-          <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-            <div style={{ padding: "20px", background: "#eff6ff", border: "1px solid #bfdbfe", borderRadius: "10px" }}>
-              <p style={{ fontSize: "18px", fontWeight: 700, color: "#2563eb", margin: "0 0 6px" }}>✅ PDF repaired successfully</p>
-              <p style={{ fontSize: "13px", color: "#4b5563", margin: 0 }}>Your file has been repaired and is ready to download.</p>
-            </div>
-            <button onClick={handleDownload} style={{ padding: "14px 28px", background: "#16a34a", color: "#fff", border: "none", borderRadius: "10px", fontWeight: 600, fontSize: "15px", cursor: "pointer", width: "fit-content" }}>⬇ Download repaired PDF</button>
-            <button onClick={handleReset} style={{ background: "none", border: "none", cursor: "pointer", padding: 0, fontSize: "13px", color: "#2563eb", fontWeight: 500, textAlign: "left" }}>→ Repair another PDF</button>
+        {status === "error" && (
+          <div style={{ padding: "12px 14px", background: "#fef2f2", color: "#dc2626", border: "1px solid #fecaca", borderRadius: "8px", fontSize: "13px" }}>
+            {errorMessage === "Failed to repair PDF" ? "Could not repair this file. The PDF may be too severely damaged to recover." : errorMessage || "Something went wrong. Please try again."}
           </div>
         )}
+
+        {status === "done" && downloadUrl && (
+          <div style={{ border: "1px solid #bfdbfe", borderRadius: "12px", overflow: "hidden" }}>
+            <div style={{ background: "#eff6ff", padding: "12px 16px" }}>
+              <p style={{ fontSize: "15px", fontWeight: 700, color: "#2563eb", margin: "0 0 2px" }}>✅ PDF repaired successfully</p>
+              <p style={{ fontSize: "12px", color: "#16a34a", margin: 0 }}>Your file is ready to download</p>
+            </div>
+            <div style={{ padding: "12px 16px", background: "#fff" }}>
+              <button onClick={handleDownload} style={{ width: "100%", padding: "11px", background: "#16a34a", color: "#fff", border: "none", borderRadius: "8px", fontWeight: 600, fontSize: "14px", cursor: "pointer" }}>
+                ⬇ Download repaired PDF
+              </button>
+            </div>
+            <div style={{ padding: "10px 16px", background: "#f9fafb", borderTop: "1px solid #e5e7eb" }}>
+              <button onClick={handleReset} style={{ background: "none", border: "none", cursor: "pointer", padding: 0, fontSize: "12px", color: "#2563eb", fontWeight: 500 }}>→ Repair another PDF</button>
+            </div>
+          </div>
+        )}
+
       </div>
     </>
   );
