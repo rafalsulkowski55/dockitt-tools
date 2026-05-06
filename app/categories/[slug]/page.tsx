@@ -9,19 +9,19 @@ const categoryMeta: Record<string, {
 }> = {
   core: {
     name: "Core PDF Tools",
-    description: "Essential tools for everyday PDF tasks — merge, split, compress, rotate and more.",
+    description: "Essential tools for everyday PDF tasks merge, split, compress, rotate and more.",
     faqs: [
       {
         question: "What is the best way to reduce a PDF file size for email?",
-        answer: "The most effective way to reduce a PDF file size for email is to use a PDF compressor. Dockitt's Compress PDF tool re-optimises the internal structure of your file — removing redundant data and streamlining object streams — without visually altering the content. For text-heavy PDFs such as reports, contracts, and presentations, the size reduction is often significant. If your PDF contains many high-resolution images, the reduction may be smaller since image data is harder to compress without quality loss. Most email clients have a 10MB or 25MB attachment limit, and compressing your PDF before sending is the cleanest way to stay within those limits without splitting the document.",
+        answer: "The most effective way to reduce a PDF file size for email is to use a PDF compressor. Dockitt's Compress PDF tool re-optimises the internal structure of your file removing redundant data and streamlining object streams without visually altering the content. For text-heavy PDFs such as reports, contracts, and presentations, the size reduction is often significant. If your PDF contains many high-resolution images, the reduction may be smaller since image data is harder to compress without quality loss. Most email clients have a 10MB or 25MB attachment limit, and compressing your PDF before sending is the cleanest way to stay within those limits without splitting the document.",
       },
       {
         question: "How do I combine multiple PDF files into one document?",
-        answer: "Use the Merge PDF tool. Upload all the files you want to combine, arrange them in the correct order, and download the merged result. The tool preserves the content, formatting, fonts, and images of each individual file exactly as they are — merging only joins the pages together into a single document without altering anything inside each file. This is useful for combining a cover letter with a CV, assembling a report from multiple chapters, or consolidating scanned pages from different sources. If any of the files are password protected, you will need to unlock them first using the Unlock PDF tool before merging.",
+        answer: "Use the Merge PDF tool. Upload all the files you want to combine, arrange them in the correct order, and download the merged result. The tool preserves the content, formatting, fonts, and images of each individual file exactly as they are merging only joins the pages together into a single document without altering anything inside each file. This is useful for combining a cover letter with a CV, assembling a report from multiple chapters, or consolidating scanned pages from different sources. If any of the files are password protected, you will need to unlock them first using the Unlock PDF tool before merging.",
       },
       {
         question: "What is the difference between splitting and extracting pages from a PDF?",
-        answer: "Split PDF lets you define a consecutive page range to extract as a new document — for example, pages 1 through 5. Extract PDF Pages lets you specify individual page numbers in any order, which is useful when the pages you need are not consecutive. For example, if you need pages 2, 7, and 14 from a 30-page document, use Extract PDF Pages. If you need the first 10 pages of a document, use Split PDF. Both operations are non-destructive — they create new files without modifying the original.",
+        answer: "Split PDF lets you define a consecutive page range to extract as a new document for example, pages 1 through 5. Extract PDF Pages lets you specify individual page numbers in any order, which is useful when the pages you need are not consecutive. For example, if you need pages 2, 7, and 14 from a 30-page document, use Extract PDF Pages. If you need the first 10 pages of a document, use Split PDF. Both operations are non-destructive they create new files without modifying the original.",
       },
       {
         question: "Can I rotate only specific pages in a PDF, not the entire document?",
@@ -29,11 +29,11 @@ const categoryMeta: Record<string, {
       },
       {
         question: "Will compressing a PDF affect the quality of images inside it?",
-        answer: "Dockitt's Compress PDF tool works by optimising the PDF's internal structure — removing redundant metadata, streamlining object references, and cleaning up file overhead — rather than re-compressing the images themselves. This means that for most PDFs, image quality is not affected. The approach works best on text-heavy documents. For PDFs where the majority of the file size comes from embedded high-resolution images, the compression gains will be more modest because the images themselves are not touched.",
+        answer: "Dockitt's Compress PDF tool works by optimising the PDF's internal structure removing redundant metadata, streamlining object references, and cleaning up file overhead rather than re-compressing the images themselves. This means that for most PDFs, image quality is not affected. The approach works best on text-heavy documents. For PDFs where the majority of the file size comes from embedded high-resolution images, the compression gains will be more modest because the images themselves are not touched.",
       },
       {
         question: "Is there a file size limit for these PDF tools?",
-        answer: "Files up to 10MB can be processed directly. This limit comes from the Vercel serverless function payload limit for tools that require server-side processing. For tools that run entirely in the browser — such as Merge PDF, Split PDF, Rotate PDF, and Compress PDF — the practical limit is higher and depends on your device's available memory. If your file exceeds the limit for a server-side tool, try compressing it first to bring it under the threshold, or split it into smaller sections.",
+        answer: "Files up to 10MB can be processed directly. This limit comes from the Vercel serverless function payload limit for tools that require server-side processing. For tools that run entirely in the browser such as Merge PDF, Split PDF, Rotate PDF, and Compress PDF the practical limit is higher and depends on your device's available memory. If your file exceeds the limit for a server-side tool, try compressing it first to bring it under the threshold, or split it into smaller sections.",
       },
     ],
   },
@@ -43,19 +43,19 @@ const categoryMeta: Record<string, {
     faqs: [
       {
         question: "How secure is password protection on a PDF?",
-        answer: "Dockitt uses 128-bit AES encryption via Ghostscript, which is the standard encryption level for PDF security and is considered strong for most professional and personal use cases. A well-chosen password — at least 12 characters, mixing letters, numbers, and symbols — combined with 128-bit encryption makes the file extremely difficult to access without the correct password. However, no encryption is unconditional. If the password itself is weak or is shared insecurely, the protection can be compromised. Always share the password through a different channel than the document itself — for example, send the PDF by email and the password by SMS.",
+        answer: "Dockitt uses 128-bit AES encryption via Ghostscript, which is the standard encryption level for PDF security and is considered strong for most professional and personal use cases. A well-chosen password at least 12 characters, mixing letters, numbers, and symbols combined with 128-bit encryption makes the file extremely difficult to access without the correct password. However, no encryption is unconditional. If the password itself is weak or is shared insecurely, the protection can be compromised. Always share the password through a different channel than the document itself for example, send the PDF by email and the password by SMS.",
       },
       {
         question: "What is the difference between a user password and an owner password in a PDF?",
-        answer: "A PDF can have two separate layers of protection. A user password (also called an open password) is required to open and view the document at all. An owner password (also called a permissions password) controls what actions are allowed after the document is opened — such as printing, copying text, or editing. It is possible for a PDF to have only an owner password, meaning anyone can open it but certain actions are restricted. Dockitt's Protect PDF tool sets a user password, and the Unlock PDF tool removes both types of protection when given the correct password.",
+        answer: "A PDF can have two separate layers of protection. A user password (also called an open password) is required to open and view the document at all. An owner password (also called a permissions password) controls what actions are allowed after the document is opened such as printing, copying text, or editing. It is possible for a PDF to have only an owner password, meaning anyone can open it but certain actions are restricted. Dockitt's Protect PDF tool sets a user password, and the Unlock PDF tool removes both types of protection when given the correct password.",
       },
       {
         question: "Is a handwritten signature added through a browser legally binding?",
-        answer: "A handwritten signature drawn in a browser and embedded in a PDF is a visual signature. In many countries and for many document types, a visual signature is considered valid — particularly for internal documents, agreements between parties who have consented to electronic signing, and informal contracts. However, for high-stakes legal documents such as property transactions, financial agreements, or any document that may be legally disputed, a certified electronic signature with an audit trail and identity verification provides much stronger legal standing. Dockitt's Sign PDF tool is best suited for informal use cases where a visual representation of a signature is sufficient.",
+        answer: "A handwritten signature drawn in a browser and embedded in a PDF is a visual signature. In many countries and for many document types, a visual signature is considered valid particularly for internal documents, agreements between parties who have consented to electronic signing, and informal contracts. However, for high-stakes legal documents such as property transactions, financial agreements, or any document that may be legally disputed, a certified electronic signature with an audit trail and identity verification provides much stronger legal standing. Dockitt's Sign PDF tool is best suited for informal use cases where a visual representation of a signature is sufficient.",
       },
       {
         question: "Can someone remove a watermark I've added to a PDF?",
-        answer: "A text watermark embedded directly into a PDF's page content is significantly harder to remove than it might appear. While professional PDF editors like Adobe Acrobat Pro can attempt to remove watermarks, the process is time-consuming and imperfect on complex page backgrounds. For most use cases — marking documents as draft or confidential, deterring casual copying, or asserting ownership — an embedded text watermark is an effective deterrent.",
+        answer: "A text watermark embedded directly into a PDF's page content is significantly harder to remove than it might appear. While professional PDF editors like Adobe Acrobat Pro can attempt to remove watermarks, the process is time-consuming and imperfect on complex page backgrounds. For most use cases marking documents as draft or confidential, deterring casual copying, or asserting ownership an embedded text watermark is an effective deterrent.",
       },
       {
         question: "What should I do if I forgot the password on a PDF I own?",
@@ -69,15 +69,15 @@ const categoryMeta: Record<string, {
   },
   utility: {
     name: "PDF Utility Tools",
-    description: "Advanced PDF utilities — crop, OCR, repair, reorder pages and more.",
+    description: "Advanced PDF utilities crop, OCR, repair, reorder pages and more.",
     faqs: [
       {
         question: "What kinds of PDF files can OCR make searchable?",
-        answer: "OCR works on PDFs that are purely image-based — typically scanned documents, photographed pages, or PDFs exported from image editing tools where the text was flattened into the page image. If you open a PDF and cannot select, highlight, or copy any text, it is image-based and OCR will help. Dockitt uses ocrmypdf with the Tesseract engine, which supports a wide range of document types. OCR accuracy is highest on clean, high-resolution scans of printed text.",
+        answer: "OCR works on PDFs that are purely image-based typically scanned documents, photographed pages, or PDFs exported from image editing tools where the text was flattened into the page image. If you open a PDF and cannot select, highlight, or copy any text, it is image-based and OCR will help. Dockitt uses ocrmypdf with the Tesseract engine, which supports a wide range of document types. OCR accuracy is highest on clean, high-resolution scans of printed text.",
       },
       {
         question: "What causes a PDF to become corrupted and can it always be repaired?",
-        answer: "PDF corruption most commonly happens due to interrupted file transfers — a download that was cut off mid-way, a file that was being saved when the application crashed, or storage media errors. Dockitt's Repair PDF tool uses Ghostscript to rebuild the internal structure of the file. This works well for mildly damaged files. However, if the file data itself has been physically overwritten or large portions are missing, the content cannot be recovered.",
+        answer: "PDF corruption most commonly happens due to interrupted file transfers a download that was cut off mid-way, a file that was being saved when the application crashed, or storage media errors. Dockitt's Repair PDF tool uses Ghostscript to rebuild the internal structure of the file. This works well for mildly damaged files. However, if the file data itself has been physically overwritten or large portions are missing, the content cannot be recovered.",
       },
       {
         question: "Does cropping a PDF permanently delete the content outside the crop area?",
@@ -89,7 +89,7 @@ const categoryMeta: Record<string, {
       },
       {
         question: "Can I extract non-consecutive pages from a PDF into a new document?",
-        answer: "Yes. The Extract PDF Pages tool lets you specify individual page numbers in any order — for example, pages 3, 8, 12, and 17. The resulting PDF will contain only those pages, in the order you specified. This is useful when working with reports that have relevant sections scattered throughout.",
+        answer: "Yes. The Extract PDF Pages tool lets you specify individual page numbers in any order for example, pages 3, 8, 12, and 17. The resulting PDF will contain only those pages, in the order you specified. This is useful when working with reports that have relevant sections scattered throughout.",
       },
       {
         question: "What should I do if a repaired PDF still shows blank or missing pages?",
@@ -114,8 +114,14 @@ const TOOL_ICONS: Record<string, string> = {
   "repair-pdf": "🔧",
   "ocr-pdf": "🔍",
   "reorder-pdf-pages": "🔀",
+  "add-page-numbers": "🔢",
+  "resize-pages": "📐",
+  "flatten-pdf": "⬜",
+  "remove-metadata": "🧹",
+  "compress-images-pdf": "🖼️",
+  "dark-mode-pdf": "🌙",
+  "pdf-word-count": "📊",
 };
-
 export function generateStaticParams() {
   return Object.keys(categoryMeta).map((slug) => ({ slug }));
 }

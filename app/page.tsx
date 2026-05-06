@@ -27,7 +27,7 @@ const USE_CASES = [
 
 const WHY_ITEMS = [
   { Icon: Zap, title: "Fast processing", text: "Most operations complete in under 5 seconds.", color: "#ca8a04", bg: "#fefce8" },
-  { Icon: Smartphone, title: "Works on any device", text: "Desktop, tablet, or phone — it works everywhere.", color: "#9333ea", bg: "#fdf4ff" },
+  { Icon: Smartphone, title: "Works on any device", text: "Desktop, tablet, or phone it works everywhere.", color: "#9333ea", bg: "#fdf4ff" },
   { Icon: ShieldCheck, title: "Privacy focused", text: "Files are never stored or shared. Processed and gone.", color: "#16a34a", bg: "#f0fdf4" },
   { Icon: Layers, title: "20+ tools", text: "Everything you need to work with PDFs in one place.", color: "#2563eb", bg: "#eff6ff" },
 ];
@@ -149,6 +149,13 @@ function UploadBox() {
         { name: "Crop PDF", desc: "Trim margins", slug: "crop-pdf" },
         { name: "Reorder pages", desc: "Drag to rearrange", slug: "reorder-pdf-pages" },
         { name: "Extract pages", desc: "Save specific pages", slug: "extract-pdf-pages" },
+        { name: "Add page numbers", desc: "Number your pages", slug: "add-page-numbers" },
+        { name: "Resize pages", desc: "A4, Letter, A3, Legal", slug: "resize-pages" },
+        { name: "Flatten PDF", desc: "Make forms static", slug: "flatten-pdf" },
+        { name: "Remove metadata", desc: "Strip hidden info", slug: "remove-metadata" },
+        { name: "Compress images", desc: "Shrink image PDFs", slug: "compress-images-pdf" },
+        { name: "Dark mode PDF", desc: "Invert colours", slug: "dark-mode-pdf" },
+        { name: "Word count", desc: "Count words & pages", slug: "pdf-word-count" },
       ],
     },
   ];
@@ -320,9 +327,9 @@ export default function Home() {
               </p>
               <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
                 {[
-                  { Icon: ShieldCheck, text: "Files stay private — processed and gone", color: "#16a34a" },
-                  { Icon: Zap, text: "Works in your browser — no software needed", color: "#ca8a04" },
-                  { Icon: Layers, text: "Fast — 20+ tools available", color: "#2563eb" },
+                  { Icon: ShieldCheck, text: "Files stay private processed and gone", color: "#16a34a" },
+                  { Icon: Zap, text: "Works in your browser no software needed", color: "#ca8a04" },
+                  { Icon: Layers, text: "Fast 20+ tools available", color: "#2563eb" },
                 ].map((item) => (
                   <div key={item.text} style={{ display: "flex", alignItems: "center", gap: "10px", fontSize: "16px", color: "#374151" }}>
                     <item.Icon size={20} color={item.color} strokeWidth={2.5} />
@@ -402,7 +409,7 @@ export default function Home() {
             <div style={{ display: "flex", flexDirection: "column", gap: "28px" }}>
               {[
                 { num: "01", Icon: FolderOpen, title: "Upload your file", text: "Drag & drop or click to select your PDF. Most tools process files entirely in your browser, no upload needed." },
-                { num: "02", Icon: Settings, title: "Process instantly", text: "Choose what you want to do — compress, merge, split, convert. Browser tools start immediately; server tools process securely and delete your file right after." },
+                { num: "02", Icon: Settings, title: "Process instantly", text: "Choose what you want to do compress, merge, split, convert. Browser tools start immediately; server tools process securely and delete your file right after." },
                 { num: "03", Icon: Download, title: "Download result", text: "Get your processed file right away. No email required, no waiting, just click download and you're done." },
               ].map((step) => (
                 <div key={step.num} style={{ display: "flex", gap: "16px", alignItems: "flex-start" }}>
