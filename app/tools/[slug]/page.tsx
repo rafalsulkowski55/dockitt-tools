@@ -16,6 +16,14 @@ import CropUpload from "./CropUpload";
 import ReorderUpload from "./ReorderUpload";
 import RepairUpload from "./RepairUpload";
 import OcrUpload from "./OcrUpload";
+import PdfToTextUpload from "./PdfToTextUpload";
+import AddPageNumbersUpload from "./AddPageNumbersUpload";
+import ResizePagesUpload from "./ResizePagesUpload";
+import FlattenPdfUpload from "./FlattenPdfUpload";
+import RemoveMetadataUpload from "./RemoveMetadataUpload";
+import CompressImagesPdfUpload from "./CompressImagesPdfUpload";
+import DarkModePdfUpload from "./DarkModePdfUpload";
+import PdfWordCountUpload from "./PdfWordCountUpload";
 import DownloadHandler from "./DownloadHandler";
 import Link from "next/link";
 
@@ -58,6 +66,13 @@ const SERVER_SIDE_TOOLS = new Set([
   "ocr-pdf",
   "pdf-to-word",
   "word-to-pdf",
+  "pdf-to-text",
+  "add-page-numbers",
+  "resize-pages",
+  "flatten-pdf",
+  "remove-metadata",
+  "compress-images-pdf",
+  "dark-mode-pdf",
 ]);
 
 function ToolComponent({ slug }: { slug: string }) {
@@ -76,6 +91,14 @@ function ToolComponent({ slug }: { slug: string }) {
     case "reorder-pdf-pages": return <ReorderUpload />;
     case "repair-pdf": return <RepairUpload />;
     case "ocr-pdf": return <OcrUpload />;
+    case "pdf-to-text": return <PdfToTextUpload />;
+    case "add-page-numbers": return <AddPageNumbersUpload />;
+    case "resize-pages": return <ResizePagesUpload />;
+    case "flatten-pdf": return <FlattenPdfUpload />;
+    case "remove-metadata": return <RemoveMetadataUpload />;
+    case "compress-images-pdf": return <CompressImagesPdfUpload />;
+    case "dark-mode-pdf": return <DarkModePdfUpload />;
+    case "pdf-word-count": return <PdfWordCountUpload />;
     default: return <ToolUpload />;
   }
 }
@@ -178,13 +201,13 @@ export default async function ToolPage({ params }: ToolPageProps) {
   const bullets = SERVER_SIDE_TOOLS.has(slug)
     ? [
         { color: "#16a34a", text: "Your file is deleted immediately after processing" },
-        { color: "#2563eb", text: "Encrypted connection — safe and private" },
+        { color: "#2563eb", text: "Encrypted connection safe and private" },
         { color: "#ca8a04", text: "Result ready in seconds" },
       ]
     : [
-        { color: "#16a34a", text: "Processed entirely in your browser — never leaves your device" },
-        { color: "#2563eb", text: "No software needed — works in any browser" },
-        { color: "#ca8a04", text: "Fast — most operations complete in seconds" },
+        { color: "#16a34a", text: "Processed entirely in your browser never leaves your device" },
+        { color: "#2563eb", text: "No software needed works in any browser" },
+        { color: "#ca8a04", text: "Fast most operations complete in seconds" },
       ];
 
   return (
@@ -203,7 +226,7 @@ export default async function ToolPage({ params }: ToolPageProps) {
             style={{ display: "grid", gridTemplateColumns: "42% 58%", gap: "48px", alignItems: "start" }}
             className="hero-grid"
           >
-            {/* Lewa — sticky na górze */}
+            {/* Lewa sticky na górze */}
             <div style={{ alignSelf: "start" }}>
               <Breadcrumbs toolName={tool.name} />
               <IntroSection tool={tool} variant={variant} slug={slug} />
@@ -220,7 +243,7 @@ export default async function ToolPage({ params }: ToolPageProps) {
               </div>
             </div>
 
-            {/* Prawa — upload box */}
+            {/* Prawa upload box */}
             <div style={{ alignSelf: "start", background: "#ffffff", border: "1px solid #e5e7eb", borderRadius: "16px", overflow: "hidden" }}>
               {SERVER_SIDE_TOOLS.has(slug) ? (
                 <div style={{
@@ -238,7 +261,7 @@ export default async function ToolPage({ params }: ToolPageProps) {
                   padding: "12px 16px", fontSize: "13px", color: "#14532d",
                 }}>
                   <span style={{ flexShrink: 0 }}>✅</span>
-                  <span><strong>Processed entirely in your browser.</strong> Your file never leaves your device — no upload, no server, complete privacy.</span>
+                  <span><strong>Processed entirely in your browser.</strong> Your file never leaves your device no upload, no server, complete privacy.</span>
                 </div>
               )}
               <div style={{ padding: "24px" }}>
