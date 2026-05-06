@@ -29,74 +29,7 @@ const WHY_ITEMS = [
   { Icon: Zap, title: "Fast processing", text: "Most operations complete in under 5 seconds.", color: "#ca8a04", bg: "#fefce8" },
   { Icon: Smartphone, title: "Works on any device", text: "Desktop, tablet, or phone it works everywhere.", color: "#9333ea", bg: "#fdf4ff" },
   { Icon: ShieldCheck, title: "Privacy focused", text: "Files are never stored or shared. Processed and gone.", color: "#16a34a", bg: "#f0fdf4" },
-  { Icon: Layers, title: "20+ tools", text: "Everything you need to work with PDFs in one place.", color: "#2563eb", bg: "#eff6ff" },
-];
-
-const CATEGORIES_TOOLS = [
-  {
-    slug: "core",
-    name: "Core PDF Tools",
-    desc: "Compress, merge, split, rotate and more.",
-    count: 5,
-    icon: FileArchive,
-    color: "#2563eb",
-    bg: "#eff6ff",
-    href: "/categories/core",
-    tools: [
-      { name: "Compress PDF", desc: "Reduce PDF file size", slug: "compress-pdf", Icon: FileArchive },
-      { name: "Merge PDF", desc: "Combine multiple PDFs", slug: "merge-pdf", Icon: GitMerge },
-      { name: "Split PDF", desc: "Extract page ranges", slug: "split-pdf", Icon: Scissors },
-      { name: "Rotate PDF", desc: "Fix page orientation", slug: "rotate-pdf", Icon: RotateCw },
-    ],
-  },
-  {
-    slug: "convert",
-    name: "Convert PDF",
-    desc: "PDF to Word, JPG, PNG and back.",
-    count: 6,
-    icon: FileText,
-    color: "#ea580c",
-    bg: "#fff7ed",
-    href: "/convert-pdf",
-    tools: [
-      { name: "PDF to Word", desc: "Editable .docx file", slug: "pdf-to-word", Icon: FileText, href: "/convert-pdf/pdf-to-word" },
-      { name: "Word to PDF", desc: "Convert .docx to PDF", slug: "word-to-pdf", Icon: FileOutput, href: "/convert-pdf/word-to-pdf" },
-      { name: "PDF to JPG", desc: "Pages as images", slug: "pdf-to-jpg", Icon: FileText, href: "/convert-pdf/pdf-to-jpg" },
-      { name: "PDF to PNG", desc: "Lossless image export", slug: "pdf-to-png", Icon: FileText, href: "/convert-pdf/pdf-to-png" },
-    ],
-  },
-  {
-    slug: "security",
-    name: "PDF Security",
-    desc: "Protect, unlock, sign and watermark.",
-    count: 4,
-    icon: Lock,
-    color: "#dc2626",
-    bg: "#fef2f2",
-    href: "/categories/security",
-    tools: [
-      { name: "Protect PDF", desc: "Add password encryption", slug: "protect-pdf", Icon: Lock },
-      { name: "Unlock PDF", desc: "Remove password", slug: "unlock-pdf", Icon: Lock },
-      { name: "Watermark PDF", desc: "Add text watermark", slug: "watermark-pdf", Icon: Lock },
-      { name: "Sign PDF", desc: "Draw your signature", slug: "sign-pdf", Icon: Lock },
-    ],
-  },
-  {
-    slug: "utility",
-    name: "PDF Utilities",
-    desc: "OCR, repair, crop and reorder pages.",
-    count: 5,
-    icon: ScanText,
-    color: "#16a34a",
-    bg: "#f0fdf4",
-    href: "/categories/utility",
-    tools: [
-      { name: "OCR PDF", desc: "Make scanned PDFs searchable", slug: "ocr-pdf", Icon: ScanText },
-      { name: "Repair PDF", desc: "Fix corrupted files", slug: "repair-pdf", Icon: ScanText },
-      { name: "Crop PDF", desc: "Remove margins", slug: "crop-pdf", Icon: ScanText },
-      { name: "Reorder Pages", desc: "Drag to rearrange", slug: "reorder-pdf-pages", Icon: ScanText },
-    ],
-  },
+  { Icon: Layers, title: "30+ tools", text: "Everything you need to work with PDFs in one place.", color: "#2563eb", bg: "#eff6ff" },
 ];
 
 function formatSize(bytes: number) {
@@ -125,20 +58,25 @@ function UploadBox() {
       ],
     },
     {
-      label: "Convert",
+      label: "PDF → File",
       tools: [
         { name: "PDF to Word", desc: "Editable .docx", slug: "pdf-to-word", href: "/convert-pdf/pdf-to-word" },
-        { name: "Word to PDF", desc: "From .docx", slug: "word-to-pdf", href: "/convert-pdf/word-to-pdf" },
         { name: "PDF to PowerPoint", desc: "Editable .pptx", slug: "pdf-to-pptx", href: "/convert-pdf/pdf-to-pptx" },
-        { name: "PowerPoint to PDF", desc: "From .pptx", slug: "pptx-to-pdf", href: "/convert-pdf/pptx-to-pdf" },
         { name: "PDF to Excel", desc: "Editable .xlsx", slug: "pdf-to-xlsx", href: "/convert-pdf/pdf-to-xlsx" },
-        { name: "Excel to PDF", desc: "From .xlsx", slug: "xlsx-to-pdf", href: "/convert-pdf/xlsx-to-pdf" },
         { name: "PDF to JPG", desc: "Pages as images", slug: "pdf-to-jpg", href: "/convert-pdf/pdf-to-jpg" },
         { name: "PDF to PNG", desc: "High quality", slug: "pdf-to-png", href: "/convert-pdf/pdf-to-png" },
-        { name: "JPG to PDF", desc: "Images to PDF", slug: "jpg-to-pdf", href: "/convert-pdf/jpg-to-pdf" },
-        { name: "PNG to PDF", desc: "Images to PDF", slug: "png-to-pdf", href: "/convert-pdf/png-to-pdf" },
         { name: "PDF to Text", desc: "Plain .txt", slug: "pdf-to-text", href: "/convert-pdf/pdf-to-text" },
         { name: "PDF to HTML", desc: "Web format", slug: "pdf-to-html", href: "/convert-pdf/pdf-to-html" },
+      ],
+    },
+    {
+      label: "File → PDF",
+      tools: [
+        { name: "Word to PDF", desc: "From .docx", slug: "word-to-pdf", href: "/convert-pdf/word-to-pdf" },
+        { name: "PowerPoint to PDF", desc: "From .pptx", slug: "pptx-to-pdf", href: "/convert-pdf/pptx-to-pdf" },
+        { name: "Excel to PDF", desc: "From .xlsx", slug: "xlsx-to-pdf", href: "/convert-pdf/xlsx-to-pdf" },
+        { name: "JPG to PDF", desc: "Images to PDF", slug: "jpg-to-pdf", href: "/convert-pdf/jpg-to-pdf" },
+        { name: "PNG to PDF", desc: "Images to PDF", slug: "png-to-pdf", href: "/convert-pdf/png-to-pdf" },
       ],
     },
     {
@@ -269,19 +207,19 @@ function UploadBox() {
         <p style={{ fontSize: "13px", fontWeight: 600, color: "#6b7280", textTransform: "uppercase", letterSpacing: "0.05em", margin: "0 0 12px" }}>
           What do you want to do?
         </p>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(4, minmax(0, 1fr))", gap: "8px" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(5, minmax(0, 1fr))", gap: "6px" }}>
           {TOOLS_COLUMNS.map((col) => (
             <div key={col.label}>
               <p style={{ margin: "0 0 6px", fontSize: "11px", fontWeight: 600, color: "#9ca3af", textTransform: "uppercase", letterSpacing: "0.04em" }}>
                 {col.label}
               </p>
-              <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+              <div style={{ display: "flex", flexDirection: "column", gap: "3px" }}>
                 {col.tools.map((tool) => (
                   <div
                     key={tool.slug}
                     onClick={() => goToTool(tool.slug, (tool as { href?: string }).href)}
                     style={{
-                      padding: "8px 10px", borderRadius: "8px", cursor: "pointer",
+                      padding: "7px 9px", borderRadius: "8px", cursor: "pointer",
                       background: "#f9fafb", border: "1px solid #e5e7eb",
                     }}
                     onMouseEnter={(e) => {
@@ -293,8 +231,8 @@ function UploadBox() {
                       (e.currentTarget as HTMLDivElement).style.borderColor = "#e5e7eb";
                     }}
                   >
-                    <p style={{ margin: "0 0 1px", fontSize: "12px", fontWeight: 600, color: "#111" }}>{tool.name}</p>
-                    <p style={{ margin: 0, fontSize: "11px", color: "#6b7280" }}>{tool.desc}</p>
+                    <p style={{ margin: "0 0 1px", fontSize: "11px", fontWeight: 600, color: "#111" }}>{tool.name}</p>
+                    <p style={{ margin: 0, fontSize: "10px", color: "#6b7280" }}>{tool.desc}</p>
                   </div>
                 ))}
               </div>
@@ -308,9 +246,9 @@ function UploadBox() {
 
 const CATEGORIES = [
   { slug: "core", name: "Core PDF Tools", desc: "Compress, merge, split, rotate and more.", count: 5, icon: FileArchive, color: "#2563eb", bg: "#eff6ff", href: "/categories/core" },
-  { slug: "convert", name: "Convert PDF", desc: "PDF to Word, JPG, PNG and back.", count: 6, icon: FileText, color: "#ea580c", bg: "#fff7ed", href: "/convert-pdf" },
+  { slug: "convert", name: "Convert PDF", desc: "PDF to Word, JPG, PNG and back.", count: 12, icon: FileText, color: "#ea580c", bg: "#fff7ed", href: "/convert-pdf" },
   { slug: "security", name: "PDF Security", desc: "Protect, unlock, sign and watermark.", count: 4, icon: Lock, color: "#dc2626", bg: "#fef2f2", href: "/categories/security" },
-  { slug: "utility", name: "PDF Utilities", desc: "OCR, repair, crop and reorder pages.", count: 5, icon: ScanText, color: "#16a34a", bg: "#f0fdf4", href: "/categories/utility" },
+  { slug: "utility", name: "PDF Utilities", desc: "OCR, repair, crop and reorder pages.", count: 14, icon: ScanText, color: "#16a34a", bg: "#f0fdf4", href: "/categories/utility" },
 ];
 
 export default function Home() {
@@ -333,9 +271,9 @@ export default function Home() {
               </p>
               <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
                 {[
-                  { Icon: ShieldCheck, text: "Files stay private processed and gone", color: "#16a34a" },
-                  { Icon: Zap, text: "Works in your browser no software needed", color: "#ca8a04" },
-                  { Icon: Layers, text: "Fast 20+ tools available", color: "#2563eb" },
+                  { Icon: ShieldCheck, text: "Files stay private — processed and gone", color: "#16a34a" },
+                  { Icon: Zap, text: "Works in your browser — no software needed", color: "#ca8a04" },
+                  { Icon: Layers, text: "Fast — 30+ tools available", color: "#2563eb" },
                 ].map((item) => (
                   <div key={item.text} style={{ display: "flex", alignItems: "center", gap: "10px", fontSize: "16px", color: "#374151" }}>
                     <item.Icon size={20} color={item.color} strokeWidth={2.5} />
@@ -393,7 +331,6 @@ export default function Home() {
           <p style={{ fontSize: "14px", color: "#4b5563", marginBottom: "36px" }}>Fast, simple, and private.</p>
 
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "48px", alignItems: "center" }} className="how-grid">
-            {/* SVG */}
             <div style={{ display: "flex", justifyContent: "center" }}>
               <div style={{ position: "relative", display: "flex", alignItems: "center", gap: "24px" }}>
                 <span style={{ fontSize: "32px", color: "#2563eb" }}>↑</span>
@@ -411,11 +348,10 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Kroki */}
             <div style={{ display: "flex", flexDirection: "column", gap: "28px" }}>
               {[
                 { num: "01", Icon: FolderOpen, title: "Upload your file", text: "Drag & drop or click to select your PDF. Most tools process files entirely in your browser, no upload needed." },
-                { num: "02", Icon: Settings, title: "Process instantly", text: "Choose what you want to do compress, merge, split, convert. Browser tools start immediately; server tools process securely and delete your file right after." },
+                { num: "02", Icon: Settings, title: "Process instantly", text: "Choose what you want to do — compress, merge, split, convert. Browser tools start immediately; server tools process securely and delete your file right after." },
                 { num: "03", Icon: Download, title: "Download result", text: "Get your processed file right away. No email required, no waiting, just click download and you're done." },
               ].map((step) => (
                 <div key={step.num} style={{ display: "flex", gap: "16px", alignItems: "flex-start" }}>
