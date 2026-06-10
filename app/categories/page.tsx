@@ -26,8 +26,8 @@ const CATEGORY_LABELS: Record<string, string> = {
 };
 
 export const metadata = {
-  title: "All PDF Tools Dockitt",
-  description: "Browse all PDF tools merge, split, compress, convert, protect and more.",
+  title: "All Tools — PDF, Image & More | Dockitt",
+  description: "Browse all free browser-based tools: merge, split, convert, edit PDFs, images, text and files. No signup required.",
 };
 
 export default function CategoriesPage() {
@@ -50,7 +50,7 @@ export default function CategoriesPage() {
             All Tools
           </p>
           <h1 style={{ fontSize: "clamp(22px, 4vw, 32px)", fontWeight: 700, color: "#0f0f0f", letterSpacing: "-0.015em", marginBottom: "8px", borderLeft: "3px solid #2563eb", paddingLeft: "12px" }}>
-            Browse all PDF tools
+            Browse all tools
           </h1>
           <p style={{ fontSize: "15px", color: "#4b5563", margin: 0 }}>
             All tools are free, require no signup, and most run directly in your browser.
@@ -108,6 +108,39 @@ export default function CategoriesPage() {
             ))}
           </div>
         </div>
+
+        {/* Coming soon categories */}
+        {[
+          { label: "Image Convert", href: "/convert-image", icon: "🖼️", desc: "Convert between JPG, PNG, WebP and more" },
+          { label: "Image Edit", href: "/edit-image", icon: "✏️", desc: "Resize, crop, compress and rotate images" },
+          { label: "Text & Data", href: "/text-tools", icon: "📝", desc: "Transform, encode and format text and data" },
+          { label: "File Utilities", href: "/file-tools", icon: "🗂️", desc: "Compress, archive and inspect files" },
+        ].map((cat) => (
+          <div key={cat.href} style={{ marginBottom: "40px" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "14px" }}>
+              <h2 style={{ fontSize: "16px", fontWeight: 700, color: "#111", margin: 0, borderLeft: "3px solid #e5e7eb", paddingLeft: "12px" }}>
+                {cat.label}
+              </h2>
+              <span style={{ background: "#fff7ed", color: "#ea580c", fontSize: "10px", fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", padding: "2px 8px", borderRadius: "99px" }}>
+                Coming soon
+              </span>
+            </div>
+            <Link href={cat.href} style={{ textDecoration: "none" }}>
+              <div style={{
+                background: "#fff", border: "1px dashed #e5e7eb",
+                borderRadius: "12px", padding: "20px 24px",
+                display: "flex", alignItems: "center", gap: "16px",
+              }}>
+                <span style={{ fontSize: "24px" }}>{cat.icon}</span>
+                <div>
+                  <p style={{ fontSize: "13px", fontWeight: 600, color: "#111", margin: "0 0 3px" }}>{cat.label}</p>
+                  <p style={{ fontSize: "12px", color: "#9ca3af", margin: 0 }}>{cat.desc}</p>
+                </div>
+                <span style={{ marginLeft: "auto", fontSize: "13px", color: "#2563eb", fontWeight: 500 }}>See what's coming →</span>
+              </div>
+            </Link>
+          </div>
+        ))}
 
       </div>
     </main>

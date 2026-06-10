@@ -39,6 +39,7 @@ export default function sitemap() {
   const staticPages = [
     { url: baseUrl, priority: 1.0 },
     { url: `${baseUrl}/categories`, priority: 0.8 },
+    { url: `${baseUrl}/convert`, priority: 0.8 },
     { url: `${baseUrl}/about`, priority: 0.4 },
     { url: `${baseUrl}/contact`, priority: 0.4 },
     { url: `${baseUrl}/privacy`, priority: 0.3 },

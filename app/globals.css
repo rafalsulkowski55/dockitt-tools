@@ -29,4 +29,10 @@ a:hover {
   .why-grid {
     grid-template-columns: 1fr !important;
   }
+  .desktop-nav {
+    display: none !important;
+  }
+  .hamburger {
+    display: flex !important;
+  }
 }
