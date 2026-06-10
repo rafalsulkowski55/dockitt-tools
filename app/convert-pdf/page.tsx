@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 export const metadata = {
-  title: "Convert PDF Online — PDF Converter",
+  title: "Convert PDF Online PDF Converter",
   description: "Convert PDF to Word, JPG, PNG, and more. Or convert JPG, PNG, and Word files to PDF. Free, no signup required.",
 };
 
@@ -74,7 +74,7 @@ export default function ConvertPdfPage() {
           Convert PDF files online
         </h1>
         <p style={{ fontSize: "15px", color: "#4b5563", margin: 0 }}>
-          Convert PDF to Word, JPG, or PNG — or convert images and Word documents to PDF. Free, works in your browser.
+          Convert PDF to Word, JPG, or PNG or convert images and Word documents to PDF. Free, works in your browser.
         </p>
       </div>
 

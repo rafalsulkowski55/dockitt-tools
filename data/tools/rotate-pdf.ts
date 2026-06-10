@@ -2,7 +2,7 @@ export const rotatePdfTool = {
   slug: "rotate-pdf",
   name: "Rotate PDF",
   title: "Rotate PDF Pages Online",
-  description: "Rotate pages in your PDF file online — fix upside-down or sideways pages without any software.",
+  description: "Rotate pages in your PDF file online fix upside-down or sideways pages without any software.",
   longDescription: `Scanned documents often come out rotated the wrong way. A page that should be portrait ends up landscape, or an entire document is upside down because the paper was fed into the scanner incorrectly. Fixing this manually in a PDF editor can be time-consuming. Dockitt's Rotate PDF tool lets you rotate all pages in your PDF by 90, 180, or 270 degrees in seconds, directly in your browser. The rotation is saved permanently into the file, so it opens correctly in any PDF viewer without needing to be adjusted again.`,
   shortDescription: "Rotate PDF pages online .",
   category: "core",

@@ -2,9 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { ToolTracking } from "@/lib/analytics";
-import { useConversionLimit } from "@/lib/use-conversion-limit";
 import { usePendingFile } from "@/lib/use-pending-file";
-import PricingModal from "@/app/components/PricingModal";
 
 const TOOL_NAME = "crop-pdf";
 const PROCESSING_TYPE = "browser" as const;
@@ -35,7 +33,6 @@ export default function CropUpload() {
   const overlayCanvasRef = useRef<HTMLCanvasElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const { showPricingModal, setShowPricingModal, onConversionSuccess } = useConversionLimit();
   const isDragging = useRef(false);
   const isResizing = useRef<string | null>(null);
   const dragStart = useRef({ x: 0, y: 0 });
@@ -194,7 +191,6 @@ export default function CropUpload() {
       const saved = await pdfDoc.save({ useObjectStreams: true });
       const blob = new Blob([saved.buffer as ArrayBuffer], { type: "application/pdf" });
       const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = `cropped-${file.name}`; a.click();
-      setStatus("done"); onConversionSuccess();
       ToolTracking.processSuccess(TOOL_NAME, PROCESSING_TYPE); ToolTracking.downloadClicked(TOOL_NAME, PROCESSING_TYPE);
     } catch (err: unknown) {
       clearInterval(interval);
@@ -207,7 +203,6 @@ export default function CropUpload() {
 
   return (
     <>
-      {showPricingModal && <PricingModal onClose={() => setShowPricingModal(false)} />}
       <input ref={inputRef} type="file" accept=".pdf" style={{ display: "none" }} onChange={handleFileChange} />
 
       <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>

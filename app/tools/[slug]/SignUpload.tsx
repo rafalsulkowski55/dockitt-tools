@@ -2,9 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { ToolTracking } from "@/lib/analytics";
-import { useConversionLimit } from "@/lib/use-conversion-limit";
 import { usePendingFile } from "@/lib/use-pending-file";
-import PricingModal from "@/app/components/PricingModal";
 
 const TOOL_NAME = "sign-pdf";
 const PROCESSING_TYPE = "browser" as const;
@@ -32,7 +30,6 @@ export default function SignUpload() {
   const previewCanvasRef = useRef<HTMLCanvasElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const { showPricingModal, setShowPricingModal, onConversionSuccess } = useConversionLimit();
   const isDrawing = useRef(false);
   const lastPos = useRef<{ x: number; y: number } | null>(null);
 
@@ -128,7 +125,6 @@ export default function SignUpload() {
       const saved = await pdfDoc.save();
       const blob = new Blob([saved.buffer as ArrayBuffer], { type: "application/pdf" });
       const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = `signed-${file.name}`; a.click();
-      setStatus("done"); onConversionSuccess();
       ToolTracking.processSuccess(TOOL_NAME, PROCESSING_TYPE);
       ToolTracking.downloadClicked(TOOL_NAME, PROCESSING_TYPE);
     } catch (err: unknown) {
@@ -142,7 +138,6 @@ export default function SignUpload() {
 
   return (
     <>
-      {showPricingModal && <PricingModal onClose={() => setShowPricingModal(false)} />}
       <input ref={inputRef} type="file" accept=".pdf" style={{ display: "none" }} onChange={handleFileChange} />
 
       <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
@@ -171,7 +166,7 @@ export default function SignUpload() {
         {file && (
           <>
             <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-              <p style={{ fontSize: "13px", fontWeight: 600, color: "#374151", margin: 0 }}>Step 1 — Click where you want to place your signature:</p>
+              <p style={{ fontSize: "13px", fontWeight: 600, color: "#374151", margin: 0 }}>Step 1 Click where you want to place your signature:</p>
               <div style={{ position: "relative", display: "inline-block", maxWidth: "100%" }}>
                 <canvas ref={previewCanvasRef} onClick={handlePreviewClick} style={{ border: "1px solid #bfdbfe", borderRadius: "8px", cursor: "crosshair", display: "block", maxWidth: "100%" }} />
                 {signaturePos && (
@@ -179,12 +174,12 @@ export default function SignUpload() {
                 )}
               </div>
               <p style={{ fontSize: "11px", color: signaturePos ? "#16a34a" : "#9ca3af", margin: 0 }}>
-                {signaturePos ? "✓ Position set — click elsewhere to move it" : "Click anywhere on the document to set position"}
+                {signaturePos ? "✓ Position set click elsewhere to move it" : "Click anywhere on the document to set position"}
               </p>
             </div>
 
             <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-              <p style={{ fontSize: "13px", fontWeight: 600, color: "#374151", margin: 0 }}>Step 2 — Draw your signature:</p>
+              <p style={{ fontSize: "13px", fontWeight: 600, color: "#374151", margin: 0 }}>Step 2 Draw your signature:</p>
               <canvas ref={signatureCanvasRef} width={400} height={100}
                 onMouseDown={startDrawing} onMouseMove={draw} onMouseUp={stopDrawing} onMouseLeave={stopDrawing}
                 style={{ border: "2px dashed #bfdbfe", borderRadius: "8px", cursor: "crosshair", background: "#f8faff", maxWidth: "100%", display: "block" }} />

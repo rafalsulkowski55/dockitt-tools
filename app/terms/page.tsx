@@ -1,5 +1,5 @@
 export const metadata = {
-  title: "Terms of Use — Dockitt",
+  title: "Terms of Use Dockitt",
   description: "Terms of use for Dockitt PDF tools.",
 };
 

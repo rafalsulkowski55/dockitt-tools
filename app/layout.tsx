@@ -12,8 +12,8 @@ const geistSans = Geist({
 });
 
 export const metadata: Metadata = {
-  title: "Dockitt — PDF Tools Online",
-  description: "Compress, merge, split and convert PDF files — fast, without limits.",
+  title: "Dockitt PDF Tools Online",
+  description: "Compress, merge, split and convert PDF files fast, without limits.",
   metadataBase: new URL("https://www.dockitt.com"),
   icons: {
     icon: [
@@ -23,8 +23,8 @@ export const metadata: Metadata = {
     apple: "/apple-touch-icon.png",
   },
   openGraph: {
-    title: "Dockitt — PDF Tools Online",
-    description: "Compress, merge, split and convert PDF files — fast, without limits.",
+    title: "Dockitt PDF Tools Online",
+    description: "Compress, merge, split and convert PDF files fast, without limits.",
     url: "https://www.dockitt.com",
     siteName: "Dockitt",
     locale: "en_US",
@@ -32,8 +32,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary",
-    title: "Dockitt — PDF Tools Online",
-    description: "Compress, merge, split and convert PDF files — fast, without limits.",
+    title: "Dockitt PDF Tools Online",
+    description: "Compress, merge, split and convert PDF files fast, without limits.",
   },
 };
 
@@ -78,9 +78,9 @@ export default function RootLayout({
         }}>
           <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "12px 20px", marginBottom: "16px" }}>
             <Link href="/convert-pdf" style={{ color: "#666", textDecoration: "none" }}>Convert PDF</Link>
-            <Link href="/categories/core" style={{ color: "#666", textDecoration: "none" }}>Core Tools</Link>
-            <Link href="/categories/security" style={{ color: "#666", textDecoration: "none" }}>Security Tools</Link>
-            <Link href="/categories/utility" style={{ color: "#666", textDecoration: "none" }}>Utility Tools</Link>
+            <Link href="/categories/core" style={{ color: "#666", textDecoration: "none" }}>Organize PDF</Link>
+            <Link href="/categories/security" style={{ color: "#666", textDecoration: "none" }}>Edit & Sign</Link>
+            <Link href="/categories" style={{ color: "#666", textDecoration: "none" }}>All Tools</Link>
             <Link href="/guides" style={{ color: "#666", textDecoration: "none" }}>Guides</Link>
             <Link href="/about" style={{ color: "#666", textDecoration: "none" }}>About</Link>
             <Link href="/contact" style={{ color: "#666", textDecoration: "none" }}>Contact</Link>
@@ -88,8 +88,8 @@ export default function RootLayout({
             <Link href="/terms" style={{ color: "#666", textDecoration: "none" }}>Terms of Use</Link>
           </div>
           <p style={{ fontSize: "12px", color: "#9ca3af", maxWidth: "600px", margin: "0 auto 12px", lineHeight: 1.6 }}>
-            Dockitt is an online PDF toolbox. Compress, merge, split and convert PDFs without installing anything.
-            Most tools run directly in your browser. For tools that require server processing, files are sent over an encrypted connection and deleted immediately after processing.
+            Dockitt is a free online PDF toolbox. Merge, split, rotate, convert and edit PDFs without installing anything.
+            All tools run directly in your browser — your files never leave your device.
           </p>
           <p style={{ margin: 0, fontSize: "12px", color: "#9ca3af" }}>
             © {new Date().getFullYear()} Dockitt

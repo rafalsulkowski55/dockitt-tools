@@ -1,5 +1,5 @@
 export const metadata = {
-  title: "Privacy Policy — Dockitt",
+  title: "Privacy Policy Dockitt",
   description: "Privacy policy for Dockitt PDF tools.",
 };
 

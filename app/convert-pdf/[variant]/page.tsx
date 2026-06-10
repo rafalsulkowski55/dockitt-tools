@@ -12,7 +12,7 @@ export async function generateMetadata({ params }: ConvertPageProps) {
   const v = getConvertVariant(variant);
   if (!v) return {};
   return {
-    title: `${v.title} — Dockitt`,
+    title: `${v.title} Dockitt`,
     description: v.description,
   };
 }
@@ -21,27 +21,17 @@ export async function generateStaticParams() {
   return getAllConvertVariants().map((v) => ({ variant: v.slug }));
 }
 
-const R2_VARIANTS = new Set(["pdf-to-word", "word-to-pdf"]);
-
 export default async function ConvertPage({ params }: ConvertPageProps) {
   const { variant } = await params;
   const v = getConvertVariant(variant);
   const all = getAllConvertVariants();
   if (!v) notFound();
 
-  const isServer = R2_VARIANTS.has(variant);
-
-  const bullets = isServer
-    ? [
-        { color: "#16a34a", text: "Your file is deleted immediately after processing" },
-        { color: "#2563eb", text: "Encrypted connection — safe and private" },
-        { color: "#ca8a04", text: "Result ready in seconds" },
-      ]
-    : [
-        { color: "#16a34a", text: "Processed entirely in your browser — never leaves your device" },
-        { color: "#2563eb", text: "No software needed — works in any browser" },
-        { color: "#ca8a04", text: "Fast — most operations complete in seconds" },
-      ];
+  const bullets = [
+    { color: "#16a34a", text: "Processed entirely in your browser — never leaves your device" },
+    { color: "#2563eb", text: "No software needed — works in any browser" },
+    { color: "#ca8a04", text: "Fast — most operations complete in seconds" },
+  ];
 
   return (
     <main style={{ background: "#ffffff" }}>
@@ -51,7 +41,7 @@ export default async function ConvertPage({ params }: ConvertPageProps) {
         <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "60px 24px" }}>
           <div style={{ display: "grid", gridTemplateColumns: "42% 58%", gap: "48px", alignItems: "start" }} className="hero-grid">
 
-            {/* Lewa */}
+            {/* Left */}
             <div style={{ alignSelf: "start" }}>
               <nav style={{ marginBottom: "16px" }}>
                 <ol style={{ display: "flex", alignItems: "center", gap: "8px", listStyle: "none", margin: 0, padding: 0, fontSize: "13px", color: "#9ca3af" }}>
@@ -83,7 +73,7 @@ export default async function ConvertPage({ params }: ConvertPageProps) {
               </div>
             </div>
 
-            {/* Prawa — tool */}
+            {/* Right tool */}
             <div style={{ alignSelf: "start", background: "#ffffff", border: "1px solid #e5e7eb", borderRadius: "16px", overflow: "hidden" }}>
               {/* Variant switcher */}
               <div style={{ padding: "12px 16px", borderBottom: "1px solid #e5e7eb", background: "#f9fafb" }}>
@@ -101,17 +91,10 @@ export default async function ConvertPage({ params }: ConvertPageProps) {
               </div>
 
               {/* Privacy banner */}
-              {isServer ? (
-                <div style={{ display: "flex", alignItems: "flex-start", gap: "10px", background: "#fffbeb", borderBottom: "1px solid #fde68a", padding: "12px 16px", fontSize: "13px", color: "#92400e" }}>
-                  <span style={{ flexShrink: 0 }}>🔐</span>
-                  <span><strong>Processed on our secure server.</strong> Your file is sent over an encrypted connection, converted, and deleted immediately.</span>
-                </div>
-              ) : (
-                <div style={{ display: "flex", alignItems: "flex-start", gap: "10px", background: "#f0fdf4", borderBottom: "1px solid #bbf7d0", padding: "12px 16px", fontSize: "13px", color: "#14532d" }}>
-                  <span style={{ flexShrink: 0 }}>✅</span>
-                  <span><strong>Processed entirely in your browser.</strong> Your file never leaves your device — no upload, no server, complete privacy.</span>
-                </div>
-              )}
+              <div style={{ display: "flex", alignItems: "flex-start", gap: "10px", background: "#f0fdf4", borderBottom: "1px solid #bbf7d0", padding: "12px 16px", fontSize: "13px", color: "#14532d" }}>
+                <span style={{ flexShrink: 0 }}>✅</span>
+                <span><strong>Processed entirely in your browser.</strong> Your file never leaves your device — no upload, no server, complete privacy.</span>
+              </div>
 
               <div style={{ padding: "24px" }}>
                 <ConvertTool variant={v} />

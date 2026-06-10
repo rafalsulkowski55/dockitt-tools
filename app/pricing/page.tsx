@@ -58,7 +58,7 @@ export default function PricingPage() {
             <div style={{ fontSize: "13px", fontWeight: 600, color: "#2563eb", marginBottom: "8px" }}>PREMIUM</div>
             <div style={{ fontSize: "32px", fontWeight: 800, color: "#111", marginBottom: "4px" }}>$4.99</div>
             <div style={{ fontSize: "13px", color: "#9ca3af", marginBottom: "4px" }}>per month</div>
-            <div style={{ fontSize: "13px", color: "#16a34a", fontWeight: 600, marginBottom: "24px" }}>or $49.99/year — save 17%</div>
+            <div style={{ fontSize: "13px", color: "#16a34a", fontWeight: 600, marginBottom: "24px" }}>or $49.99/year save 17%</div>
             <ul style={{ listStyle: "none", padding: 0, margin: "0 0 24px", display: "flex", flexDirection: "column", gap: "10px" }}>
               {["Unlimited conversions", "Max 100MB files", "All tools included", "Conversion history"].map((f) => (
                 <li key={f} style={{ fontSize: "14px", color: "#374151", display: "flex", gap: "8px" }}>

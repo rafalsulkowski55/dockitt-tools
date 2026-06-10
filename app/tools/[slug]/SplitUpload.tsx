@@ -2,9 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { ToolTracking } from "@/lib/analytics";
-import { useConversionLimit } from "@/lib/use-conversion-limit";
 import { usePendingFile } from "@/lib/use-pending-file";
-import PricingModal from "@/app/components/PricingModal";
 
 const TOOL_NAME = "split-pdf";
 const PROCESSING_TYPE = "browser" as const;
@@ -30,7 +28,6 @@ export default function SplitUpload() {
   const [progress, setProgress] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const { showPricingModal, setShowPricingModal, checkDownloadLimit, onConversionSuccess } = useConversionLimit();
 
   useEffect(() => { ToolTracking.viewTool(TOOL_NAME, PROCESSING_TYPE); }, []);
 
@@ -84,7 +81,6 @@ export default function SplitUpload() {
       const newBytes = await newDoc.save();
       const blob = new Blob([new Uint8Array(newBytes)], { type: "application/pdf" });
       setDownloadUrl(URL.createObjectURL(blob));
-      setStatus("done"); onConversionSuccess();
       ToolTracking.processSuccess(TOOL_NAME, PROCESSING_TYPE);
     } catch (err: unknown) {
       clearInterval(interval);
@@ -93,11 +89,8 @@ export default function SplitUpload() {
     }
   }
 
-  async function handleDownload() {
+  function handleDownload() {
     if (!downloadUrl) return;
-    const canDownload = await checkDownloadLimit();
-    if (!canDownload) return;
-    onConversionSuccess();
     ToolTracking.downloadClicked(TOOL_NAME, PROCESSING_TYPE);
     const a = document.createElement("a"); a.href = downloadUrl; a.download = `split-${file?.name ?? "output.pdf"}`; a.click();
   }
@@ -106,7 +99,6 @@ export default function SplitUpload() {
 
   return (
     <>
-      {showPricingModal && <PricingModal onClose={() => setShowPricingModal(false)} />}
       <input ref={inputRef} type="file" accept=".pdf" style={{ display: "none" }} onChange={handleFileChange} />
 
       <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>

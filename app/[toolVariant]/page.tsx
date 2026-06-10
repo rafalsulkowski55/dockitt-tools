@@ -1,20 +1,15 @@
 import { notFound } from 'next/navigation'
 import { getAllVariants, getVariantBySlug } from '@/data/variants'
 import { getToolBySlug } from '@/lib/tools'
-import ToolUpload from '@/app/tools/[slug]/ToolUpload'
 import MergeUpload from '@/app/tools/[slug]/MergeUpload'
 import SplitUpload from '@/app/tools/[slug]/SplitUpload'
 import RotateUpload from '@/app/tools/[slug]/RotateUpload'
 import DeletePagesUpload from '@/app/tools/[slug]/DeletePagesUpload'
 import ExtractPagesUpload from '@/app/tools/[slug]/ExtractPagesUpload'
-import ProtectUpload from '@/app/tools/[slug]/ProtectUpload'
-import UnlockUpload from '@/app/tools/[slug]/UnlockUpload'
 import WatermarkUpload from '@/app/tools/[slug]/WatermarkUpload'
 import SignUpload from '@/app/tools/[slug]/SignUpload'
 import CropUpload from '@/app/tools/[slug]/CropUpload'
 import ReorderUpload from '@/app/tools/[slug]/ReorderUpload'
-import RepairUpload from '@/app/tools/[slug]/RepairUpload'
-import OcrUpload from '@/app/tools/[slug]/OcrUpload'
 import Link from 'next/link'
 
 type Props = {
@@ -53,21 +48,16 @@ export async function generateStaticParams() {
 
 function ToolComponent({ slug }: { slug: string }) {
   switch (slug) {
-    case 'compress-pdf': return <ToolUpload />
     case 'merge-pdf': return <MergeUpload />
     case 'split-pdf': return <SplitUpload />
     case 'rotate-pdf': return <RotateUpload />
     case 'delete-pdf-pages': return <DeletePagesUpload />
     case 'extract-pdf-pages': return <ExtractPagesUpload />
-    case 'protect-pdf': return <ProtectUpload />
-    case 'unlock-pdf': return <UnlockUpload />
     case 'watermark-pdf': return <WatermarkUpload />
     case 'sign-pdf': return <SignUpload />
     case 'crop-pdf': return <CropUpload />
     case 'reorder-pdf-pages': return <ReorderUpload />
-    case 'repair-pdf': return <RepairUpload />
-    case 'ocr-pdf': return <OcrUpload />
-    default: return <ToolUpload />
+    default: return null
   }
 }
 

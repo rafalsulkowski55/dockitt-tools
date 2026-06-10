@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 export const metadata = {
-  title: "About Dockitt — Free Online PDF Tools",
+  title: "About Dockitt Free Online PDF Tools",
   description: "Dockitt is a free online PDF toolbox. No signup, no watermarks, no ads. Built for people who just need to get things done.",
 };
 

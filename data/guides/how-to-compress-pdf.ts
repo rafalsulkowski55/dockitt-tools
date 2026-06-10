@@ -1,7 +1,7 @@
 export const howToCompressPdf = {
   slug: "how-to-compress-pdf",
   title: "How to Compress a PDF File",
-  description: "Learn how to reduce the size of a PDF file online — free, without software, and without losing quality.",
+  description: "Learn how to reduce the size of a PDF file online free, without software, and without losing quality.",
   intro: "A large PDF file can be a real problem. Email providers reject attachments over 10MB or 25MB. File upload forms on websites often have strict size limits. Sharing a 50MB report over a messaging app is slow and eats up storage. Compressing a PDF reduces the file size so it becomes easier to share, upload, and store without changing how the document looks or reads.",
   introList: [
     "Compress a PDF for email when the file is too large to attach",

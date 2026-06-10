@@ -142,7 +142,7 @@ export default async function GuidePage({ params }: GuidePageProps) {
 
       {g.toolLinks && g.toolLinks.length > 0 && (
         <div style={{ ...card, background: '#eff6ff', border: '1px solid #bfdbfe' }}>
-          <p style={{ fontWeight: 600, color: '#111', marginBottom: '12px', marginTop: 0 }}>Quick access — editing tools:</p>
+          <p style={{ fontWeight: 600, color: '#111', marginBottom: '12px', marginTop: 0 }}>Quick access editing tools:</p>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
             {g.toolLinks.map((tool) => (
               <Link

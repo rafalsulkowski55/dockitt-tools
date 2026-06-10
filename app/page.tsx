@@ -4,32 +4,31 @@ import React, { useState, useRef, useCallback } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
-  FileArchive, GitMerge, Scissors, RotateCw, Lock,
-  ScanText, FileText, FileOutput, Zap, Layers,
+  FileArchive, Lock, FileText, Zap, Layers,
   Smartphone, ShieldCheck, FolderOpen, Settings, Download,
   X,
 } from "lucide-react";
 
 const USE_CASES = [
-  { label: "Compress PDF for email", href: "/tools/compress-pdf" },
-  { label: "Reduce PDF size without losing quality", href: "/tools/compress-pdf" },
   { label: "Merge PDF files online", href: "/tools/merge-pdf" },
-  { label: "Convert PDF to Word", href: "/convert-pdf/pdf-to-word" },
   { label: "Split PDF by page range", href: "/tools/split-pdf" },
-  { label: "Add password to PDF", href: "/tools/protect-pdf" },
-  { label: "Make scanned PDF searchable", href: "/tools/ocr-pdf" },
   { label: "Remove pages from PDF", href: "/tools/delete-pdf-pages" },
   { label: "Rotate PDF pages online", href: "/tools/rotate-pdf" },
-  { label: "Add watermark to PDF", href: "/tools/watermark-pdf" },
   { label: "Extract pages from PDF", href: "/tools/extract-pdf-pages" },
-  { label: "Repair corrupted PDF file", href: "/tools/repair-pdf" },
+  { label: "Reorder PDF pages", href: "/tools/reorder-pdf-pages" },
+  { label: "Add watermark to PDF", href: "/tools/watermark-pdf" },
+  { label: "Sign a PDF document", href: "/tools/sign-pdf" },
+  { label: "Crop PDF pages", href: "/tools/crop-pdf" },
+  { label: "Convert PDF to JPG", href: "/convert-pdf/pdf-to-jpg" },
+  { label: "Convert PDF to PNG", href: "/convert-pdf/pdf-to-png" },
+  { label: "Convert JPG to PDF", href: "/convert-pdf/jpg-to-pdf" },
 ];
 
 const WHY_ITEMS = [
   { Icon: Zap, title: "Fast processing", text: "Most operations complete in under 5 seconds.", color: "#ca8a04", bg: "#fefce8" },
   { Icon: Smartphone, title: "Works on any device", text: "Desktop, tablet, or phone it works everywhere.", color: "#9333ea", bg: "#fdf4ff" },
   { Icon: ShieldCheck, title: "Privacy focused", text: "Files are never stored or shared. Processed and gone.", color: "#16a34a", bg: "#f0fdf4" },
-  { Icon: Layers, title: "30+ tools", text: "Everything you need to work with PDFs in one place.", color: "#2563eb", bg: "#eff6ff" },
+  { Icon: Layers, title: "14 free tools", text: "Everything you need to work with PDFs in one place.", color: "#2563eb", bg: "#eff6ff" },
 ];
 
 function formatSize(bytes: number) {
@@ -45,61 +44,32 @@ function UploadBox() {
 
   const TOOLS_COLUMNS = [
     {
-      label: "Reduce & Merge",
+      label: "Organize",
       tools: [
-        { name: "Compress PDF", desc: "Reduce file size", slug: "compress-pdf" },
-        { name: "Compress images", desc: "Shrink image PDFs", slug: "compress-images-pdf" },
         { name: "Merge PDF", desc: "Combine PDFs", slug: "merge-pdf" },
         { name: "Split PDF", desc: "Extract pages", slug: "split-pdf" },
-        { name: "Extract pages", desc: "Save specific pages", slug: "extract-pdf-pages" },
+        { name: "Rotate PDF", desc: "Fix orientation", slug: "rotate-pdf" },
         { name: "Delete pages", desc: "Remove pages", slug: "delete-pdf-pages" },
-        { name: "Repair PDF", desc: "Fix corrupted files", slug: "repair-pdf" },
+        { name: "Extract pages", desc: "Save specific pages", slug: "extract-pdf-pages" },
         { name: "Reorder pages", desc: "Drag to rearrange", slug: "reorder-pdf-pages" },
       ],
     },
     {
-      label: "PDF → File",
+      label: "Convert",
       tools: [
-        { name: "PDF to Word", desc: "Editable .docx", slug: "pdf-to-word", href: "/convert-pdf/pdf-to-word" },
-        { name: "PDF to PowerPoint", desc: "Editable .pptx", slug: "pdf-to-pptx", href: "/convert-pdf/pdf-to-pptx" },
-        { name: "PDF to Excel", desc: "Editable .xlsx", slug: "pdf-to-xlsx", href: "/convert-pdf/pdf-to-xlsx" },
         { name: "PDF to JPG", desc: "Pages as images", slug: "pdf-to-jpg", href: "/convert-pdf/pdf-to-jpg" },
         { name: "PDF to PNG", desc: "High quality", slug: "pdf-to-png", href: "/convert-pdf/pdf-to-png" },
-        { name: "PDF to Text", desc: "Plain .txt", slug: "pdf-to-text", href: "/convert-pdf/pdf-to-text" },
-        { name: "PDF to HTML", desc: "Web format", slug: "pdf-to-html", href: "/convert-pdf/pdf-to-html" },
-      ],
-    },
-    {
-      label: "File → PDF",
-      tools: [
-        { name: "Word to PDF", desc: "From .docx", slug: "word-to-pdf", href: "/convert-pdf/word-to-pdf" },
-        { name: "PowerPoint to PDF", desc: "From .pptx", slug: "pptx-to-pdf", href: "/convert-pdf/pptx-to-pdf" },
-        { name: "Excel to PDF", desc: "From .xlsx", slug: "xlsx-to-pdf", href: "/convert-pdf/xlsx-to-pdf" },
         { name: "JPG to PDF", desc: "Images to PDF", slug: "jpg-to-pdf", href: "/convert-pdf/jpg-to-pdf" },
         { name: "PNG to PDF", desc: "Images to PDF", slug: "png-to-pdf", href: "/convert-pdf/png-to-pdf" },
+        { name: "Word count", desc: "Count words & pages", slug: "pdf-word-count" },
       ],
     },
     {
-      label: "Protect & Sign",
+      label: "Edit & Sign",
       tools: [
-        { name: "Protect PDF", desc: "Add password", slug: "protect-pdf" },
-        { name: "Unlock PDF", desc: "Remove password", slug: "unlock-pdf" },
         { name: "Watermark PDF", desc: "Add text or image", slug: "watermark-pdf" },
         { name: "Sign PDF", desc: "Add signature", slug: "sign-pdf" },
-        { name: "Remove metadata", desc: "Strip hidden info", slug: "remove-metadata" },
-        { name: "Flatten PDF", desc: "Make forms static", slug: "flatten-pdf" },
-      ],
-    },
-    {
-      label: "Edit & Analyze",
-      tools: [
-        { name: "Rotate PDF", desc: "Fix orientation", slug: "rotate-pdf" },
         { name: "Crop PDF", desc: "Trim margins", slug: "crop-pdf" },
-        { name: "Add page numbers", desc: "Number pages", slug: "add-page-numbers" },
-        { name: "Resize pages", desc: "A4, Letter, A3", slug: "resize-pages" },
-        { name: "Dark mode PDF", desc: "Invert colours", slug: "dark-mode-pdf" },
-        { name: "OCR PDF", desc: "Make searchable", slug: "ocr-pdf" },
-        { name: "Word count", desc: "Count words & pages", slug: "pdf-word-count" },
       ],
     },
   ];
@@ -207,7 +177,7 @@ function UploadBox() {
         <p style={{ fontSize: "13px", fontWeight: 600, color: "#6b7280", textTransform: "uppercase", letterSpacing: "0.05em", margin: "0 0 12px" }}>
           What do you want to do?
         </p>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(5, minmax(0, 1fr))", gap: "6px" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: "6px" }}>
           {TOOLS_COLUMNS.map((col) => (
             <div key={col.label}>
               <p style={{ margin: "0 0 6px", fontSize: "11px", fontWeight: 600, color: "#9ca3af", textTransform: "uppercase", letterSpacing: "0.04em" }}>
@@ -245,10 +215,9 @@ function UploadBox() {
 }
 
 const CATEGORIES = [
-  { slug: "core", name: "Core PDF Tools", desc: "Compress, merge, split, rotate and more.", count: 5, icon: FileArchive, color: "#2563eb", bg: "#eff6ff", href: "/categories/core" },
-  { slug: "convert", name: "Convert PDF", desc: "PDF to Word, JPG, PNG and back.", count: 12, icon: FileText, color: "#ea580c", bg: "#fff7ed", href: "/convert-pdf" },
-  { slug: "security", name: "PDF Security", desc: "Protect, unlock, sign and watermark.", count: 4, icon: Lock, color: "#dc2626", bg: "#fef2f2", href: "/categories/security" },
-  { slug: "utility", name: "PDF Utilities", desc: "OCR, repair, crop and reorder pages.", count: 14, icon: ScanText, color: "#16a34a", bg: "#f0fdf4", href: "/categories/utility" },
+  { slug: "core", name: "Organize PDF", desc: "Merge, split, rotate, and delete pages.", count: 4, icon: FileArchive, color: "#2563eb", bg: "#eff6ff", href: "/categories/core" },
+  { slug: "convert", name: "Convert PDF", desc: "PDF to JPG, PNG, and back.", count: 4, icon: FileText, color: "#ea580c", bg: "#fff7ed", href: "/convert-pdf" },
+  { slug: "security", name: "Edit & Sign", desc: "Watermark, sign, crop, and reorder pages.", count: 6, icon: Lock, color: "#16a34a", bg: "#f0fdf4", href: "/categories/security" },
 ];
 
 export default function Home() {
@@ -350,8 +319,8 @@ export default function Home() {
 
             <div style={{ display: "flex", flexDirection: "column", gap: "28px" }}>
               {[
-                { num: "01", Icon: FolderOpen, title: "Upload your file", text: "Drag & drop or click to select your PDF. Most tools process files entirely in your browser, no upload needed." },
-                { num: "02", Icon: Settings, title: "Process instantly", text: "Choose what you want to do — compress, merge, split, convert. Browser tools start immediately; server tools process securely and delete your file right after." },
+                { num: "01", Icon: FolderOpen, title: "Upload your file", text: "Drag & drop or click to select your PDF. All tools process files entirely in your browser — no upload needed." },
+                { num: "02", Icon: Settings, title: "Process instantly", text: "Choose what you want to do — merge, split, rotate, convert. Processing starts immediately in your browser." },
                 { num: "03", Icon: Download, title: "Download result", text: "Get your processed file right away. No email required, no waiting, just click download and you're done." },
               ].map((step) => (
                 <div key={step.num} style={{ display: "flex", gap: "16px", alignItems: "flex-start" }}>

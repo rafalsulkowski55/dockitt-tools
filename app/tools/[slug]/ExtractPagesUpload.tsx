@@ -2,9 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { ToolTracking } from "@/lib/analytics";
-import { useConversionLimit } from "@/lib/use-conversion-limit";
 import { usePendingFile } from "@/lib/use-pending-file";
-import PricingModal from "@/app/components/PricingModal";
 
 const TOOL_NAME = "extract-pdf-pages";
 const PROCESSING_TYPE = "browser" as const;
@@ -28,7 +26,6 @@ export default function ExtractPagesUpload() {
   const [progress, setProgress] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const { showPricingModal, setShowPricingModal, onConversionSuccess } = useConversionLimit();
 
   useEffect(() => { ToolTracking.viewTool(TOOL_NAME, PROCESSING_TYPE); }, []);
 
@@ -83,7 +80,6 @@ export default function ExtractPagesUpload() {
       const newBytes = await newDoc.save();
       const blob = new Blob([new Uint8Array(newBytes)], { type: "application/pdf" });
       const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = `extracted-pages-${file.name}`; a.click();
-      setStatus("done"); onConversionSuccess();
       ToolTracking.processSuccess(TOOL_NAME, PROCESSING_TYPE);
       ToolTracking.downloadClicked(TOOL_NAME, PROCESSING_TYPE);
     } catch (err: unknown) {
@@ -97,7 +93,6 @@ export default function ExtractPagesUpload() {
 
   return (
     <>
-      {showPricingModal && <PricingModal onClose={() => setShowPricingModal(false)} />}
       <input ref={inputRef} type="file" accept=".pdf" style={{ display: "none" }} onChange={handleFileChange} />
 
       <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>

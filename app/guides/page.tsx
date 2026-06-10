@@ -31,7 +31,7 @@ export default function GuidesPage() {
             PDF Guides
           </h1>
           <p style={{ fontSize: "15px", color: "#4b5563", margin: 0, lineHeight: 1.6 }}>
-            Step-by-step guides for the most common PDF tasks — no software required.
+            Step-by-step guides for the most common PDF tasks no software required.
           </p>
         </div>
 

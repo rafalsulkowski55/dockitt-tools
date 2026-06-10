@@ -1,28 +1,16 @@
 import { notFound } from "next/navigation";
 import { getAllTools, getToolBySlug, getRelatedTools } from "@/lib/tools";
 import { Suspense } from "react";
-import ToolUpload from "./ToolUpload";
 import MergeUpload from "./MergeUpload";
 import SplitUpload from "./SplitUpload";
 import Breadcrumbs from "./Breadcrumbs";
 import RotateUpload from "./RotateUpload";
 import DeletePagesUpload from "./DeletePagesUpload";
 import ExtractPagesUpload from "./ExtractPagesUpload";
-import ProtectUpload from "./ProtectUpload";
-import UnlockUpload from "./UnlockUpload";
 import WatermarkUpload from "./WatermarkUpload";
 import SignUpload from "./SignUpload";
 import CropUpload from "./CropUpload";
 import ReorderUpload from "./ReorderUpload";
-import RepairUpload from "./RepairUpload";
-import OcrUpload from "./OcrUpload";
-import PdfToTextUpload from "./PdfToTextUpload";
-import AddPageNumbersUpload from "./AddPageNumbersUpload";
-import ResizePagesUpload from "./ResizePagesUpload";
-import FlattenPdfUpload from "./FlattenPdfUpload";
-import RemoveMetadataUpload from "./RemoveMetadataUpload";
-import CompressImagesPdfUpload from "./CompressImagesPdfUpload";
-import DarkModePdfUpload from "./DarkModePdfUpload";
 import PdfWordCountUpload from "./PdfWordCountUpload";
 import DownloadHandler from "./DownloadHandler";
 import Link from "next/link";
@@ -58,48 +46,19 @@ export async function generateStaticParams() {
   return getAllTools().map((tool) => ({ slug: tool.slug }));
 }
 
-const SERVER_SIDE_TOOLS = new Set([
-  "compress-pdf",
-  "protect-pdf",
-  "unlock-pdf",
-  "repair-pdf",
-  "ocr-pdf",
-  "pdf-to-word",
-  "word-to-pdf",
-  "pdf-to-text",
-  "add-page-numbers",
-  "resize-pages",
-  "flatten-pdf",
-  "remove-metadata",
-  "compress-images-pdf",
-  "dark-mode-pdf",
-]);
-
 function ToolComponent({ slug }: { slug: string }) {
   switch (slug) {
-    case "compress-pdf": return <ToolUpload />;
     case "merge-pdf": return <MergeUpload />;
     case "split-pdf": return <SplitUpload />;
     case "rotate-pdf": return <RotateUpload />;
     case "delete-pdf-pages": return <DeletePagesUpload />;
     case "extract-pdf-pages": return <ExtractPagesUpload />;
-    case "protect-pdf": return <ProtectUpload />;
-    case "unlock-pdf": return <UnlockUpload />;
     case "watermark-pdf": return <WatermarkUpload />;
     case "sign-pdf": return <SignUpload />;
     case "crop-pdf": return <CropUpload />;
     case "reorder-pdf-pages": return <ReorderUpload />;
-    case "repair-pdf": return <RepairUpload />;
-    case "ocr-pdf": return <OcrUpload />;
-    case "pdf-to-text": return <PdfToTextUpload />;
-    case "add-page-numbers": return <AddPageNumbersUpload />;
-    case "resize-pages": return <ResizePagesUpload />;
-    case "flatten-pdf": return <FlattenPdfUpload />;
-    case "remove-metadata": return <RemoveMetadataUpload />;
-    case "compress-images-pdf": return <CompressImagesPdfUpload />;
-    case "dark-mode-pdf": return <DarkModePdfUpload />;
     case "pdf-word-count": return <PdfWordCountUpload />;
-    default: return <ToolUpload />;
+    default: return null;
   }
 }
 
@@ -110,16 +69,14 @@ const categoryLabels: Record<string, string> = {
 };
 
 const introVariants: Record<string, "A" | "B" | "C" | "D"> = {
-  "compress-pdf": "A", "merge-pdf": "B", "split-pdf": "A", "rotate-pdf": "C",
-  "delete-pdf-pages": "B", "protect-pdf": "D", "unlock-pdf": "A",
-  "watermark-pdf": "D", "sign-pdf": "C", "crop-pdf": "B", "repair-pdf": "A",
-  "ocr-pdf": "C", "extract-pdf-pages": "B", "reorder-pdf-pages": "D",
+  "merge-pdf": "B", "split-pdf": "A", "rotate-pdf": "C",
+  "delete-pdf-pages": "B", "watermark-pdf": "D", "sign-pdf": "C",
+  "crop-pdf": "B", "extract-pdf-pages": "B", "reorder-pdf-pages": "D",
 };
 
-function IntroSection({ tool, variant, slug }: {
+function IntroSection({ tool, variant }: {
   tool: { title: string; description: string; name: string; primaryKeyword: string };
   variant: "A" | "B" | "C" | "D";
-  slug: string;
 }) {
   const subtitles = {
     A: "Upload your file below and get the result in seconds. No sign-up required.",
@@ -127,19 +84,6 @@ function IntroSection({ tool, variant, slug }: {
     C: "Processes your file instantly. Nothing is stored on our servers after download.",
     D: "Fast, and private. Your files are deleted immediately after processing.",
   };
-
-  if (slug === "compress-pdf") {
-    return (
-      <section>
-        <h1 style={{ fontSize: "clamp(24px, 4vw, 36px)", fontWeight: 700, lineHeight: 1.15, letterSpacing: "-0.02em", marginBottom: "12px", marginTop: 0 }}>
-          Reduce PDF file size for email, forms and uploads
-        </h1>
-        <p style={{ fontSize: "18px", color: "#4b5563", lineHeight: 1.6, margin: 0 }}>
-          Make large PDF files smaller so you can send them by email or upload them without size errors. No signup required.
-        </p>
-      </section>
-    );
-  }
 
   return (
     <section>
@@ -198,17 +142,11 @@ export default async function ToolPage({ params }: ToolPageProps) {
     })),
   };
 
-  const bullets = SERVER_SIDE_TOOLS.has(slug)
-    ? [
-        { color: "#16a34a", text: "Your file is deleted immediately after processing" },
-        { color: "#2563eb", text: "Encrypted connection safe and private" },
-        { color: "#ca8a04", text: "Result ready in seconds" },
-      ]
-    : [
-        { color: "#16a34a", text: "Processed entirely in your browser never leaves your device" },
-        { color: "#2563eb", text: "No software needed works in any browser" },
-        { color: "#ca8a04", text: "Fast most operations complete in seconds" },
-      ];
+  const bullets = [
+    { color: "#16a34a", text: "Processed entirely in your browser — never leaves your device" },
+    { color: "#2563eb", text: "No software needed — works in any browser" },
+    { color: "#ca8a04", text: "Fast — most operations complete in seconds" },
+  ];
 
   return (
     <main style={{ background: "#ffffff" }}>
@@ -226,10 +164,9 @@ export default async function ToolPage({ params }: ToolPageProps) {
             style={{ display: "grid", gridTemplateColumns: "42% 58%", gap: "48px", alignItems: "start" }}
             className="hero-grid"
           >
-            {/* Lewa sticky na górze */}
             <div style={{ alignSelf: "start" }}>
               <Breadcrumbs toolName={tool.name} />
-              <IntroSection tool={tool} variant={variant} slug={slug} />
+              <IntroSection tool={tool} variant={variant} />
               <div style={{ display: "flex", flexDirection: "column", gap: "12px", marginTop: "24px" }}>
                 {bullets.map((b) => (
                   <div key={b.text} style={{ display: "flex", alignItems: "center", gap: "10px", fontSize: "15px", color: "#374151" }}>
@@ -243,27 +180,15 @@ export default async function ToolPage({ params }: ToolPageProps) {
               </div>
             </div>
 
-            {/* Prawa upload box */}
             <div style={{ alignSelf: "start", background: "#ffffff", border: "1px solid #e5e7eb", borderRadius: "16px", overflow: "hidden" }}>
-              {SERVER_SIDE_TOOLS.has(slug) ? (
-                <div style={{
-                  display: "flex", alignItems: "flex-start", gap: "10px",
-                  background: "#fffbeb", borderBottom: "1px solid #fde68a",
-                  padding: "12px 16px", fontSize: "13px", color: "#92400e",
-                }}>
-                  <span style={{ flexShrink: 0 }}>🔐</span>
-                  <span><strong>Processed on our secure server.</strong> Your file is sent over an encrypted connection, converted, and deleted immediately.</span>
-                </div>
-              ) : (
-                <div style={{
-                  display: "flex", alignItems: "flex-start", gap: "10px",
-                  background: "#f0fdf4", borderBottom: "1px solid #bbf7d0",
-                  padding: "12px 16px", fontSize: "13px", color: "#14532d",
-                }}>
-                  <span style={{ flexShrink: 0 }}>✅</span>
-                  <span><strong>Processed entirely in your browser.</strong> Your file never leaves your device no upload, no server, complete privacy.</span>
-                </div>
-              )}
+              <div style={{
+                display: "flex", alignItems: "flex-start", gap: "10px",
+                background: "#f0fdf4", borderBottom: "1px solid #bbf7d0",
+                padding: "12px 16px", fontSize: "13px", color: "#14532d",
+              }}>
+                <span style={{ flexShrink: 0 }}>✅</span>
+                <span><strong>Processed entirely in your browser.</strong> Your file never leaves your device — no upload, no server, complete privacy.</span>
+              </div>
               <div style={{ padding: "24px" }}>
                 <ToolComponent slug={slug} />
               </div>
