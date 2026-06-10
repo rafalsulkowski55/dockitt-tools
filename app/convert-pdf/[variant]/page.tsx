@@ -31,9 +31,9 @@ export default async function ConvertPage({ params }: ConvertPageProps) {
     ? "Files up to 50MB supported"
     : "Files up to 100MB supported";
   const bullets = [
-    { color: "#16a34a", text: "Processed entirely in your browser — never leaves your device" },
-    { color: "#2563eb", text: "No software needed — works in any browser" },
-    { color: "#ca8a04", text: "Fast — most operations complete in seconds" },
+    { color: "#16a34a", text: "Processed entirely in your browser - never leaves your device" },
+    { color: "#2563eb", text: "No software needed - works in any browser" },
+    { color: "#ca8a04", text: "Fast - most operations complete in seconds" },
     { color: "#6b7280", text: fileSizeInfo },
   ];
 
@@ -97,7 +97,7 @@ export default async function ConvertPage({ params }: ConvertPageProps) {
               {/* Privacy banner */}
               <div style={{ display: "flex", alignItems: "flex-start", gap: "10px", background: "#f0fdf4", borderBottom: "1px solid #bbf7d0", padding: "12px 16px", fontSize: "13px", color: "#14532d" }}>
                 <span style={{ flexShrink: 0 }}>✅</span>
-                <span><strong>Processed entirely in your browser.</strong> Your file never leaves your device — no upload, no server, complete privacy.</span>
+                <span><strong>Processed entirely in your browser.</strong> Your file never leaves your device - no upload, no server, complete privacy.</span>
               </div>
 
               <div style={{ padding: "24px" }}>

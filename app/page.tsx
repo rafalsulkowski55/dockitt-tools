@@ -4,9 +4,9 @@ import React, { useState, useRef, useCallback } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
-  FileArchive, Lock, Zap, Layers,
+  Lock, Zap, Layers,
   Smartphone, ShieldCheck, FolderOpen, Settings, Download,
-  X,
+  X, Scissors, ScanText, FileText,
 } from "lucide-react";
 
 const USE_CASES = [
@@ -29,7 +29,7 @@ const USE_CASES = [
 const WHY_ITEMS = [
   { Icon: ShieldCheck, title: "100% free", text: "Every tool is free to use. No account, no subscription, no hidden limits.", color: "#16a34a", bg: "#f0fdf4" },
   { Icon: Lock, title: "Private by design", text: "Your files never leave your browser. Nothing is uploaded to any server.", color: "#2563eb", bg: "#eff6ff" },
-  { Icon: Smartphone, title: "Works everywhere", text: "Desktop, tablet, or phone — no installation needed.", color: "#9333ea", bg: "#fdf4ff" },
+  { Icon: Smartphone, title: "Works everywhere", text: "Desktop, tablet, or phone - no installation needed.", color: "#9333ea", bg: "#fdf4ff" },
   { Icon: Zap, title: "Fast results", text: "Most operations complete in seconds, right in your tab.", color: "#ca8a04", bg: "#fefce8" },
 ];
 
@@ -224,8 +224,10 @@ function UploadBox() {
 }
 
 const CATEGORIES = [
-  { slug: "core", name: "Organize PDF", desc: "Merge, split, rotate, delete and extract pages.", count: 6, icon: FileArchive, color: "#2563eb", bg: "#eff6ff", href: "/categories/core" },
-  { slug: "security", name: "Edit & Sign", desc: "Watermark, sign, crop, and count words in PDFs.", count: 6, icon: Lock, color: "#16a34a", bg: "#f0fdf4", href: "/categories/security" },
+  { slug: "core", name: "Organize PDF", desc: "Merge, split, rotate and delete PDF pages.", count: 4, icon: Scissors, color: "#2563eb", bg: "#eff6ff", href: "/categories/core" },
+  { slug: "utility", name: "PDF Utilities", desc: "Crop, reorder, extract pages and count words.", count: 4, icon: ScanText, color: "#16a34a", bg: "#f0fdf4", href: "/categories/utility" },
+  { slug: "security", name: "Edit & Sign", desc: "Add watermarks and sign PDF documents.", count: 2, icon: Lock, color: "#dc2626", bg: "#fef2f2", href: "/categories/security" },
+  { slug: "convert", name: "Convert PDF", desc: "Convert between PDF, JPG and PNG formats.", count: 4, icon: FileText, color: "#ea580c", bg: "#fff7ed", href: "/convert-pdf" },
 ];
 
 export default function Home() {
@@ -244,13 +246,13 @@ export default function Home() {
                 <span style={{ color: "#2563eb" }}>in your browser.</span>
               </h1>
               <p style={{ fontSize: "18px", color: "#4b5563", lineHeight: 1.6, marginBottom: "24px" }}>
-                Merge, split, rotate, convert and edit PDF files — no sign-up, no limits, no uploads to external servers.
+                Merge, split, rotate, convert and edit PDF files - no sign-up, no limits, no uploads to external servers.
               </p>
               <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
                 {[
-                  { Icon: ShieldCheck, text: "Files never leave your device — processed in your browser", color: "#16a34a" },
-                  { Icon: Zap, text: "100% free — no account required", color: "#ca8a04" },
-                  { Icon: Layers, text: "15 free tools — all browser-based", color: "#2563eb" },
+                  { Icon: ShieldCheck, text: "Files never leave your device - processed in your browser", color: "#16a34a" },
+                  { Icon: Zap, text: "100% free - no account required", color: "#ca8a04" },
+                  { Icon: Layers, text: "15 free tools - all browser-based", color: "#2563eb" },
                 ].map((item) => (
                   <div key={item.text} style={{ display: "flex", alignItems: "center", gap: "10px", fontSize: "16px", color: "#374151" }}>
                     <item.Icon size={20} color={item.color} strokeWidth={2.5} />
@@ -327,8 +329,8 @@ export default function Home() {
 
             <div style={{ display: "flex", flexDirection: "column", gap: "28px" }}>
               {[
-                { num: "01", Icon: FolderOpen, title: "Upload your file", text: "Drag & drop or click to select your PDF. All tools process files entirely in your browser — no upload needed." },
-                { num: "02", Icon: Settings, title: "Process instantly", text: "Choose what you want to do — merge, split, rotate, convert. Processing starts immediately in your browser." },
+                { num: "01", Icon: FolderOpen, title: "Upload your file", text: "Drag & drop or click to select your PDF. All tools process files entirely in your browser - no upload needed." },
+                { num: "02", Icon: Settings, title: "Process instantly", text: "Choose what you want to do - merge, split, rotate, convert. Processing starts immediately in your browser." },
                 { num: "03", Icon: Download, title: "Download result", text: "Get your processed file right away. No email required, no waiting, just click download and you're done." },
               ].map((step) => (
                 <div key={step.num} style={{ display: "flex", gap: "16px", alignItems: "flex-start" }}>

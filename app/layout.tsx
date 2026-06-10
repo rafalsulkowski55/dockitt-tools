@@ -85,7 +85,7 @@ export default function RootLayout({
           </div>
           <p style={{ fontSize: "12px", color: "#9ca3af", maxWidth: "600px", margin: "0 auto 12px", lineHeight: 1.6 }}>
             Dockitt is a free online PDF toolbox. Merge, split, rotate, convert and edit PDFs without installing anything.
-            All tools run directly in your browser — your files never leave your device.
+            All tools run directly in your browser - your files never leave your device.
           </p>
           <p style={{ margin: 0, fontSize: "12px", color: "#9ca3af" }}>
             © {new Date().getFullYear()} Dockitt

@@ -40,7 +40,7 @@ export default function ConvertTool({ variant }: Props) {
     if (selected.some(f => f.size > maxSize)) {
       const mb = maxSize / (1024 * 1024);
       setErrorMessage(mb === 50
-        ? "File too large. Maximum size is 50MB. Large PDFs with many pages may also be slow to render — consider splitting the PDF into smaller sections first."
+        ? "File too large. Maximum size is 50MB. Large PDFs with many pages may also be slow to render - consider splitting the PDF into smaller sections first."
         : "File too large. Maximum size for this tool is 100MB. For large files, try splitting the PDF first.");
       setStatus("error");
       return;
@@ -213,7 +213,7 @@ export default function ConvertTool({ variant }: Props) {
         </div>
       )}
 
-      {/* Result — multiple image pages (PDF→JPG/PNG) */}
+      {/* Result - multiple image pages (PDF→JPG/PNG) */}
       {status === "done" && resultUrls.length > 0 && (
         <div style={{ border: "1px solid #bfdbfe", borderRadius: "12px", overflow: "hidden" }}>
           <div style={{ background: "#eff6ff", padding: "12px 16px" }}>
@@ -238,7 +238,7 @@ export default function ConvertTool({ variant }: Props) {
         </div>
       )}
 
-      {/* Result — single file download (image→PDF) */}
+      {/* Result - single file download (image→PDF) */}
       {status === "done" && downloadUrl && (
         <div style={{ border: "1px solid #bfdbfe", borderRadius: "12px", overflow: "hidden" }}>
           <div style={{ background: "#eff6ff", padding: "12px 16px" }}>
