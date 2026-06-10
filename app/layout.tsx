@@ -81,7 +81,6 @@ export default function RootLayout({
             <Link href="/categories/core" style={{ color: "#666", textDecoration: "none" }}>Organize PDF</Link>
             <Link href="/categories/security" style={{ color: "#666", textDecoration: "none" }}>Edit & Sign</Link>
             <Link href="/categories" style={{ color: "#666", textDecoration: "none" }}>All Tools</Link>
-            <Link href="/guides" style={{ color: "#666", textDecoration: "none" }}>Guides</Link>
             <Link href="/about" style={{ color: "#666", textDecoration: "none" }}>About</Link>
             <Link href="/contact" style={{ color: "#666", textDecoration: "none" }}>Contact</Link>
             <Link href="/privacy" style={{ color: "#666", textDecoration: "none" }}>Privacy Policy</Link>

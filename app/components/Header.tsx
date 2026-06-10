@@ -32,7 +32,6 @@ export default function Header() {
           <Link href="/" style={{ fontSize: "14px", color: "#444", textDecoration: "none" }}>Home</Link>
           <Link href="/convert-pdf" style={{ fontSize: "14px", color: "#444", textDecoration: "none" }}>Convert PDF</Link>
           <Link href="/categories" style={{ fontSize: "14px", color: "#444", textDecoration: "none" }}>All Tools</Link>
-          <Link href="/guides" style={{ fontSize: "14px", color: "#444", textDecoration: "none" }}>Guides</Link>
         </nav>
 
         {/* Hamburger button */}
@@ -68,7 +67,6 @@ export default function Header() {
           <Link href="/" onClick={() => setMenuOpen(false)} style={{ padding: "12px 16px", fontSize: "15px", color: "#111", textDecoration: "none" }}>Home</Link>
           <Link href="/convert-pdf" onClick={() => setMenuOpen(false)} style={{ padding: "12px 16px", fontSize: "15px", color: "#111", textDecoration: "none" }}>Convert PDF</Link>
           <Link href="/categories" onClick={() => setMenuOpen(false)} style={{ padding: "12px 16px", fontSize: "15px", color: "#111", textDecoration: "none" }}>All Tools</Link>
-          <Link href="/guides" onClick={() => setMenuOpen(false)} style={{ padding: "12px 16px", fontSize: "15px", color: "#111", textDecoration: "none" }}>Guides</Link>
         </nav>
       )}
     </header>
