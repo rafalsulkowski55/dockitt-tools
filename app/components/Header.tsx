@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -52,6 +52,9 @@ export default function Header() {
   const [mobileConvertOpen, setMobileConvertOpen] = useState(false);
   const [mobileToolsOpen, setMobileToolsOpen] = useState(false);
 
+  const convertTimer = useRef<NodeJS.Timeout | null>(null);
+  const toolsTimer = useRef<NodeJS.Timeout | null>(null);
+
   const close = () => setMenuOpen(false);
 
   return (
@@ -86,8 +89,8 @@ export default function Header() {
           {/* Convert dropdown */}
           <div
             style={{ position: "relative" }}
-            onMouseEnter={() => setConvertOpen(true)}
-            onMouseLeave={() => setConvertOpen(false)}
+            onMouseEnter={() => { if (convertTimer.current) clearTimeout(convertTimer.current); setConvertOpen(true); }}
+            onMouseLeave={() => { convertTimer.current = setTimeout(() => setConvertOpen(false), 150); }}
           >
             <button style={{
               fontSize: "14px", color: "#444", background: "none", border: "none",
@@ -97,7 +100,11 @@ export default function Header() {
               Convert <span style={{ fontSize: "9px", opacity: 0.6 }}>▾</span>
             </button>
             {convertOpen && (
-              <div style={DROPDOWN_PANEL}>
+              <div
+                style={DROPDOWN_PANEL}
+                onMouseEnter={() => { if (convertTimer.current) clearTimeout(convertTimer.current); }}
+                onMouseLeave={() => { convertTimer.current = setTimeout(() => setConvertOpen(false), 150); }}
+              >
                 <Link href="/convert" style={DROPDOWN_HEADER_LINK} onClick={() => setConvertOpen(false)}>All Converters</Link>
                 <div style={DIVIDER} />
                 <Link href="/convert-pdf" style={DROPDOWN_LINK} onClick={() => setConvertOpen(false)}>PDF Convert</Link>
@@ -109,8 +116,8 @@ export default function Header() {
           {/* Tools dropdown */}
           <div
             style={{ position: "relative" }}
-            onMouseEnter={() => setToolsOpen(true)}
-            onMouseLeave={() => setToolsOpen(false)}
+            onMouseEnter={() => { if (toolsTimer.current) clearTimeout(toolsTimer.current); setToolsOpen(true); }}
+            onMouseLeave={() => { toolsTimer.current = setTimeout(() => setToolsOpen(false), 150); }}
           >
             <button style={{
               fontSize: "14px", color: "#444", background: "none", border: "none",
@@ -120,7 +127,11 @@ export default function Header() {
               Tools <span style={{ fontSize: "9px", opacity: 0.6 }}>▾</span>
             </button>
             {toolsOpen && (
-              <div style={DROPDOWN_PANEL}>
+              <div
+                style={DROPDOWN_PANEL}
+                onMouseEnter={() => { if (toolsTimer.current) clearTimeout(toolsTimer.current); }}
+                onMouseLeave={() => { toolsTimer.current = setTimeout(() => setToolsOpen(false), 150); }}
+              >
                 <Link href="/categories/core" style={DROPDOWN_LINK} onClick={() => setToolsOpen(false)}>PDF Organize</Link>
                 <Link href="/categories/security" style={DROPDOWN_LINK} onClick={() => setToolsOpen(false)}>PDF Edit & Sign</Link>
                 <div style={DIVIDER} />
