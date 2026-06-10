@@ -4,7 +4,7 @@ import React, { useState, useRef, useCallback } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
-  FileArchive, Lock, FileText, Zap, Layers,
+  FileArchive, Lock, Zap, Layers,
   Smartphone, ShieldCheck, FolderOpen, Settings, Download,
   X,
 } from "lucide-react";
@@ -12,23 +12,25 @@ import {
 const USE_CASES = [
   { label: "Merge PDF files online", href: "/tools/merge-pdf" },
   { label: "Split PDF by page range", href: "/tools/split-pdf" },
-  { label: "Remove pages from PDF", href: "/tools/delete-pdf-pages" },
   { label: "Rotate PDF pages online", href: "/tools/rotate-pdf" },
+  { label: "Delete pages from PDF", href: "/tools/delete-pdf-pages" },
   { label: "Extract pages from PDF", href: "/tools/extract-pdf-pages" },
   { label: "Reorder PDF pages", href: "/tools/reorder-pdf-pages" },
   { label: "Add watermark to PDF", href: "/tools/watermark-pdf" },
-  { label: "Sign a PDF document", href: "/tools/sign-pdf" },
+  { label: "Sign PDF online", href: "/tools/sign-pdf" },
   { label: "Crop PDF pages", href: "/tools/crop-pdf" },
-  { label: "Convert PDF to JPG", href: "/convert-pdf/pdf-to-jpg" },
-  { label: "Convert PDF to PNG", href: "/convert-pdf/pdf-to-png" },
-  { label: "Convert JPG to PDF", href: "/convert-pdf/jpg-to-pdf" },
+  { label: "Count words in PDF", href: "/tools/pdf-word-count" },
+  { label: "Convert PDF to JPG images", href: "/convert-pdf/pdf-to-jpg" },
+  { label: "Convert PDF to PNG images", href: "/convert-pdf/pdf-to-png" },
+  { label: "Convert JPG images to PDF", href: "/convert-pdf/jpg-to-pdf" },
+  { label: "Convert PNG images to PDF", href: "/convert-pdf/png-to-pdf" },
 ];
 
 const WHY_ITEMS = [
-  { Icon: Zap, title: "Fast processing", text: "Most operations complete in under 5 seconds.", color: "#ca8a04", bg: "#fefce8" },
-  { Icon: Smartphone, title: "Works on any device", text: "Desktop, tablet, or phone it works everywhere.", color: "#9333ea", bg: "#fdf4ff" },
-  { Icon: ShieldCheck, title: "Privacy focused", text: "Files are never stored or shared. Processed and gone.", color: "#16a34a", bg: "#f0fdf4" },
-  { Icon: Layers, title: "14 free tools", text: "Everything you need to work with PDFs in one place.", color: "#2563eb", bg: "#eff6ff" },
+  { Icon: ShieldCheck, title: "100% free", text: "Every tool is free to use. No account, no subscription, no hidden limits.", color: "#16a34a", bg: "#f0fdf4" },
+  { Icon: Lock, title: "Private by design", text: "Your files never leave your browser. Nothing is uploaded to any server.", color: "#2563eb", bg: "#eff6ff" },
+  { Icon: Smartphone, title: "Works everywhere", text: "Desktop, tablet, or phone — no installation needed.", color: "#9333ea", bg: "#fdf4ff" },
+  { Icon: Zap, title: "Fast results", text: "Most operations complete in seconds, right in your tab.", color: "#ca8a04", bg: "#fefce8" },
 ];
 
 function formatSize(bytes: number) {
@@ -222,9 +224,8 @@ function UploadBox() {
 }
 
 const CATEGORIES = [
-  { slug: "core", name: "Organize PDF", desc: "Merge, split, rotate, and delete pages.", count: 4, icon: FileArchive, color: "#2563eb", bg: "#eff6ff", href: "/categories/core" },
-  { slug: "convert", name: "Convert PDF", desc: "PDF to JPG, PNG, and back.", count: 4, icon: FileText, color: "#ea580c", bg: "#fff7ed", href: "/convert-pdf" },
-  { slug: "security", name: "Edit & Sign", desc: "Watermark, sign, crop, and reorder pages.", count: 6, icon: Lock, color: "#16a34a", bg: "#f0fdf4", href: "/categories/security" },
+  { slug: "core", name: "Organize PDF", desc: "Merge, split, rotate, delete and extract pages.", count: 6, icon: FileArchive, color: "#2563eb", bg: "#eff6ff", href: "/categories/core" },
+  { slug: "security", name: "Edit & Sign", desc: "Watermark, sign, crop, and count words in PDFs.", count: 6, icon: Lock, color: "#16a34a", bg: "#f0fdf4", href: "/categories/security" },
 ];
 
 export default function Home() {
@@ -239,17 +240,17 @@ export default function Home() {
             {/* Lewa */}
             <div>
               <h1 style={{ fontSize: "clamp(28px, 5vw, 48px)", fontWeight: 700, lineHeight: 1.15, color: "#0f0f0f", letterSpacing: "-0.02em", marginBottom: "16px", marginTop: 0 }}>
-                All-in-one PDF tools.<br />
-                <span style={{ color: "#2563eb" }}>Fast, simple, and safe.</span>
+                Free PDF tools that work<br />
+                <span style={{ color: "#2563eb" }}>in your browser.</span>
               </h1>
               <p style={{ fontSize: "18px", color: "#4b5563", lineHeight: 1.6, marginBottom: "24px" }}>
-                Compress, merge, split and convert PDFs in seconds.
+                Merge, split, rotate, convert and edit PDF files — no sign-up, no limits, no uploads to external servers.
               </p>
               <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
                 {[
-                  { Icon: ShieldCheck, text: "Files stay private — processed and gone", color: "#16a34a" },
-                  { Icon: Zap, text: "Works in your browser — no software needed", color: "#ca8a04" },
-                  { Icon: Layers, text: "Fast — 30+ tools available", color: "#2563eb" },
+                  { Icon: ShieldCheck, text: "Files never leave your device — processed in your browser", color: "#16a34a" },
+                  { Icon: Zap, text: "100% free — no account required", color: "#ca8a04" },
+                  { Icon: Layers, text: "15 free tools — all browser-based", color: "#2563eb" },
                 ].map((item) => (
                   <div key={item.text} style={{ display: "flex", alignItems: "center", gap: "10px", fontSize: "16px", color: "#374151" }}>
                     <item.Icon size={20} color={item.color} strokeWidth={2.5} />
@@ -402,9 +403,6 @@ export default function Home() {
         <div style={{ display: "flex", justifyContent: "center", gap: "12px", flexWrap: "wrap" }}>
           <Link href="/categories" style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "#2563eb", color: "#fff", padding: "12px 28px", borderRadius: "8px", fontSize: "15px", fontWeight: 500, textDecoration: "none" }}>
             See all tools →
-          </Link>
-          <Link href="/convert-pdf" style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "#fff", color: "#2563eb", padding: "12px 28px", borderRadius: "8px", fontSize: "15px", fontWeight: 500, textDecoration: "none", border: "1.5px solid #2563eb" }}>
-            Convert PDF →
           </Link>
         </div>
       </section>

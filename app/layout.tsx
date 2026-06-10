@@ -77,9 +77,6 @@ export default function RootLayout({
           color: "#666",
         }}>
           <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "12px 20px", marginBottom: "16px" }}>
-            <Link href="/convert-pdf" style={{ color: "#666", textDecoration: "none" }}>Convert PDF</Link>
-            <Link href="/categories/core" style={{ color: "#666", textDecoration: "none" }}>Organize PDF</Link>
-            <Link href="/categories/security" style={{ color: "#666", textDecoration: "none" }}>Edit & Sign</Link>
             <Link href="/categories" style={{ color: "#666", textDecoration: "none" }}>All Tools</Link>
             <Link href="/about" style={{ color: "#666", textDecoration: "none" }}>About</Link>
             <Link href="/contact" style={{ color: "#666", textDecoration: "none" }}>Contact</Link>
