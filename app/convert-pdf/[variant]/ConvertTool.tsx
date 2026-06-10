@@ -34,6 +34,17 @@ export default function ConvertTool({ variant }: Props) {
   }, [variant.slug]);
 
   function handleFiles(selected: File[]) {
+    const maxSize = (variant.slug === "pdf-to-jpg" || variant.slug === "pdf-to-png")
+      ? 50 * 1024 * 1024
+      : 100 * 1024 * 1024;
+    if (selected.some(f => f.size > maxSize)) {
+      const mb = maxSize / (1024 * 1024);
+      setErrorMessage(mb === 50
+        ? "File too large. Maximum size is 50MB. Large PDFs with many pages may also be slow to render — consider splitting the PDF into smaller sections first."
+        : "File too large. Maximum size for this tool is 100MB. For large files, try splitting the PDF first.");
+      setStatus("error");
+      return;
+    }
     setFiles(selected);
     setStatus("idle");
     setErrorMessage("");
@@ -92,6 +103,7 @@ export default function ConvertTool({ variant }: Props) {
     }
     const pdfBytes = await pdfDoc.save();
     const blob = new Blob([pdfBytes.buffer as ArrayBuffer], { type: "application/pdf" });
+
     setDownloadUrl(URL.createObjectURL(blob));
     setStatus("done");
     ToolTracking.processSuccess(variant.slug, PROCESSING_TYPE);

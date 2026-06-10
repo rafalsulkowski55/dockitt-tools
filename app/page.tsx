@@ -41,6 +41,7 @@ function UploadBox() {
   const inputRef = useRef<HTMLInputElement>(null);
   const [file, setFile] = useState<File | null>(null);
   const [dragOver, setDragOver] = useState(false);
+  const [fileSizeWarning, setFileSizeWarning] = useState(false);
 
   const TOOLS_COLUMNS = [
     {
@@ -77,6 +78,7 @@ function UploadBox() {
   const handleFile = useCallback((f: File) => {
     if (f.type !== "application/pdf") return;
     setFile(f);
+    setFileSizeWarning(f.size > 100 * 1024 * 1024);
   }, []);
 
   const handleDrop = (e: React.DragEvent) => {
@@ -146,7 +148,7 @@ function UploadBox() {
           Choose PDF file
         </button>
         <p style={{ fontSize: "12px", color: "#9ca3af", marginTop: "12px", marginBottom: 0 }}>
-          Works with any PDF · Up to 50MB
+          Works with any PDF · Up to 100MB
         </p>
       </div>
     );
@@ -163,6 +165,11 @@ function UploadBox() {
           <div>
             <p style={{ fontSize: "14px", fontWeight: 600, color: "#111", margin: 0 }}>{file.name}</p>
             <p style={{ fontSize: "12px", color: "#6b7280", margin: 0 }}>{formatSize(file.size)}</p>
+            {fileSizeWarning && (
+              <p style={{ fontSize: "12px", color: "#b45309", margin: "2px 0 0", fontWeight: 500 }}>
+                This file is too large for most tools (max 100MB). Try splitting it first.
+              </p>
+            )}
           </div>
         </div>
         <button

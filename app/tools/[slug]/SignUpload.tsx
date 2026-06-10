@@ -6,6 +6,7 @@ import { usePendingFile } from "@/lib/use-pending-file";
 
 const TOOL_NAME = "sign-pdf";
 const PROCESSING_TYPE = "browser" as const;
+const MAX_FILE_SIZE = 100 * 1024 * 1024; // 100MB
 
 function Spinner() {
   return (
@@ -43,6 +44,7 @@ export default function SignUpload() {
   usePendingFile((f) => { handleFile(f); });
 
   async function handleFile(f: File) {
+    if (f.size > MAX_FILE_SIZE) { setStatus("error"); setErrorMessage("File too large. Maximum size for this tool is 100MB. For large files, try splitting the PDF first."); return; }
     setFile(f); setStatus("idle"); setErrorMessage(""); setSignaturePos(null);
     setIsSigned(false); setProgress(0); clearSignature();
     ToolTracking.uploadStarted(TOOL_NAME, PROCESSING_TYPE);

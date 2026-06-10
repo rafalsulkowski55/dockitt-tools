@@ -142,10 +142,14 @@ export default async function ToolPage({ params }: ToolPageProps) {
     })),
   };
 
+  const fileSizeInfo = tool.slug === "merge-pdf"
+    ? "Up to 50MB per file, 150MB total"
+    : "Files up to 100MB supported";
   const bullets = [
     { color: "#16a34a", text: "Processed entirely in your browser — never leaves your device" },
     { color: "#2563eb", text: "No software needed — works in any browser" },
     { color: "#ca8a04", text: "Fast — most operations complete in seconds" },
+    { color: "#6b7280", text: fileSizeInfo },
   ];
 
   return (

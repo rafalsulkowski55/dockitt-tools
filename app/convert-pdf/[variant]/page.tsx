@@ -27,10 +27,14 @@ export default async function ConvertPage({ params }: ConvertPageProps) {
   const all = getAllConvertVariants();
   if (!v) notFound();
 
+  const fileSizeInfo = (v.slug === "pdf-to-jpg" || v.slug === "pdf-to-png")
+    ? "Files up to 50MB supported"
+    : "Files up to 100MB supported";
   const bullets = [
     { color: "#16a34a", text: "Processed entirely in your browser — never leaves your device" },
     { color: "#2563eb", text: "No software needed — works in any browser" },
     { color: "#ca8a04", text: "Fast — most operations complete in seconds" },
+    { color: "#6b7280", text: fileSizeInfo },
   ];
 
   return (

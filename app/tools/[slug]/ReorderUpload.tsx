@@ -6,6 +6,7 @@ import { usePendingFile } from "@/lib/use-pending-file";
 
 const TOOL_NAME = "reorder-pdf-pages";
 const PROCESSING_TYPE = "browser" as const;
+const MAX_FILE_SIZE = 100 * 1024 * 1024; // 100MB
 
 function Spinner() {
   return (
@@ -32,6 +33,7 @@ export default function ReorderUpload() {
   usePendingFile((f) => { handleFile(f); });
 
   async function handleFile(f: File) {
+    if (f.size > MAX_FILE_SIZE) { setStatus("error"); setErrorMessage("File too large. Maximum size for this tool is 100MB. For large files, try splitting the PDF first."); return; }
     setFile(f); setStatus("idle"); setErrorMessage(""); setPages([]); setTotalPages(null); setProgress(0);
     ToolTracking.uploadStarted(TOOL_NAME, PROCESSING_TYPE);
     const { PDFDocument } = await import("pdf-lib");

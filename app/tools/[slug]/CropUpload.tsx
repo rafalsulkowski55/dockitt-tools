@@ -6,6 +6,7 @@ import { usePendingFile } from "@/lib/use-pending-file";
 
 const TOOL_NAME = "crop-pdf";
 const PROCESSING_TYPE = "browser" as const;
+const MAX_FILE_SIZE = 100 * 1024 * 1024; // 100MB
 
 type CropBox = { x: number; y: number; width: number; height: number };
 
@@ -89,6 +90,7 @@ export default function CropUpload() {
   }
 
   async function handleFile(f: File) {
+    if (f.size > MAX_FILE_SIZE) { setStatus("error"); setErrorMessage("File too large. Maximum size for this tool is 100MB. For large files, try splitting the PDF first."); return; }
     setFile(f); setStatus("idle"); setErrorMessage(""); setCropBox(null);
     setCurrentPage(1); setProgress(0); allCropsRef.current = {};
     ToolTracking.uploadStarted(TOOL_NAME, PROCESSING_TYPE);

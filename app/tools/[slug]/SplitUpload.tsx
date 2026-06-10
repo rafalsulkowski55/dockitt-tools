@@ -6,6 +6,7 @@ import { usePendingFile } from "@/lib/use-pending-file";
 
 const TOOL_NAME = "split-pdf";
 const PROCESSING_TYPE = "browser" as const;
+const MAX_FILE_SIZE = 100 * 1024 * 1024; // 100MB
 
 function Spinner() {
   return (
@@ -39,20 +40,22 @@ export default function SplitUpload() {
 
   function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const f = e.target.files?.[0] ?? null;
+    e.target.value = "";
+    if (!f) return;
+    if (f.size > MAX_FILE_SIZE) { setStatus("error"); setErrorMessage("File too large. Maximum size for this tool is 100MB. For large files, try splitting the PDF first."); return; }
     setFile(f); setStatus("idle"); setDownloadUrl(null); setErrorMessage("");
     setTotalPages(null); setFromPage("1"); setToPage("1"); setProgress(0);
-    if (f) ToolTracking.uploadStarted(TOOL_NAME, PROCESSING_TYPE);
-    e.target.value = "";
+    ToolTracking.uploadStarted(TOOL_NAME, PROCESSING_TYPE);
   }
 
   function handleDrop(e: React.DragEvent<HTMLDivElement>) {
     e.preventDefault();
     const f = e.dataTransfer.files?.[0] ?? null;
-    if (f && f.type === "application/pdf") {
-      setFile(f); setStatus("idle"); setDownloadUrl(null); setErrorMessage("");
-      setTotalPages(null); setFromPage("1"); setToPage("1"); setProgress(0);
-      ToolTracking.uploadStarted(TOOL_NAME, PROCESSING_TYPE);
-    }
+    if (!f || f.type !== "application/pdf") return;
+    if (f.size > MAX_FILE_SIZE) { setStatus("error"); setErrorMessage("File too large. Maximum size for this tool is 100MB. For large files, try splitting the PDF first."); return; }
+    setFile(f); setStatus("idle"); setDownloadUrl(null); setErrorMessage("");
+    setTotalPages(null); setFromPage("1"); setToPage("1"); setProgress(0);
+    ToolTracking.uploadStarted(TOOL_NAME, PROCESSING_TYPE);
   }
 
   function handleReset() {

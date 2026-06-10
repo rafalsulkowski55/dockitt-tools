@@ -6,6 +6,8 @@ import { usePendingFile } from "@/lib/use-pending-file";
 
 const TOOL_NAME = "merge-pdf";
 const PROCESSING_TYPE = "browser" as const;
+const MAX_FILE_SIZE_PER_FILE = 50 * 1024 * 1024; // 50MB per file
+const MAX_TOTAL_SIZE = 150 * 1024 * 1024; // 150MB total
 
 function Spinner() {
   return (
@@ -20,6 +22,7 @@ function Spinner() {
 export default function MergeUpload() {
   const [files, setFiles] = useState<File[]>([]);
   const [status, setStatus] = useState<"idle" | "processing" | "done" | "error">("idle");
+  const [errorMessage, setErrorMessage] = useState("");
   const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -39,36 +42,58 @@ export default function MergeUpload() {
     return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
   }
 
+  function validateAndAdd(incoming: File[], existing: File[]) {
+    const next = [...existing, ...incoming];
+    if (incoming.some(f => f.size > MAX_FILE_SIZE_PER_FILE)) {
+      setErrorMessage("One or more files exceed the 50MB per file limit. Please remove large files before merging.");
+      setStatus("error");
+    } else if (next.reduce((s, f) => s + f.size, 0) > MAX_TOTAL_SIZE) {
+      setErrorMessage("Total size of selected files exceeds 150MB. Please select fewer or smaller files.");
+      setStatus("error");
+    } else {
+      setErrorMessage(""); setStatus("idle");
+    }
+    return next;
+  }
+
   function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const selected = Array.from(e.target.files ?? []);
-    setFiles((prev) => [...prev, ...selected]);
-    setStatus("idle"); setDownloadUrl(null);
-    if (selected.length > 0) ToolTracking.uploadStarted(TOOL_NAME, PROCESSING_TYPE);
     e.target.value = "";
+    if (!selected.length) return;
+    setFiles((prev) => validateAndAdd(selected, prev));
+    setDownloadUrl(null);
+    ToolTracking.uploadStarted(TOOL_NAME, PROCESSING_TYPE);
   }
 
   function handleDrop(e: React.DragEvent<HTMLDivElement>) {
     e.preventDefault();
     const dropped = Array.from(e.dataTransfer.files).filter(f => f.type === "application/pdf");
-    setFiles((prev) => [...prev, ...dropped]);
-    setStatus("idle"); setDownloadUrl(null);
-    if (dropped.length > 0) ToolTracking.uploadStarted(TOOL_NAME, PROCESSING_TYPE);
+    if (!dropped.length) return;
+    setFiles((prev) => validateAndAdd(dropped, prev));
+    setDownloadUrl(null);
+    ToolTracking.uploadStarted(TOOL_NAME, PROCESSING_TYPE);
   }
 
   function removeFile(index: number) {
-    setFiles((prev) => prev.filter((_, i) => i !== index));
-    setStatus("idle"); setDownloadUrl(null);
+    setFiles((prev) => {
+      const next = prev.filter((_, i) => i !== index);
+      if (next.every(f => f.size <= MAX_FILE_SIZE_PER_FILE) && next.reduce((s, f) => s + f.size, 0) <= MAX_TOTAL_SIZE) {
+        setErrorMessage(""); setStatus("idle");
+      }
+      return next;
+    });
+    setDownloadUrl(null);
   }
 
   function handleReset() {
-    setFiles([]); setStatus("idle"); setDownloadUrl(null); setProgress(0);
+    setFiles([]); setStatus("idle"); setErrorMessage(""); setDownloadUrl(null); setProgress(0);
     if (inputRef.current) inputRef.current.value = "";
   }
 
   async function handleProcess() {
     if (files.length < 2) return;
     ToolTracking.processStarted(TOOL_NAME, PROCESSING_TYPE);
-    setStatus("processing"); setDownloadUrl(null); setProgress(0);
+    setStatus("processing"); setErrorMessage(""); setDownloadUrl(null); setProgress(0);
     const interval = setInterval(() => { setProgress((p) => (p < 85 ? p + 5 : p)); }, 300);
     try {
       const { PDFDocument } = await import("pdf-lib");
@@ -159,7 +184,7 @@ export default function MergeUpload() {
 
         {status === "error" && (
           <div style={{ padding: "12px 14px", background: "#fef2f2", color: "#dc2626", border: "1px solid #fecaca", borderRadius: "8px", fontSize: "13px" }}>
-            Something went wrong. Please try again.
+            {errorMessage || "Something went wrong. Please try again."}
           </div>
         )}
 

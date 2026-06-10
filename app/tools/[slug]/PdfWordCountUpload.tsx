@@ -6,6 +6,7 @@ import { usePendingFile } from "@/lib/use-pending-file";
 
 const TOOL_NAME = "pdf-word-count";
 const PROCESSING_TYPE = "browser" as const;
+const MAX_FILE_SIZE = 100 * 1024 * 1024; // 100MB
 
 type Status = "idle" | "processing" | "done" | "error";
 
@@ -32,6 +33,7 @@ export default function PdfWordCountUpload() {
 
   function handleFileSelect(f: File) {
     if (f.type !== "application/pdf") { setErrorMessage("Please upload a PDF file."); setStatus("error"); return; }
+    if (f.size > MAX_FILE_SIZE) { setErrorMessage("File too large. Maximum size for this tool is 100MB. For large files, try splitting the PDF first."); setStatus("error"); return; }
     setFile(f); setFileName(f.name); setStatus("idle"); setErrorMessage(""); setResult(null);
     ToolTracking.uploadStarted(TOOL_NAME, PROCESSING_TYPE);
   }
