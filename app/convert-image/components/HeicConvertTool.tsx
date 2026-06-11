@@ -60,14 +60,19 @@ export default function HeicConvertTool({ variant }: Props) {
     setStatus("processing"); setErrorMessage(""); setDownloadUrl(null);
     try {
       const heic2any = (await import("heic2any")).default;
-      const quality = cfg.mime === "image/jpeg" ? 0.92 : undefined;
-      const result = await heic2any({ blob: file, toType: cfg.mime, quality });
+      const convertOptions: { blob: Blob; toType: string; quality?: number } = {
+        blob: file,
+        toType: cfg.mime,
+      };
+      if (cfg.mime === "image/jpeg") convertOptions.quality = 0.9;
+      const result = await heic2any(convertOptions);
       const outputBlob = Array.isArray(result) ? result[0] : result;
-      setDownloadUrl(URL.createObjectURL(outputBlob));
+      const url = URL.createObjectURL(outputBlob);
+      setDownloadUrl(url);
       setStatus("done");
       ToolTracking.processSuccess(variant.slug, PROCESSING_TYPE);
-    } catch (err: unknown) {
-      setErrorMessage(err instanceof Error ? err.message : "Conversion failed. The file may be corrupt or not a valid HEIC image.");
+    } catch {
+      setErrorMessage("Conversion failed. Make sure the file is a valid HEIC/HEIF image from an iPhone or iPad.");
       setStatus("error");
     }
   }
