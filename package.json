@@ -17,6 +17,7 @@
     "heic2any": "^0.0.4",
     "js-yaml": "^4.2.0",
     "jszip": "^3.10.1",
+    "libheif-js": "^1.19.8",
     "lucide-react": "^1.8.0",
     "marked": "^18.0.5",
     "next": "16.1.6",

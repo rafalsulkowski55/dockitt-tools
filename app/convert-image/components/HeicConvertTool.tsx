@@ -59,14 +59,41 @@ export default function HeicConvertTool({ variant }: Props) {
     ToolTracking.processStarted(variant.slug, PROCESSING_TYPE);
     setStatus("processing"); setErrorMessage(""); setDownloadUrl(null);
     try {
-      const heic2any = (await import("heic2any")).default;
-      const convertOptions: { blob: Blob; toType: string; quality?: number } = {
-        blob: file,
-        toType: cfg.mime,
-      };
-      if (cfg.mime === "image/jpeg") convertOptions.quality = 0.9;
-      const result = await heic2any(convertOptions);
-      const outputBlob = Array.isArray(result) ? result[0] : result;
+      const libheifModule = await import("libheif-js/wasm-bundle");
+      const libheif = libheifModule.default;
+
+      const data = await file.arrayBuffer();
+      const decoder = new libheif.HeifDecoder();
+      const images = decoder.decode(new Uint8Array(data));
+      if (!images || images.length === 0) throw new Error("No images found in file.");
+
+      const image = images[0];
+      const width = image.get_width();
+      const height = image.get_height();
+
+      const canvas = document.createElement("canvas");
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext("2d")!;
+      const imageData = ctx.createImageData(width, height);
+
+      await new Promise<void>((resolve, reject) => {
+        image.display(imageData, (displayData) => {
+          if (!displayData) { reject(new Error("Failed to decode HEIF image data.")); return; }
+          ctx.putImageData(imageData, 0, 0);
+          resolve();
+        });
+      });
+
+      const mimeType = cfg.mime;
+      const quality = mimeType === "image/jpeg" ? 0.9 : undefined;
+      const outputBlob = await new Promise<Blob>((resolve, reject) => {
+        canvas.toBlob((blob) => {
+          if (!blob) { reject(new Error("Failed to create output image.")); return; }
+          resolve(blob);
+        }, mimeType, quality);
+      });
+
       const url = URL.createObjectURL(outputBlob);
       setDownloadUrl(url);
       setStatus("done");
