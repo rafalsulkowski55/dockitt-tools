@@ -5,10 +5,17 @@ import Link from "next/link";
 import type { ConvertVariant } from "@/data/convert/variants";
 
 const VARIANT_META: Record<string, { icon: string; desc: string }> = {
-  "pdf-to-jpg": { icon: "🖼️", desc: "Extract every page as a JPEG image" },
-  "pdf-to-png": { icon: "🖼️", desc: "Extract every page as a PNG image" },
-  "jpg-to-pdf": { icon: "📄", desc: "Combine multiple JPG images into one PDF" },
-  "png-to-pdf": { icon: "📄", desc: "Combine multiple PNG images into one PDF" },
+  "pdf-to-jpg":  { icon: "🖼️", desc: "Extract every page as a JPEG image" },
+  "pdf-to-png":  { icon: "🖼️", desc: "Extract every page as a PNG image" },
+  "pdf-to-webp": { icon: "🖼️", desc: "Extract every page as a WebP image" },
+  "pdf-to-bmp":  { icon: "🖼️", desc: "Extract every page as a BMP image" },
+  "pdf-to-txt":  { icon: "📝", desc: "Extract all text into a plain text file" },
+  "jpg-to-pdf":  { icon: "📄", desc: "Combine multiple JPG images into one PDF" },
+  "png-to-pdf":  { icon: "📄", desc: "Combine multiple PNG images into one PDF" },
+  "webp-to-pdf": { icon: "📄", desc: "Combine multiple WebP images into one PDF" },
+  "bmp-to-pdf":  { icon: "📄", desc: "Combine multiple BMP images into one PDF" },
+  "gif-to-pdf":  { icon: "📄", desc: "Combine multiple GIF images into one PDF" },
+  "text-to-pdf": { icon: "📄", desc: "Convert a plain text file to a PDF document" },
 };
 
 type Props = {

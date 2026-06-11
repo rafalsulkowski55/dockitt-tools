@@ -1,7 +1,28 @@
 import { notFound } from "next/navigation";
 import { getAllConvertVariants, getConvertVariant } from "@/data/convert/variants";
+import type { ConvertVariant } from "@/data/convert/variants";
 import ConvertTool from "./ConvertTool";
+import PdfToWebpTool from "./PdfToWebpTool";
+import PdfToBmpTool from "./PdfToBmpTool";
+import PdfToTxtTool from "./PdfToTxtTool";
+import TextToPdfTool from "./TextToPdfTool";
+import WebpToPdfTool from "./WebpToPdfTool";
+import BmpToPdfTool from "./BmpToPdfTool";
+import GifToPdfTool from "./GifToPdfTool";
 import Link from "next/link";
+
+function ConvertToolRouter({ variant }: { variant: ConvertVariant }) {
+  switch (variant.slug) {
+    case "pdf-to-webp":  return <PdfToWebpTool variant={variant} />;
+    case "pdf-to-bmp":   return <PdfToBmpTool variant={variant} />;
+    case "pdf-to-txt":   return <PdfToTxtTool variant={variant} />;
+    case "text-to-pdf":  return <TextToPdfTool variant={variant} />;
+    case "webp-to-pdf":  return <WebpToPdfTool variant={variant} />;
+    case "bmp-to-pdf":   return <BmpToPdfTool variant={variant} />;
+    case "gif-to-pdf":   return <GifToPdfTool variant={variant} />;
+    default:             return <ConvertTool variant={variant} />;
+  }
+}
 
 type ConvertPageProps = {
   params: Promise<{ variant: string }>;
@@ -27,7 +48,8 @@ export default async function ConvertPage({ params }: ConvertPageProps) {
   const all = getAllConvertVariants();
   if (!v) notFound();
 
-  const fileSizeInfo = (v.slug === "pdf-to-jpg" || v.slug === "pdf-to-png")
+  const FIFTY_MB_SLUGS = new Set(["pdf-to-jpg", "pdf-to-png", "pdf-to-webp", "pdf-to-bmp"]);
+  const fileSizeInfo = FIFTY_MB_SLUGS.has(v.slug)
     ? "Files up to 50MB supported"
     : "Files up to 100MB supported";
   const bullets = [
@@ -101,7 +123,7 @@ export default async function ConvertPage({ params }: ConvertPageProps) {
               </div>
 
               <div style={{ padding: "24px" }}>
-                <ConvertTool variant={v} />
+                <ConvertToolRouter variant={v} />
               </div>
             </div>
 

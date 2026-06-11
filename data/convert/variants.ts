@@ -188,6 +188,308 @@ export const convertVariants: ConvertVariant[] = [
       },
     ],
   },
+  // ── new tools ──────────────────────────────────────────────────────────────
+  {
+    slug: "pdf-to-webp",
+    name: "PDF to WebP",
+    title: "Convert PDF to WebP Online",
+    description: "Convert PDF pages to WebP images online without any sign-up.",
+    longDescription: "WebP is the modern image format developed by Google that delivers superior compression compared to both JPG and PNG while maintaining excellent visual quality. Converting PDF pages to WebP is particularly useful when you need to display PDF content on a modern website — WebP files are significantly smaller than equivalent JPG or PNG files, which means faster page loads and lower bandwidth usage. WebP supports both lossy and lossless compression as well as transparency, making it a versatile replacement for both JPG and PNG in web contexts. Dockitt converts each page of your PDF to a separate WebP file directly in your browser using PDF.js, with no server upload required.",
+    primaryKeyword: "pdf to webp",
+    inputFormat: "pdf",
+    outputFormat: "webp",
+    inputLabel: "Choose PDF",
+    accept: ".pdf",
+    howTo: [
+      "Click 'Choose PDF' and select the PDF file you want to convert to WebP images.",
+      "Click 'Convert to WebP' and wait while each page is rendered and encoded.",
+      "Download the WebP images. Each page of the PDF becomes one individual WebP file.",
+    ],
+    faqs: [
+      {
+        question: "Why convert PDF to WebP instead of JPG or PNG?",
+        answer: "WebP typically produces files that are 25–35% smaller than equivalent JPG images and 26% smaller than PNG, at comparable visual quality. If you are embedding PDF pages on a website or web application, WebP is the most efficient format for modern browsers. All major browsers have supported WebP since 2020. For desktop or print use cases, JPG or PNG are still more universally compatible.",
+      },
+      {
+        question: "Will each page of the PDF become a separate WebP file?",
+        answer: "Yes. Each page is converted to its own individual WebP image. A 10-page PDF will produce 10 separate WebP files, each named after the page number. If you need all pages in a single image, you would need to combine them after downloading.",
+      },
+      {
+        question: "Does WebP support transparency?",
+        answer: "Yes. WebP supports alpha channel transparency for both lossy and lossless compression modes. If your PDF pages have transparent backgrounds, the WebP output will preserve that transparency correctly, unlike JPG which cannot represent transparency at all.",
+      },
+      {
+        question: "The WebP images look blurry. What can I do?",
+        answer: "The sharpness of the output depends on the resolution of the source PDF. The tool renders pages at 2× scale to produce clear output for standard use cases. If the original PDF was created from low-resolution raster images, the WebP output will also appear soft. For vector-based PDFs such as those exported from Illustrator or InDesign, the output will be crisp regardless of output size.",
+      },
+      {
+        question: "Can I open WebP files on my computer?",
+        answer: "Modern operating systems support WebP natively. On Windows 10 and later, the Photos app can open WebP files. On macOS 11 Big Sur and later, Preview supports WebP. On Linux, most image viewers have added WebP support in recent years. If you need compatibility with older software, consider converting to PNG instead.",
+      },
+      {
+        question: "Is the conversion done in my browser or on a server?",
+        answer: "The PDF to WebP conversion is handled entirely in your browser using PDF.js. Your file is not uploaded to any server. It stays on your device throughout the entire process, which also makes it faster for most files since there is no upload or download round trip.",
+      },
+    ],
+  },
+  {
+    slug: "pdf-to-bmp",
+    name: "PDF to BMP",
+    title: "Convert PDF to BMP Online",
+    description: "Convert PDF pages to BMP images online without any sign-up.",
+    longDescription: "BMP (Bitmap) is one of the oldest and most straightforward image formats, storing pixel colour data with no lossy compression. This makes BMP files very large compared to modern formats, but also means the image data is completely uncompressed and lossless. BMP is still used in some legacy systems, industrial applications, and document management workflows that expect uncompressed bitmap files. If you need to extract PDF pages as BMP images for compatibility with such a system, Dockitt converts each page directly in your browser using PDF.js and a built-in BMP encoder, with no server upload required.",
+    primaryKeyword: "pdf to bmp",
+    inputFormat: "pdf",
+    outputFormat: "bmp",
+    inputLabel: "Choose PDF",
+    accept: ".pdf",
+    howTo: [
+      "Click 'Choose PDF' and select the PDF file you want to convert to BMP images.",
+      "Click 'Convert to BMP' and wait while each page is rendered and encoded.",
+      "Download the BMP images. Each page of the PDF becomes one individual BMP file.",
+    ],
+    faqs: [
+      {
+        question: "When would I need a PDF page as a BMP file?",
+        answer: "BMP is most commonly required in legacy software environments, industrial imaging systems, and some document management systems that only accept uncompressed bitmap files. If a specific piece of software or a workflow requires BMP input and you only have a PDF, this tool is the quickest way to extract the pages in the right format.",
+      },
+      {
+        question: "Why are the BMP files so large?",
+        answer: "BMP stores every pixel as raw colour data with no compression. A single A4 page rendered at standard screen resolution can easily be 5–20 megabytes as a BMP file, compared to a fraction of that as a JPG or PNG. This is inherent to the format. If file size is a concern and the receiving software can accept PNG, use the PDF to PNG converter instead, which provides the same lossless quality at dramatically smaller file sizes.",
+      },
+      {
+        question: "Will each page become a separate BMP file?",
+        answer: "Yes. Each page of the PDF is exported as an individual BMP image. A 5-page PDF produces 5 separate BMP files. There is no option to combine pages into a single BMP file, as BMP is a single-image format.",
+      },
+      {
+        question: "Does BMP support transparency?",
+        answer: "Standard 24-bit BMP does not support transparency. Transparent areas in the source PDF will be rendered with a white background in the BMP output. If you need transparency preserved, use PDF to PNG instead, which fully supports alpha channel transparency.",
+      },
+      {
+        question: "The conversion seems slower than other formats. Why?",
+        answer: "BMP files for high-resolution pages can be very large — sometimes tens of megabytes per page. The browser needs to encode and process this data in memory. For PDFs with many pages, this can take a noticeable amount of time compared to JPG or WebP. If speed is a priority, consider using JPG or WebP, which are much smaller and faster to encode.",
+      },
+      {
+        question: "Is the conversion done in my browser or on a server?",
+        answer: "The PDF to BMP conversion is handled entirely in your browser using PDF.js for rendering and a built-in BMP encoder for producing the output files. Your PDF is not uploaded to any server at any point. The entire process happens locally on your device.",
+      },
+    ],
+  },
+  {
+    slug: "pdf-to-txt",
+    name: "PDF to Text",
+    title: "Extract Text from PDF Online",
+    description: "Extract all text from a PDF file and save it as a plain text file.",
+    longDescription: "Extracting text from a PDF is useful when you need to copy the content into a word processor, run it through a spell checker, search it with command-line tools, feed it into a script or language model, or simply store the words without the PDF structure. Not all PDFs are created equal — PDFs created from text-based documents such as Word files or InDesign layouts contain embedded text that can be extracted cleanly. Scanned documents saved as PDFs, however, are essentially images and do not contain extractable text; an OCR tool would be needed for those. Dockitt extracts text from searchable PDFs directly in your browser using PDF.js.",
+    primaryKeyword: "pdf to text",
+    inputFormat: "pdf",
+    outputFormat: "txt",
+    inputLabel: "Choose PDF",
+    accept: ".pdf",
+    howTo: [
+      "Click 'Choose PDF' and select the PDF file you want to extract text from.",
+      "Click 'Extract Text' and wait while each page is processed.",
+      "Download the TXT file. All text from all pages is combined into a single file with page markers.",
+    ],
+    faqs: [
+      {
+        question: "Why does the extracted text look garbled or out of order?",
+        answer: "PDF does not store text in reading order — it stores text fragments positioned on a page, and the reading order depends on how the PDF was created. PDFs with complex multi-column layouts, tables, or non-standard text flow may produce text that is out of order when extracted. This is a fundamental limitation of the PDF format, not a bug in the tool. For structured data like tables, a dedicated PDF table extractor would be more appropriate.",
+      },
+      {
+        question: "The output file is empty. What went wrong?",
+        answer: "If the output is empty, the PDF is likely a scanned document — one that was created by scanning paper pages and saving them as a PDF image. Scanned PDFs contain images of text, not actual text characters. To extract text from a scanned PDF, you need an OCR (Optical Character Recognition) tool that can read the image and convert it to text. This tool only works with PDFs that contain embedded text.",
+      },
+      {
+        question: "How are the pages separated in the output file?",
+        answer: "Each page is preceded by a separator line in the format '--- Page N ---', where N is the page number. This makes it easy to find content from a specific page in the output file. You can search for '--- Page' in any text editor to jump between page boundaries.",
+      },
+      {
+        question: "Does the tool preserve formatting like bold, italics, or headings?",
+        answer: "No. Plain text does not support rich formatting. All text is extracted as flat, unformatted characters. Bold, italics, font size differences, and any other visual formatting are not preserved in the TXT output. If you need to preserve formatting, consider using a Word or PDF editor tool instead.",
+      },
+      {
+        question: "Can I extract text from a password-protected PDF?",
+        answer: "No. The PDF must be unlocked before text can be extracted. If your PDF is password-protected, use the Dockitt Unlock PDF tool to remove the password first, then run the unlocked file through the text extraction tool.",
+      },
+      {
+        question: "Is my document content kept private?",
+        answer: "Yes. Text extraction is done entirely in your browser using PDF.js. The content of your PDF is never sent to any server. The file is processed locally on your device, and the extracted text file is created and downloaded directly in your browser without any data leaving your machine.",
+      },
+    ],
+  },
+  {
+    slug: "text-to-pdf",
+    name: "Text to PDF",
+    title: "Convert Text File to PDF Online",
+    description: "Convert a plain text file (.txt) to a PDF document in your browser.",
+    longDescription: "Sometimes you have a plain text file that needs to be shared as a PDF — a script, a readme, a log file, a code snippet, or any other plain text content. Converting it to PDF gives it a fixed layout, makes it easy to print, and ensures anyone can open it without needing a specific text editor. Dockitt converts your TXT file to a clean PDF document directly in your browser using pdf-lib, applying standard margins and line wrapping so the content is readable on screen and in print, with no server upload required.",
+    primaryKeyword: "text to pdf",
+    inputFormat: "txt",
+    outputFormat: "pdf",
+    inputLabel: "Choose TXT",
+    accept: ".txt",
+    howTo: [
+      "Click 'Choose TXT' and select the plain text file you want to convert to PDF.",
+      "Click 'Convert to PDF' and wait while the document is laid out.",
+      "Download the PDF file. All text from your file is formatted into pages with standard margins.",
+    ],
+    faqs: [
+      {
+        question: "What font and layout is used in the output PDF?",
+        answer: "The output PDF uses Helvetica at 12pt with 40pt margins on all sides and a standard letter page size (8.5 × 11 inches). Lines longer than 80 characters are automatically wrapped to fit within the margins. A new page is added whenever the content exceeds the available space. These values are fixed and optimised for readability.",
+      },
+      {
+        question: "Will the formatting from my text file be preserved?",
+        answer: "The basic structure of the text is preserved — line breaks, blank lines, and paragraph spacing appear in the PDF as they do in the text file. However, rich formatting such as bold or italic text, headings, bullet points, or tabular alignment is not possible in a plain text file, so none of those elements are present in the output.",
+      },
+      {
+        question: "What happens to very long lines?",
+        answer: "Lines that exceed 80 characters are automatically wrapped at the nearest word boundary. If a single word is longer than 80 characters, it is broken at the 80-character limit to prevent overflow. The wrapped text is still readable and flows naturally down the page.",
+      },
+      {
+        question: "Can I convert a code file or log file to PDF?",
+        answer: "Yes, as long as the file has a .txt extension or you rename it to .txt before uploading. Code and log files are plain text and will be converted correctly. Keep in mind that the fixed-width character grid that terminal and code editor fonts provide is not replicated — Helvetica is a proportional font, so code indentation may look slightly different than in a dedicated code viewer.",
+      },
+      {
+        question: "The output PDF has many pages. Is that expected?",
+        answer: "Yes. A standard letter page holds approximately 44 lines of text at 12pt with the default margins. If your text file is long, the PDF will have many pages. If you want a more compact output, consider editing your text file to remove blank lines or use a narrower margin setting — though those are not configurable in this tool.",
+      },
+      {
+        question: "Is the conversion done in my browser or on a server?",
+        answer: "The conversion is done entirely in your browser using pdf-lib. Your text file is never uploaded to any server. The PDF is generated locally on your device and downloaded directly from the browser.",
+      },
+    ],
+  },
+  {
+    slug: "webp-to-pdf",
+    name: "WebP to PDF",
+    title: "Convert WebP to PDF Online",
+    description: "Convert one or more WebP images to a PDF document in your browser.",
+    longDescription: "WebP images are widely used on the web, and there are many situations where you might need to compile one or more WebP files into a PDF — for sharing with someone who expects a document rather than individual image files, for archiving, for printing, or for including web screenshots in a report. Dockitt converts WebP images to PDF directly in your browser using a canvas intermediate and pdf-lib, without uploading anything to a server. Each image becomes one page in the output PDF, with the page sized to match the image dimensions exactly.",
+    primaryKeyword: "webp to pdf",
+    inputFormat: "webp",
+    outputFormat: "pdf",
+    inputLabel: "Choose WebP",
+    accept: ".webp",
+    howTo: [
+      "Click 'Choose WebP' and select one or more WebP image files you want to combine into a PDF.",
+      "Check that the files are in the correct order before converting.",
+      "Click 'Convert to PDF' and download the resulting PDF file.",
+    ],
+    faqs: [
+      {
+        question: "Can I combine multiple WebP images into one PDF?",
+        answer: "Yes. You can select multiple WebP files in one go. Each image becomes one page in the output PDF, in the order you selected them. A 5-image selection produces a 5-page PDF.",
+      },
+      {
+        question: "Will the image quality be preserved in the PDF?",
+        answer: "The conversion uses a PNG intermediate step, which is lossless. The visual content of your WebP images is preserved without any additional quality loss. The original WebP compression may have introduced some quality reduction when the WebP was first created, but the PDF conversion itself does not degrade the image further.",
+      },
+      {
+        question: "The transparent background in my WebP appears white in the PDF.",
+        answer: "PDF pages have a white background by default. When a WebP image with transparency is embedded into a PDF, the transparent areas are replaced with white. This is expected behaviour. If you need a different background colour, edit the WebP to add the desired background before converting.",
+      },
+      {
+        question: "What page size is used in the output PDF?",
+        answer: "Each page in the output PDF is sized to match the exact pixel dimensions of the corresponding WebP image. A 1920×1080 WebP image produces a 1920×1080 point PDF page. The image fills the entire page without any borders or margins.",
+      },
+      {
+        question: "Can I control the order of images in the PDF?",
+        answer: "The page order in the PDF matches the order in which you selected the files. On most operating systems, holding Ctrl on Windows or Cmd on Mac while clicking lets you select files in a specific order. If the order is wrong after conversion, use the Dockitt Reorder PDF Pages tool to rearrange the pages.",
+      },
+      {
+        question: "Is the conversion done in my browser or on a server?",
+        answer: "The conversion is done entirely in your browser using a canvas element and pdf-lib. Your WebP files are never uploaded to any server. The PDF is generated locally on your device and downloaded directly from your browser.",
+      },
+    ],
+  },
+  {
+    slug: "bmp-to-pdf",
+    name: "BMP to PDF",
+    title: "Convert BMP to PDF Online",
+    description: "Convert one or more BMP images to a PDF document in your browser.",
+    longDescription: "BMP files show up most often in legacy environments — older Windows applications, industrial software, and document scanning systems that produce uncompressed bitmap output. If you need to compile BMP images into a PDF for sharing or archiving, Dockitt handles the conversion directly in your browser using a canvas intermediate and pdf-lib. Each BMP image becomes one page in the resulting PDF, sized to match the image dimensions. No server upload is needed and no account is required.",
+    primaryKeyword: "bmp to pdf",
+    inputFormat: "bmp",
+    outputFormat: "pdf",
+    inputLabel: "Choose BMP",
+    accept: ".bmp",
+    howTo: [
+      "Click 'Choose BMP' and select one or more BMP image files you want to combine into a PDF.",
+      "Check that the files are in the correct order before converting.",
+      "Click 'Convert to PDF' and download the resulting PDF file.",
+    ],
+    faqs: [
+      {
+        question: "Can I combine multiple BMP images into one PDF?",
+        answer: "Yes. You can select multiple BMP files in one go. Each image becomes one page in the output PDF, in the order you selected them.",
+      },
+      {
+        question: "Will the image quality be preserved in the PDF?",
+        answer: "BMP is an uncompressed format, so the source images already contain all pixel data at full quality. The conversion uses a PNG intermediate step, which is also lossless. The visual content of your BMP images is preserved without any quality degradation in the PDF.",
+      },
+      {
+        question: "Why does the conversion take longer than other image formats?",
+        answer: "BMP files are uncompressed and can be very large — a single A4 page BMP can be 10–20 megabytes. Loading and processing large uncompressed files in the browser takes more time and memory than working with compressed formats like JPG or PNG. This is inherent to the format rather than a tool limitation.",
+      },
+      {
+        question: "What page size is used in the output PDF?",
+        answer: "Each page in the output PDF is sized to match the exact pixel dimensions of the corresponding BMP image. The image fills the entire page without any borders or margins.",
+      },
+      {
+        question: "What if my BMP files were created by a scanner?",
+        answer: "Scanned BMP files work exactly the same as any other BMP. The content is treated as raster image data regardless of its origin. If the scanned images are clear and high-resolution, the resulting PDF pages will be readable. If the scans are low-resolution or contain distortion, that will be reflected in the PDF.",
+      },
+      {
+        question: "Is the conversion done in my browser or on a server?",
+        answer: "The conversion is done entirely in your browser using a canvas element and pdf-lib. Your BMP files are never uploaded to any server. The PDF is generated locally and downloaded directly from your browser.",
+      },
+    ],
+  },
+  {
+    slug: "gif-to-pdf",
+    name: "GIF to PDF",
+    title: "Convert GIF to PDF Online",
+    description: "Convert one or more GIF images to a PDF document in your browser.",
+    longDescription: "GIF images are common in web content, email, and messaging contexts. If you need to convert GIF files to PDF — for inclusion in a report, for archiving screenshots, or for sharing with someone who expects a document — Dockitt handles the conversion directly in your browser using a canvas intermediate and pdf-lib. For animated GIFs, only the first frame is used, as PDF is a static format. Each GIF becomes one page in the resulting PDF, sized to the image dimensions. No server upload is needed.",
+    primaryKeyword: "gif to pdf",
+    inputFormat: "gif",
+    outputFormat: "pdf",
+    inputLabel: "Choose GIF",
+    accept: ".gif",
+    howTo: [
+      "Click 'Choose GIF' and select one or more GIF image files you want to combine into a PDF.",
+      "Check that the files are in the correct order before converting.",
+      "Click 'Convert to PDF' and download the resulting PDF file.",
+    ],
+    faqs: [
+      {
+        question: "What happens to animated GIFs?",
+        answer: "Only the first frame of an animated GIF is used in the PDF conversion. PDF is a static document format and cannot represent animations. The first frame is typically the introductory or representative frame of the animation, which is usually the most relevant for document use. If you need a specific frame, you would need to extract that frame from the GIF first using an image editor.",
+      },
+      {
+        question: "Can I combine multiple GIF images into one PDF?",
+        answer: "Yes. You can select multiple GIF files in one go. Each image (or first frame, for animated GIFs) becomes one page in the output PDF, in the order you selected them.",
+      },
+      {
+        question: "Will the colours look different in the PDF?",
+        answer: "GIF supports a maximum of 256 colours per frame due to its palette-based design. This colour limitation is present in the source image and will be reflected in the PDF output. For images with limited colour palettes such as simple graphics, logos, or diagrams, GIF is adequate. For photographic images, the 256-colour limitation can cause visible banding or dithering.",
+      },
+      {
+        question: "The transparent areas in my GIF appear white in the PDF.",
+        answer: "GIF supports binary (on/off) transparency, but PDF pages have a white background by default. Transparent pixels in the GIF will be replaced with white in the PDF. This is the expected behaviour when converting any image format with transparency to PDF.",
+      },
+      {
+        question: "What page size is used in the output PDF?",
+        answer: "Each page in the output PDF is sized to match the pixel dimensions of the corresponding GIF image. The image fills the entire page without borders or margins.",
+      },
+      {
+        question: "Is the conversion done in my browser or on a server?",
+        answer: "The conversion is done entirely in your browser using a canvas element and pdf-lib. Your GIF files are never uploaded to any server. The PDF is generated locally on your device and downloaded directly from your browser.",
+      },
+    ],
+  },
 ];
 
 export function getConvertVariant(slug: string) {
