@@ -490,6 +490,221 @@ export const convertVariants: ConvertVariant[] = [
       },
     ],
   },
+  {
+    slug: "pdf-to-markdown",
+    name: "PDF to Markdown",
+    title: "Convert PDF to Markdown Online",
+    description: "Extract text from a PDF and export it as a Markdown .md file, with each page as a separate section.",
+    longDescription: "Markdown has become the standard format for documentation, README files, static site generators, and note-taking apps. If you have content locked inside a PDF and need to get it into a Markdown workflow — whether for a wiki, a docs site, or a writing tool like Obsidian or Notion — Dockitt extracts the text page by page and formats it as clean Markdown. Each page becomes a section with a heading, making the structure easy to navigate and edit. The extraction runs entirely in your browser using PDF.js, without uploading anything to a server.",
+    primaryKeyword: "pdf to markdown",
+    inputFormat: "pdf",
+    outputFormat: "md",
+    inputLabel: "Choose PDF",
+    accept: ".pdf",
+    howTo: [
+      "Click 'Choose PDF' and select the PDF file you want to convert to Markdown.",
+      "Click 'Extract to Markdown' and wait while each page is processed.",
+      "Download the .md file. Each page of the PDF becomes a ## Page N section in the output.",
+    ],
+    faqs: [
+      {
+        question: "What Markdown structure does the output use?",
+        answer: "Each page of the PDF becomes a section introduced by a ## Page N heading. The extracted text from that page follows immediately below. This makes the output easy to read, edit, and split in any Markdown editor.",
+      },
+      {
+        question: "Will formatting like bold, italics, or tables be preserved?",
+        answer: "No. PDF.js extracts the raw text content of each page. Visual formatting such as bold, italics, tables, bullet lists, and column layouts is not preserved. The output is plain text structured with Markdown section headings. For complex formatted documents, manual cleanup of the Markdown will be needed after extraction.",
+      },
+      {
+        question: "What if the PDF contains only scanned images?",
+        answer: "If the PDF is a scan — meaning it contains images of text rather than actual text data — the extraction will produce empty or near-empty sections. PDF.js can only extract text that is encoded as text in the PDF. For scanned PDFs, use the OCR PDF tool on Dockitt first to create a searchable PDF, then convert that to Markdown.",
+      },
+      {
+        question: "Can I use the output directly in a static site generator?",
+        answer: "Yes, with some editing. The output is valid Markdown that any static site generator (Hugo, Jekyll, Astro, etc.) can process. You will likely need to add front matter (title, date, tags) at the top of the file and clean up any text that was oddly extracted due to the original PDF layout. Multi-column layouts in particular may produce lines in an unexpected order.",
+      },
+      {
+        question: "Can I convert a password-protected PDF to Markdown?",
+        answer: "No. The PDF must be unlocked before it can be processed. Use the Dockitt Unlock PDF tool to remove the password first, then convert the unlocked file to Markdown.",
+      },
+      {
+        question: "Is the conversion done in my browser or on a server?",
+        answer: "The conversion runs entirely in your browser using PDF.js. Your file is never uploaded to any server. It stays on your device throughout the entire process.",
+      },
+    ],
+  },
+  {
+    slug: "markdown-to-pdf",
+    name: "Markdown to PDF",
+    title: "Convert Markdown to PDF Online",
+    description: "Convert a Markdown .md file to a PDF document directly in your browser — no upload required.",
+    longDescription: "Markdown is great for writing but not always practical for sharing. Clients, colleagues, and reviewers often expect a PDF. Dockitt converts your .md files to PDF entirely in your browser — no server upload, no account, no Pandoc installation needed. The tool reads your Markdown, extracts the text content, and lays it out in a clean letter-size PDF using Helvetica at 12pt with proper margins and automatic page breaks. This is a straightforward text-focused conversion designed for documentation, notes, and reports.",
+    primaryKeyword: "markdown to pdf",
+    inputFormat: "md",
+    outputFormat: "pdf",
+    inputLabel: "Choose Markdown",
+    accept: ".md",
+    howTo: [
+      "Click 'Choose Markdown' and select the .md file you want to convert to PDF.",
+      "Click 'Convert to PDF' and wait while the document is laid out.",
+      "Download the PDF file.",
+    ],
+    faqs: [
+      {
+        question: "Are Markdown formatting elements like bold and headings preserved?",
+        answer: "The conversion extracts the text content of your Markdown file. Markdown syntax characters such as # for headings and ** for bold are stripped from the output so the PDF contains clean readable text. This is a plain text conversion rather than a fully styled rendering. For rich styled output, consider tools like Pandoc combined with a LaTeX template.",
+      },
+      {
+        question: "What page size and font does the PDF use?",
+        answer: "The PDF uses US Letter size (612 × 792 pt), Helvetica at 12pt, 40pt margins on all sides, and an 18pt line height. Lines longer than approximately 80 characters are wrapped at word boundaries. New pages are added automatically when a page runs out of space.",
+      },
+      {
+        question: "My Markdown file has code blocks and tables. Will they look right?",
+        answer: "Code blocks and tables in Markdown are rendered as text content only. The table syntax characters (pipes, dashes) will appear as-is in the output rather than forming a visual table. For structured technical documentation, a dedicated Markdown-to-PDF renderer like Pandoc or a browser print stylesheet will give better results.",
+      },
+      {
+        question: "Can I convert very large Markdown files?",
+        answer: "Yes, the tool supports Markdown files up to 100MB. Very large files with thousands of lines will produce multi-page PDFs. The conversion happens in your browser so processing time depends on your device, but most documents complete in under a second.",
+      },
+      {
+        question: "What encoding does the tool expect?",
+        answer: "The tool expects UTF-8 encoded Markdown files, which is the standard encoding used by virtually all text editors and Markdown applications. Files saved in other encodings may display special characters incorrectly in the output.",
+      },
+      {
+        question: "Is the conversion done in my browser or on a server?",
+        answer: "The conversion runs entirely in your browser using pdf-lib. Your Markdown file is never uploaded to any server. The PDF is generated locally on your device and downloaded directly from your browser.",
+      },
+    ],
+  },
+  {
+    slug: "csv-to-pdf",
+    name: "CSV to PDF",
+    title: "Convert CSV to PDF Online",
+    description: "Convert a CSV spreadsheet to a formatted PDF table document directly in your browser.",
+    longDescription: "CSV files are ubiquitous in data export workflows — almost every database, spreadsheet application, and analytics tool can produce one. But CSV files are not always easy to share or present. Converting a CSV to PDF gives you a document that opens the same way on any device, preserves column structure, and is suitable for printing or attaching to an email. Dockitt parses your CSV using PapaParse and renders it as a clean table in a PDF using pdf-lib, all within your browser without any upload.",
+    primaryKeyword: "csv to pdf",
+    inputFormat: "csv",
+    outputFormat: "pdf",
+    inputLabel: "Choose CSV",
+    accept: ".csv",
+    howTo: [
+      "Click 'Choose CSV' and select the CSV file you want to convert to PDF.",
+      "Click 'Convert to PDF' and wait while the table is laid out across pages.",
+      "Download the PDF file.",
+    ],
+    faqs: [
+      {
+        question: "Does the first row become the table header?",
+        answer: "Yes. The tool treats the first row of your CSV as column headers. These are rendered in bold at a slightly larger font size (13pt) to distinguish them from the data rows below. If your CSV does not have a header row, the first row of data will be treated as headers.",
+      },
+      {
+        question: "What happens if there are many columns?",
+        answer: "The tool displays up to six columns in the PDF. If your CSV has more than six columns, only the first six are included. Column widths are divided equally across the available page width. Cell values that are too long for their column are truncated with an ellipsis.",
+      },
+      {
+        question: "Can the PDF span multiple pages?",
+        answer: "Yes. When the data rows exceed the available space on a page, the layout automatically continues on the next page. Column headers are rendered on the first page only.",
+      },
+      {
+        question: "What if my CSV uses a delimiter other than a comma?",
+        answer: "The tool uses PapaParse's auto-detection, which recognises common delimiters including commas, semicolons, and tabs. Most CSV files exported from spreadsheet applications and databases will be parsed correctly without any configuration.",
+      },
+      {
+        question: "Will special characters like accented letters display correctly?",
+        answer: "The PDF uses Helvetica, which is a built-in PDF font. Helvetica covers the standard Latin character set including common accented characters used in Western European languages. Characters outside this range (Cyrillic, CJK, Arabic, etc.) may not display correctly. For documents with non-Latin scripts, a custom embedded font would be required.",
+      },
+      {
+        question: "Is the conversion done in my browser or on a server?",
+        answer: "The conversion runs entirely in your browser using PapaParse for parsing and pdf-lib for PDF generation. Your CSV file is never uploaded to any server. The PDF is generated locally on your device.",
+      },
+    ],
+  },
+  {
+    slug: "json-to-pdf",
+    name: "JSON to PDF",
+    title: "Convert JSON to PDF Online",
+    description: "Convert a JSON file to a formatted PDF document using monospace layout, directly in your browser.",
+    longDescription: "JSON is the lingua franca of data exchange but it is not always easy to share or review without a code editor. Converting a JSON file to PDF gives you a document you can attach to a ticket, include in a report, or print for a review meeting. Dockitt reads your .json file, formats it with two-space indentation using JSON.stringify, and lays it out in a PDF using a monospace Courier font at 10pt. This preserves the structure and readability of the JSON while making it universally accessible as a document.",
+    primaryKeyword: "json to pdf",
+    inputFormat: "json",
+    outputFormat: "pdf",
+    inputLabel: "Choose JSON",
+    accept: ".json",
+    howTo: [
+      "Click 'Choose JSON' and select the JSON file you want to convert to PDF.",
+      "Click 'Convert to PDF' and wait while the file is formatted and laid out.",
+      "Download the PDF file.",
+    ],
+    faqs: [
+      {
+        question: "What font and layout does the PDF use?",
+        answer: "The PDF uses Courier (monospace) at 10pt with 40pt margins on all sides on US Letter pages (612 × 792 pt). Lines are wrapped at approximately 90 characters to fit within the page width. New pages are added automatically when content exceeds the available space.",
+      },
+      {
+        question: "Is the JSON reformatted or does it preserve the original formatting?",
+        answer: "The JSON is re-parsed and reformatted with JSON.stringify using two-space indentation. This means the output always uses consistent formatting regardless of how the original file was formatted — whether it was minified, used tabs, or had inconsistent spacing. The data structure is preserved exactly.",
+      },
+      {
+        question: "What if the JSON file is invalid?",
+        answer: "If the file cannot be parsed as valid JSON, the tool will show an error message. Make sure the file is valid JSON before attempting the conversion. You can validate JSON using any online JSON validator or by running JSON.parse in a browser console.",
+      },
+      {
+        question: "Can I convert large JSON files?",
+        answer: "Yes, the tool supports JSON files up to 100MB. Very large files with deeply nested structures or large arrays will produce multi-page PDFs. The conversion happens in your browser, so processing time depends on the size and complexity of the file.",
+      },
+      {
+        question: "Will Unicode characters in the JSON values display correctly?",
+        answer: "The PDF uses Courier, which covers the standard Latin character set. ASCII characters and common Western European characters will display correctly. Unicode characters outside the Courier character set (emoji, CJK, Arabic, Cyrillic, etc.) will not render. If your JSON values contain non-Latin characters, the text content will be present but some characters may appear as missing glyphs.",
+      },
+      {
+        question: "Is the conversion done in my browser or on a server?",
+        answer: "The conversion runs entirely in your browser using pdf-lib. Your JSON file is never uploaded to any server. The PDF is generated locally on your device and downloaded directly from your browser.",
+      },
+    ],
+  },
+  {
+    slug: "svg-to-pdf",
+    name: "SVG to PDF",
+    title: "Convert SVG to PDF Online",
+    description: "Convert SVG vector graphics to a PDF document directly in your browser — no upload required.",
+    longDescription: "SVG is a powerful vector format for icons, diagrams, charts, and illustrations, but it is not universally supported outside of web browsers and vector design tools. Converting SVG to PDF gives you a document format that opens correctly in any PDF viewer, can be printed at any size, and is suitable for embedding in reports or attaching to emails. Dockitt renders your SVG through the browser's built-in SVG engine, captures it on a canvas, and embeds the result as a high-quality image in a PDF sized to match your graphic.",
+    primaryKeyword: "svg to pdf",
+    inputFormat: "svg",
+    outputFormat: "pdf",
+    inputLabel: "Choose SVG",
+    accept: ".svg",
+    howTo: [
+      "Click 'Choose SVG' and select the SVG file you want to convert to PDF.",
+      "Click 'Convert to PDF' and wait while the graphic is rendered and embedded.",
+      "Download the PDF file.",
+    ],
+    faqs: [
+      {
+        question: "Is the output a vector PDF or a raster image embedded in a PDF?",
+        answer: "The output is a raster image (PNG) embedded in a PDF. The SVG is rendered by the browser's SVG engine at its natural dimensions, captured to a canvas, and then embedded as a PNG image in the PDF. True vector PDF output would require a different rendering pipeline. If the original SVG has high natural dimensions, the raster image will be sharp at print sizes.",
+      },
+      {
+        question: "What page size does the output PDF use?",
+        answer: "The PDF page is sized to match the natural pixel dimensions of the SVG as rendered by the browser. There are no margins. If the SVG does not specify explicit width and height attributes, the browser may render it at a default size (typically 300 × 150 pixels). In that case, adding explicit width and height attributes to the SVG before conversion will give better results.",
+      },
+      {
+        question: "Will external fonts and images referenced in the SVG load?",
+        answer: "External resources referenced in the SVG (such as Google Fonts, external images, or CSS from a CDN) will not load during the conversion because the SVG is rendered locally in the browser without network access to those origins. Use inline styles and embedded fonts (base64-encoded) in the SVG for best results. Resources that are inlined in the SVG will render correctly.",
+      },
+      {
+        question: "Will CSS styles and filters inside the SVG be applied?",
+        answer: "Yes. Inline styles and CSS embedded within the SVG file are applied by the browser's SVG renderer before the canvas capture. Standard SVG filters (blur, drop-shadow, etc.) and transforms will be reflected in the output. Complex filter chains may render slightly differently across browsers.",
+      },
+      {
+        question: "My SVG has a transparent background. What happens?",
+        answer: "The canvas is filled with a white background before the SVG is drawn. This means transparent areas in the SVG will appear white in the PDF output. PDF pages have an opaque white background by default, so this is the expected behaviour.",
+      },
+      {
+        question: "Is the conversion done in my browser or on a server?",
+        answer: "The conversion runs entirely in your browser. The SVG is rendered using the browser's built-in SVG engine, captured via the Canvas API, and embedded in a PDF using pdf-lib. Your file is never uploaded to any server.",
+      },
+    ],
+  },
 ];
 
 export function getConvertVariant(slug: string) {

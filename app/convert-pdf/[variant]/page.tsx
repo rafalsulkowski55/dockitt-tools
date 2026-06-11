@@ -9,18 +9,28 @@ import TextToPdfTool from "./TextToPdfTool";
 import WebpToPdfTool from "./WebpToPdfTool";
 import BmpToPdfTool from "./BmpToPdfTool";
 import GifToPdfTool from "./GifToPdfTool";
+import PdfToMarkdownTool from "./PdfToMarkdownTool";
+import MarkdownToPdfTool from "./MarkdownToPdfTool";
+import CsvToPdfTool from "./CsvToPdfTool";
+import JsonToPdfTool from "./JsonToPdfTool";
+import SvgToPdfTool from "./SvgToPdfTool";
 import Link from "next/link";
 
 function ConvertToolRouter({ variant }: { variant: ConvertVariant }) {
   switch (variant.slug) {
-    case "pdf-to-webp":  return <PdfToWebpTool variant={variant} />;
-    case "pdf-to-bmp":   return <PdfToBmpTool variant={variant} />;
-    case "pdf-to-txt":   return <PdfToTxtTool variant={variant} />;
-    case "text-to-pdf":  return <TextToPdfTool variant={variant} />;
-    case "webp-to-pdf":  return <WebpToPdfTool variant={variant} />;
-    case "bmp-to-pdf":   return <BmpToPdfTool variant={variant} />;
-    case "gif-to-pdf":   return <GifToPdfTool variant={variant} />;
-    default:             return <ConvertTool variant={variant} />;
+    case "pdf-to-webp":     return <PdfToWebpTool variant={variant} />;
+    case "pdf-to-bmp":      return <PdfToBmpTool variant={variant} />;
+    case "pdf-to-txt":      return <PdfToTxtTool variant={variant} />;
+    case "text-to-pdf":     return <TextToPdfTool variant={variant} />;
+    case "webp-to-pdf":     return <WebpToPdfTool variant={variant} />;
+    case "bmp-to-pdf":      return <BmpToPdfTool variant={variant} />;
+    case "gif-to-pdf":      return <GifToPdfTool variant={variant} />;
+    case "pdf-to-markdown": return <PdfToMarkdownTool variant={variant} />;
+    case "markdown-to-pdf": return <MarkdownToPdfTool variant={variant} />;
+    case "csv-to-pdf":      return <CsvToPdfTool variant={variant} />;
+    case "json-to-pdf":     return <JsonToPdfTool variant={variant} />;
+    case "svg-to-pdf":      return <SvgToPdfTool variant={variant} />;
+    default:                return <ConvertTool variant={variant} />;
   }
 }
 
@@ -48,7 +58,7 @@ export default async function ConvertPage({ params }: ConvertPageProps) {
   const all = getAllConvertVariants();
   if (!v) notFound();
 
-  const FIFTY_MB_SLUGS = new Set(["pdf-to-jpg", "pdf-to-png", "pdf-to-webp", "pdf-to-bmp"]);
+  const FIFTY_MB_SLUGS = new Set(["pdf-to-jpg", "pdf-to-png", "pdf-to-webp", "pdf-to-bmp", "pdf-to-markdown"]);
   const fileSizeInfo = FIFTY_MB_SLUGS.has(v.slug)
     ? "Files up to 50MB supported"
     : "Files up to 100MB supported";

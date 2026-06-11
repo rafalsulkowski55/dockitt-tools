@@ -26,7 +26,12 @@ const VARIANT_META: Record<string, { icon: string; desc: string }> = {
   "webp-to-pdf":  { icon: "📄", desc: "Combine multiple WebP images into one PDF" },
   "bmp-to-pdf":   { icon: "📄", desc: "Combine multiple BMP images into one PDF" },
   "gif-to-pdf":   { icon: "📄", desc: "Combine multiple GIF images into one PDF" },
-  "text-to-pdf":  { icon: "📄", desc: "Convert a plain text file to a PDF document" },
+  "text-to-pdf":      { icon: "📄", desc: "Convert a plain text file to a PDF document" },
+  "pdf-to-markdown":  { icon: "📝", desc: "Extract text from a PDF as a Markdown file" },
+  "markdown-to-pdf":  { icon: "📄", desc: "Convert a Markdown .md file to PDF" },
+  "csv-to-pdf":       { icon: "📊", desc: "Convert a CSV spreadsheet to a PDF table" },
+  "json-to-pdf":      { icon: "📄", desc: "Convert a JSON file to a formatted PDF" },
+  "svg-to-pdf":       { icon: "🖼️", desc: "Convert SVG vector graphics to a PDF" },
 };
 
 export default function ConvertPdfPage() {
