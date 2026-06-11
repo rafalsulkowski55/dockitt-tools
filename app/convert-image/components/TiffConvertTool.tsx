@@ -7,29 +7,10 @@ import { ToolTracking } from "@/lib/analytics";
 const PROCESSING_TYPE = "browser" as const;
 const MAX_FILE_SIZE = 100 * 1024 * 1024;
 
-// Per-slug conversion config derived from variant data
-type SlugConfig = { mime: string; whiteBg: boolean; ico: boolean };
-
+type SlugConfig = { mime: string; whiteBg: boolean };
 const SLUG_CONFIG: Record<string, SlugConfig> = {
-  "jpg-to-png":   { mime: "image/png",  whiteBg: false, ico: false },
-  "jpg-to-webp":  { mime: "image/webp", whiteBg: false, ico: false },
-  "jpg-to-bmp":   { mime: "image/bmp",  whiteBg: false, ico: false },
-  "jpg-to-ico":   { mime: "image/png",  whiteBg: false, ico: true  },
-  "png-to-jpg":   { mime: "image/jpeg", whiteBg: true,  ico: false },
-  "png-to-webp":  { mime: "image/webp", whiteBg: false, ico: false },
-  "png-to-bmp":   { mime: "image/bmp",  whiteBg: false, ico: false },
-  "png-to-ico":   { mime: "image/png",  whiteBg: false, ico: true  },
-  "webp-to-jpg":  { mime: "image/jpeg", whiteBg: true,  ico: false },
-  "webp-to-png":  { mime: "image/png",  whiteBg: false, ico: false },
-  "webp-to-bmp":  { mime: "image/bmp",  whiteBg: false, ico: false },
-  "bmp-to-jpg":   { mime: "image/jpeg", whiteBg: true,  ico: false },
-  "bmp-to-png":   { mime: "image/png",  whiteBg: false, ico: false },
-  "bmp-to-webp":  { mime: "image/webp", whiteBg: false, ico: false },
-  "gif-to-jpg":   { mime: "image/jpeg", whiteBg: true,  ico: false },
-  "gif-to-png":   { mime: "image/png",  whiteBg: false, ico: false },
-  "gif-to-webp":  { mime: "image/webp", whiteBg: false, ico: false },
-  "ico-to-png":   { mime: "image/png",  whiteBg: false, ico: false },
-  "ico-to-jpg":   { mime: "image/jpeg", whiteBg: true,  ico: false },
+  "tiff-to-jpg": { mime: "image/jpeg", whiteBg: true  },
+  "tiff-to-png": { mime: "image/png",  whiteBg: false },
 };
 
 type Props = { variant: ConvertImageVariant };
@@ -44,47 +25,28 @@ function Spinner() {
   );
 }
 
-function dataUrlToBlob(dataUrl: string, mimeType: string): Blob {
-  const parts = dataUrl.split(",");
-  const bstr = atob(parts[1]);
-  const u8arr = new Uint8Array(bstr.length);
-  for (let i = 0; i < bstr.length; i++) u8arr[i] = bstr.charCodeAt(i);
-  return new Blob([u8arr], { type: mimeType });
-}
-
-export default function ImageConvertTool({ variant }: Props) {
+export default function TiffConvertTool({ variant }: Props) {
   const [file, setFile] = useState<File | null>(null);
   const [status, setStatus] = useState<"idle" | "processing" | "done" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState("");
   const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const cfg = SLUG_CONFIG[variant.slug] ?? { mime: "image/png", whiteBg: false };
 
-  const cfg = SLUG_CONFIG[variant.slug] ?? { mime: "image/png", whiteBg: false, ico: false };
-
-  useEffect(() => {
-    ToolTracking.viewTool(variant.slug, PROCESSING_TYPE);
-  }, [variant.slug]);
+  useEffect(() => { ToolTracking.viewTool(variant.slug, PROCESSING_TYPE); }, [variant.slug]);
 
   function handleFileSelect(f: File) {
-    if (f.size > MAX_FILE_SIZE) {
-      setErrorMessage("File too large. Maximum size is 100MB.");
-      setStatus("error");
-      return;
-    }
+    if (f.size > MAX_FILE_SIZE) { setErrorMessage("File too large. Maximum size is 100MB."); setStatus("error"); return; }
     setFile(f); setStatus("idle"); setErrorMessage(""); setDownloadUrl(null);
     ToolTracking.uploadStarted(variant.slug, PROCESSING_TYPE);
   }
 
   function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const f = e.target.files?.[0];
-    if (f) handleFileSelect(f);
-    e.target.value = "";
+    const f = e.target.files?.[0]; if (f) handleFileSelect(f); e.target.value = "";
   }
 
   function handleDrop(e: React.DragEvent) {
-    e.preventDefault();
-    const f = e.dataTransfer.files?.[0];
-    if (f) handleFileSelect(f);
+    e.preventDefault(); const f = e.dataTransfer.files?.[0]; if (f) handleFileSelect(f);
   }
 
   function handleReset() {
@@ -96,47 +58,74 @@ export default function ImageConvertTool({ variant }: Props) {
     if (!file) return;
     ToolTracking.processStarted(variant.slug, PROCESSING_TYPE);
     setStatus("processing"); setErrorMessage(""); setDownloadUrl(null);
-
     try {
-      const objectUrl = URL.createObjectURL(file);
-      const img = await new Promise<HTMLImageElement>((resolve, reject) => {
-        const el = new Image();
-        el.onload = () => resolve(el);
-        el.onerror = () => reject(new Error("Failed to load image. The file may be corrupt or unsupported."));
-        el.src = objectUrl;
-      });
-      URL.revokeObjectURL(objectUrl);
+      const arrayBuffer = await file.arrayBuffer();
+      const { decode } = await import("tiff");
+      const ifds = decode(arrayBuffer);
+      if (!ifds || ifds.length === 0) throw new Error("Could not decode TIFF file. The file may be corrupt or use an unsupported encoding.");
+
+      const ifd = ifds[0];
+      const width: number = ifd.width;
+      const height: number = ifd.height;
+      const components: number = ifd.components;
+      const bitsPerSample: number = ifd.bitsPerSample;
+      const rawData = ifd.data;
+
+      if (!width || !height || !rawData) throw new Error("Invalid or empty TIFF image data.");
+
+      let maxVal: number;
+      if (bitsPerSample <= 8) maxVal = 255;
+      else if (bitsPerSample <= 16) maxVal = 65535;
+      else maxVal = 1;
 
       const canvas = document.createElement("canvas");
+      canvas.width = width; canvas.height = height;
       const ctx = canvas.getContext("2d")!;
+      const imageData = ctx.createImageData(width, height);
+      const pixelCount = width * height;
 
-      if (cfg.ico) {
-        // ICO: scale-fit into 256×256, preserving aspect ratio
-        canvas.width = 256;
-        canvas.height = 256;
-        const scale = Math.min(256 / img.naturalWidth, 256 / img.naturalHeight);
-        const w = img.naturalWidth * scale;
-        const h = img.naturalHeight * scale;
-        ctx.drawImage(img, (256 - w) / 2, (256 - h) / 2, w, h);
-      } else {
-        canvas.width = img.naturalWidth;
-        canvas.height = img.naturalHeight;
-        if (cfg.whiteBg) {
-          ctx.fillStyle = "#ffffff";
-          ctx.fillRect(0, 0, canvas.width, canvas.height);
+      for (let i = 0; i < pixelCount; i++) {
+        const src = i * components;
+        const dst = i * 4;
+        if (components === 1) {
+          const v = Math.min(255, Math.round((rawData[src] / maxVal) * 255));
+          imageData.data[dst] = v;
+          imageData.data[dst + 1] = v;
+          imageData.data[dst + 2] = v;
+          imageData.data[dst + 3] = 255;
+        } else if (components >= 3) {
+          imageData.data[dst]     = Math.min(255, Math.round((rawData[src]     / maxVal) * 255));
+          imageData.data[dst + 1] = Math.min(255, Math.round((rawData[src + 1] / maxVal) * 255));
+          imageData.data[dst + 2] = Math.min(255, Math.round((rawData[src + 2] / maxVal) * 255));
+          imageData.data[dst + 3] = components >= 4
+            ? Math.min(255, Math.round((rawData[src + 3] / maxVal) * 255))
+            : 255;
         }
-        ctx.drawImage(img, 0, 0);
+      }
+
+      ctx.putImageData(imageData, 0, 0);
+
+      let finalCanvas = canvas;
+      if (cfg.whiteBg) {
+        finalCanvas = document.createElement("canvas");
+        finalCanvas.width = width; finalCanvas.height = height;
+        const ctx2 = finalCanvas.getContext("2d")!;
+        ctx2.fillStyle = "#ffffff";
+        ctx2.fillRect(0, 0, width, height);
+        ctx2.drawImage(canvas, 0, 0);
       }
 
       const quality = cfg.mime === "image/jpeg" ? 0.92 : undefined;
-      const dataUrl = canvas.toDataURL(cfg.mime, quality);
-      const outputMime = cfg.ico ? "image/x-icon" : cfg.mime;
-      const blob = dataUrlToBlob(dataUrl, outputMime);
-      setDownloadUrl(URL.createObjectURL(blob));
+      const dataUrl = finalCanvas.toDataURL(cfg.mime, quality);
+      const parts = dataUrl.split(",");
+      const bstr = atob(parts[1]);
+      const u8arr = new Uint8Array(bstr.length);
+      for (let i = 0; i < bstr.length; i++) u8arr[i] = bstr.charCodeAt(i);
+      setDownloadUrl(URL.createObjectURL(new Blob([u8arr], { type: cfg.mime })));
       setStatus("done");
       ToolTracking.processSuccess(variant.slug, PROCESSING_TYPE);
     } catch (err: unknown) {
-      setErrorMessage(err instanceof Error ? err.message : "Conversion failed. Please try again.");
+      setErrorMessage(err instanceof Error ? err.message : "Could not decode TIFF file. Please try again.");
       setStatus("error");
     }
   }
@@ -144,9 +133,8 @@ export default function ImageConvertTool({ variant }: Props) {
   function handleDownload() {
     if (!downloadUrl) return;
     ToolTracking.downloadClicked(variant.slug, PROCESSING_TYPE);
-    const ext = cfg.ico ? ".ico" : `.${variant.outputFormat}`;
     const baseName = file?.name.replace(/\.[^.]+$/, "") ?? "converted";
-    const a = document.createElement("a"); a.href = downloadUrl; a.download = `${baseName}${ext}`; a.click();
+    const a = document.createElement("a"); a.href = downloadUrl; a.download = `${baseName}.${variant.outputFormat}`; a.click();
   }
 
   const isProcessing = status === "processing";

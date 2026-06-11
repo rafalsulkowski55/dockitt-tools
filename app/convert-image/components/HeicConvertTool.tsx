@@ -7,29 +7,10 @@ import { ToolTracking } from "@/lib/analytics";
 const PROCESSING_TYPE = "browser" as const;
 const MAX_FILE_SIZE = 100 * 1024 * 1024;
 
-// Per-slug conversion config derived from variant data
-type SlugConfig = { mime: string; whiteBg: boolean; ico: boolean };
-
+type SlugConfig = { mime: string };
 const SLUG_CONFIG: Record<string, SlugConfig> = {
-  "jpg-to-png":   { mime: "image/png",  whiteBg: false, ico: false },
-  "jpg-to-webp":  { mime: "image/webp", whiteBg: false, ico: false },
-  "jpg-to-bmp":   { mime: "image/bmp",  whiteBg: false, ico: false },
-  "jpg-to-ico":   { mime: "image/png",  whiteBg: false, ico: true  },
-  "png-to-jpg":   { mime: "image/jpeg", whiteBg: true,  ico: false },
-  "png-to-webp":  { mime: "image/webp", whiteBg: false, ico: false },
-  "png-to-bmp":   { mime: "image/bmp",  whiteBg: false, ico: false },
-  "png-to-ico":   { mime: "image/png",  whiteBg: false, ico: true  },
-  "webp-to-jpg":  { mime: "image/jpeg", whiteBg: true,  ico: false },
-  "webp-to-png":  { mime: "image/png",  whiteBg: false, ico: false },
-  "webp-to-bmp":  { mime: "image/bmp",  whiteBg: false, ico: false },
-  "bmp-to-jpg":   { mime: "image/jpeg", whiteBg: true,  ico: false },
-  "bmp-to-png":   { mime: "image/png",  whiteBg: false, ico: false },
-  "bmp-to-webp":  { mime: "image/webp", whiteBg: false, ico: false },
-  "gif-to-jpg":   { mime: "image/jpeg", whiteBg: true,  ico: false },
-  "gif-to-png":   { mime: "image/png",  whiteBg: false, ico: false },
-  "gif-to-webp":  { mime: "image/webp", whiteBg: false, ico: false },
-  "ico-to-png":   { mime: "image/png",  whiteBg: false, ico: false },
-  "ico-to-jpg":   { mime: "image/jpeg", whiteBg: true,  ico: false },
+  "heic-to-jpg": { mime: "image/jpeg" },
+  "heic-to-png": { mime: "image/png"  },
 };
 
 type Props = { variant: ConvertImageVariant };
@@ -44,47 +25,28 @@ function Spinner() {
   );
 }
 
-function dataUrlToBlob(dataUrl: string, mimeType: string): Blob {
-  const parts = dataUrl.split(",");
-  const bstr = atob(parts[1]);
-  const u8arr = new Uint8Array(bstr.length);
-  for (let i = 0; i < bstr.length; i++) u8arr[i] = bstr.charCodeAt(i);
-  return new Blob([u8arr], { type: mimeType });
-}
-
-export default function ImageConvertTool({ variant }: Props) {
+export default function HeicConvertTool({ variant }: Props) {
   const [file, setFile] = useState<File | null>(null);
   const [status, setStatus] = useState<"idle" | "processing" | "done" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState("");
   const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const cfg = SLUG_CONFIG[variant.slug] ?? { mime: "image/jpeg" };
 
-  const cfg = SLUG_CONFIG[variant.slug] ?? { mime: "image/png", whiteBg: false, ico: false };
-
-  useEffect(() => {
-    ToolTracking.viewTool(variant.slug, PROCESSING_TYPE);
-  }, [variant.slug]);
+  useEffect(() => { ToolTracking.viewTool(variant.slug, PROCESSING_TYPE); }, [variant.slug]);
 
   function handleFileSelect(f: File) {
-    if (f.size > MAX_FILE_SIZE) {
-      setErrorMessage("File too large. Maximum size is 100MB.");
-      setStatus("error");
-      return;
-    }
+    if (f.size > MAX_FILE_SIZE) { setErrorMessage("File too large. Maximum size is 100MB."); setStatus("error"); return; }
     setFile(f); setStatus("idle"); setErrorMessage(""); setDownloadUrl(null);
     ToolTracking.uploadStarted(variant.slug, PROCESSING_TYPE);
   }
 
   function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const f = e.target.files?.[0];
-    if (f) handleFileSelect(f);
-    e.target.value = "";
+    const f = e.target.files?.[0]; if (f) handleFileSelect(f); e.target.value = "";
   }
 
   function handleDrop(e: React.DragEvent) {
-    e.preventDefault();
-    const f = e.dataTransfer.files?.[0];
-    if (f) handleFileSelect(f);
+    e.preventDefault(); const f = e.dataTransfer.files?.[0]; if (f) handleFileSelect(f);
   }
 
   function handleReset() {
@@ -96,47 +58,16 @@ export default function ImageConvertTool({ variant }: Props) {
     if (!file) return;
     ToolTracking.processStarted(variant.slug, PROCESSING_TYPE);
     setStatus("processing"); setErrorMessage(""); setDownloadUrl(null);
-
     try {
-      const objectUrl = URL.createObjectURL(file);
-      const img = await new Promise<HTMLImageElement>((resolve, reject) => {
-        const el = new Image();
-        el.onload = () => resolve(el);
-        el.onerror = () => reject(new Error("Failed to load image. The file may be corrupt or unsupported."));
-        el.src = objectUrl;
-      });
-      URL.revokeObjectURL(objectUrl);
-
-      const canvas = document.createElement("canvas");
-      const ctx = canvas.getContext("2d")!;
-
-      if (cfg.ico) {
-        // ICO: scale-fit into 256×256, preserving aspect ratio
-        canvas.width = 256;
-        canvas.height = 256;
-        const scale = Math.min(256 / img.naturalWidth, 256 / img.naturalHeight);
-        const w = img.naturalWidth * scale;
-        const h = img.naturalHeight * scale;
-        ctx.drawImage(img, (256 - w) / 2, (256 - h) / 2, w, h);
-      } else {
-        canvas.width = img.naturalWidth;
-        canvas.height = img.naturalHeight;
-        if (cfg.whiteBg) {
-          ctx.fillStyle = "#ffffff";
-          ctx.fillRect(0, 0, canvas.width, canvas.height);
-        }
-        ctx.drawImage(img, 0, 0);
-      }
-
+      const heic2any = (await import("heic2any")).default;
       const quality = cfg.mime === "image/jpeg" ? 0.92 : undefined;
-      const dataUrl = canvas.toDataURL(cfg.mime, quality);
-      const outputMime = cfg.ico ? "image/x-icon" : cfg.mime;
-      const blob = dataUrlToBlob(dataUrl, outputMime);
-      setDownloadUrl(URL.createObjectURL(blob));
+      const result = await heic2any({ blob: file, toType: cfg.mime, quality });
+      const outputBlob = Array.isArray(result) ? result[0] : result;
+      setDownloadUrl(URL.createObjectURL(outputBlob));
       setStatus("done");
       ToolTracking.processSuccess(variant.slug, PROCESSING_TYPE);
     } catch (err: unknown) {
-      setErrorMessage(err instanceof Error ? err.message : "Conversion failed. Please try again.");
+      setErrorMessage(err instanceof Error ? err.message : "Conversion failed. The file may be corrupt or not a valid HEIC image.");
       setStatus("error");
     }
   }
@@ -144,9 +75,8 @@ export default function ImageConvertTool({ variant }: Props) {
   function handleDownload() {
     if (!downloadUrl) return;
     ToolTracking.downloadClicked(variant.slug, PROCESSING_TYPE);
-    const ext = cfg.ico ? ".ico" : `.${variant.outputFormat}`;
     const baseName = file?.name.replace(/\.[^.]+$/, "") ?? "converted";
-    const a = document.createElement("a"); a.href = downloadUrl; a.download = `${baseName}${ext}`; a.click();
+    const a = document.createElement("a"); a.href = downloadUrl; a.download = `${baseName}.${variant.outputFormat}`; a.click();
   }
 
   const isProcessing = status === "processing";

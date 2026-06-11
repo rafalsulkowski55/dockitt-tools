@@ -16,6 +16,20 @@ import WebpToBmpTool from "../components/WebpToBmpTool";
 import BmpToJpgTool from "../components/BmpToJpgTool";
 import BmpToPngTool from "../components/BmpToPngTool";
 import BmpToWebpTool from "../components/BmpToWebpTool";
+import GifToJpgTool from "../components/GifToJpgTool";
+import GifToPngTool from "../components/GifToPngTool";
+import GifToWebpTool from "../components/GifToWebpTool";
+import SvgToPngTool from "../components/SvgToPngTool";
+import SvgToJpgTool from "../components/SvgToJpgTool";
+import SvgToWebpTool from "../components/SvgToWebpTool";
+import HeicToJpgTool from "../components/HeicToJpgTool";
+import HeicToPngTool from "../components/HeicToPngTool";
+import TiffToJpgTool from "../components/TiffToJpgTool";
+import TiffToPngTool from "../components/TiffToPngTool";
+import IcoToPngTool from "../components/IcoToPngTool";
+import IcoToJpgTool from "../components/IcoToJpgTool";
+import ImageToBase64Tool from "../components/ImageToBase64Tool";
+import Base64ToImageTool from "../components/Base64ToImageTool";
 
 function ImageConvertRouter({ variant }: { variant: ConvertImageVariant }) {
   switch (variant.slug) {
@@ -30,10 +44,24 @@ function ImageConvertRouter({ variant }: { variant: ConvertImageVariant }) {
     case "webp-to-jpg":  return <WebpToJpgTool variant={variant} />;
     case "webp-to-png":  return <WebpToPngTool variant={variant} />;
     case "webp-to-bmp":  return <WebpToBmpTool variant={variant} />;
-    case "bmp-to-jpg":   return <BmpToJpgTool  variant={variant} />;
-    case "bmp-to-png":   return <BmpToPngTool  variant={variant} />;
-    case "bmp-to-webp":  return <BmpToWebpTool variant={variant} />;
-    default:             return null;
+    case "bmp-to-jpg":        return <BmpToJpgTool      variant={variant} />;
+    case "bmp-to-png":        return <BmpToPngTool      variant={variant} />;
+    case "bmp-to-webp":       return <BmpToWebpTool     variant={variant} />;
+    case "gif-to-jpg":        return <GifToJpgTool      variant={variant} />;
+    case "gif-to-png":        return <GifToPngTool      variant={variant} />;
+    case "gif-to-webp":       return <GifToWebpTool     variant={variant} />;
+    case "svg-to-png":        return <SvgToPngTool      variant={variant} />;
+    case "svg-to-jpg":        return <SvgToJpgTool      variant={variant} />;
+    case "svg-to-webp":       return <SvgToWebpTool     variant={variant} />;
+    case "heic-to-jpg":       return <HeicToJpgTool     variant={variant} />;
+    case "heic-to-png":       return <HeicToPngTool     variant={variant} />;
+    case "tiff-to-jpg":       return <TiffToJpgTool     variant={variant} />;
+    case "tiff-to-png":       return <TiffToPngTool     variant={variant} />;
+    case "ico-to-png":        return <IcoToPngTool      variant={variant} />;
+    case "ico-to-jpg":        return <IcoToJpgTool      variant={variant} />;
+    case "image-to-base64":   return <ImageToBase64Tool variant={variant} />;
+    case "base64-to-image":   return <Base64ToImageTool variant={variant} />;
+    default:                  return null;
   }
 }
 

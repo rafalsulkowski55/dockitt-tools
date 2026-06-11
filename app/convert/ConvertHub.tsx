@@ -19,7 +19,21 @@ const IMAGE_VARIANT_META: Record<string, { icon: string; desc: string }> = {
   "webp-to-bmp":  { icon: "🖼️", desc: "Convert WebP to uncompressed BMP" },
   "bmp-to-jpg":   { icon: "🖼️", desc: "Convert BMP to compressed JPEG" },
   "bmp-to-png":   { icon: "🖼️", desc: "Convert BMP to lossless PNG" },
-  "bmp-to-webp":  { icon: "🖼️", desc: "Convert BMP to modern WebP" },
+  "bmp-to-webp":       { icon: "🖼️", desc: "Convert BMP to modern WebP" },
+  "gif-to-jpg":        { icon: "🖼️", desc: "Convert GIF to compressed JPEG" },
+  "gif-to-png":        { icon: "🖼️", desc: "Convert GIF to lossless PNG" },
+  "gif-to-webp":       { icon: "🖼️", desc: "Convert GIF to modern WebP" },
+  "svg-to-png":        { icon: "🔷", desc: "Render SVG vector graphics to PNG" },
+  "svg-to-jpg":        { icon: "🔷", desc: "Render SVG vector graphics to JPG" },
+  "svg-to-webp":       { icon: "🔷", desc: "Render SVG vector graphics to WebP" },
+  "heic-to-jpg":       { icon: "📷", desc: "Convert iPhone HEIC photos to JPEG" },
+  "heic-to-png":       { icon: "📷", desc: "Convert iPhone HEIC photos to PNG" },
+  "tiff-to-jpg":       { icon: "🖼️", desc: "Convert TIFF images to compressed JPEG" },
+  "tiff-to-png":       { icon: "🖼️", desc: "Convert TIFF images to lossless PNG" },
+  "ico-to-png":        { icon: "🔷", desc: "Extract ICO icon as a PNG image" },
+  "ico-to-jpg":        { icon: "🔷", desc: "Extract ICO icon as a JPEG image" },
+  "image-to-base64":   { icon: "📝", desc: "Encode any image as a Base64 data URL" },
+  "base64-to-image":   { icon: "📝", desc: "Decode a Base64 data URL back to an image" },
 };
 
 const VARIANT_META: Record<string, { icon: string; desc: string }> = {

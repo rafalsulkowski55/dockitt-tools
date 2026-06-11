@@ -7,31 +7,6 @@ import { ToolTracking } from "@/lib/analytics";
 const PROCESSING_TYPE = "browser" as const;
 const MAX_FILE_SIZE = 100 * 1024 * 1024;
 
-// Per-slug conversion config derived from variant data
-type SlugConfig = { mime: string; whiteBg: boolean; ico: boolean };
-
-const SLUG_CONFIG: Record<string, SlugConfig> = {
-  "jpg-to-png":   { mime: "image/png",  whiteBg: false, ico: false },
-  "jpg-to-webp":  { mime: "image/webp", whiteBg: false, ico: false },
-  "jpg-to-bmp":   { mime: "image/bmp",  whiteBg: false, ico: false },
-  "jpg-to-ico":   { mime: "image/png",  whiteBg: false, ico: true  },
-  "png-to-jpg":   { mime: "image/jpeg", whiteBg: true,  ico: false },
-  "png-to-webp":  { mime: "image/webp", whiteBg: false, ico: false },
-  "png-to-bmp":   { mime: "image/bmp",  whiteBg: false, ico: false },
-  "png-to-ico":   { mime: "image/png",  whiteBg: false, ico: true  },
-  "webp-to-jpg":  { mime: "image/jpeg", whiteBg: true,  ico: false },
-  "webp-to-png":  { mime: "image/png",  whiteBg: false, ico: false },
-  "webp-to-bmp":  { mime: "image/bmp",  whiteBg: false, ico: false },
-  "bmp-to-jpg":   { mime: "image/jpeg", whiteBg: true,  ico: false },
-  "bmp-to-png":   { mime: "image/png",  whiteBg: false, ico: false },
-  "bmp-to-webp":  { mime: "image/webp", whiteBg: false, ico: false },
-  "gif-to-jpg":   { mime: "image/jpeg", whiteBg: true,  ico: false },
-  "gif-to-png":   { mime: "image/png",  whiteBg: false, ico: false },
-  "gif-to-webp":  { mime: "image/webp", whiteBg: false, ico: false },
-  "ico-to-png":   { mime: "image/png",  whiteBg: false, ico: false },
-  "ico-to-jpg":   { mime: "image/jpeg", whiteBg: true,  ico: false },
-};
-
 type Props = { variant: ConvertImageVariant };
 
 function Spinner() {
@@ -44,51 +19,32 @@ function Spinner() {
   );
 }
 
-function dataUrlToBlob(dataUrl: string, mimeType: string): Blob {
-  const parts = dataUrl.split(",");
-  const bstr = atob(parts[1]);
-  const u8arr = new Uint8Array(bstr.length);
-  for (let i = 0; i < bstr.length; i++) u8arr[i] = bstr.charCodeAt(i);
-  return new Blob([u8arr], { type: mimeType });
-}
-
-export default function ImageConvertTool({ variant }: Props) {
+export default function ImageToBase64Tool({ variant }: Props) {
   const [file, setFile] = useState<File | null>(null);
   const [status, setStatus] = useState<"idle" | "processing" | "done" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState("");
   const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
+  const [charCount, setCharCount] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const cfg = SLUG_CONFIG[variant.slug] ?? { mime: "image/png", whiteBg: false, ico: false };
-
-  useEffect(() => {
-    ToolTracking.viewTool(variant.slug, PROCESSING_TYPE);
-  }, [variant.slug]);
+  useEffect(() => { ToolTracking.viewTool(variant.slug, PROCESSING_TYPE); }, [variant.slug]);
 
   function handleFileSelect(f: File) {
-    if (f.size > MAX_FILE_SIZE) {
-      setErrorMessage("File too large. Maximum size is 100MB.");
-      setStatus("error");
-      return;
-    }
-    setFile(f); setStatus("idle"); setErrorMessage(""); setDownloadUrl(null);
+    if (f.size > MAX_FILE_SIZE) { setErrorMessage("File too large. Maximum size is 100MB."); setStatus("error"); return; }
+    setFile(f); setStatus("idle"); setErrorMessage(""); setDownloadUrl(null); setCharCount(0);
     ToolTracking.uploadStarted(variant.slug, PROCESSING_TYPE);
   }
 
   function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const f = e.target.files?.[0];
-    if (f) handleFileSelect(f);
-    e.target.value = "";
+    const f = e.target.files?.[0]; if (f) handleFileSelect(f); e.target.value = "";
   }
 
   function handleDrop(e: React.DragEvent) {
-    e.preventDefault();
-    const f = e.dataTransfer.files?.[0];
-    if (f) handleFileSelect(f);
+    e.preventDefault(); const f = e.dataTransfer.files?.[0]; if (f) handleFileSelect(f);
   }
 
   function handleReset() {
-    setFile(null); setStatus("idle"); setErrorMessage(""); setDownloadUrl(null);
+    setFile(null); setStatus("idle"); setErrorMessage(""); setDownloadUrl(null); setCharCount(0);
     if (inputRef.current) inputRef.current.value = "";
   }
 
@@ -96,43 +52,16 @@ export default function ImageConvertTool({ variant }: Props) {
     if (!file) return;
     ToolTracking.processStarted(variant.slug, PROCESSING_TYPE);
     setStatus("processing"); setErrorMessage(""); setDownloadUrl(null);
-
     try {
-      const objectUrl = URL.createObjectURL(file);
-      const img = await new Promise<HTMLImageElement>((resolve, reject) => {
-        const el = new Image();
-        el.onload = () => resolve(el);
-        el.onerror = () => reject(new Error("Failed to load image. The file may be corrupt or unsupported."));
-        el.src = objectUrl;
+      const dataUrl = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result as string);
+        reader.onerror = () => reject(new Error("Failed to read the image file."));
+        reader.readAsDataURL(file);
       });
-      URL.revokeObjectURL(objectUrl);
-
-      const canvas = document.createElement("canvas");
-      const ctx = canvas.getContext("2d")!;
-
-      if (cfg.ico) {
-        // ICO: scale-fit into 256×256, preserving aspect ratio
-        canvas.width = 256;
-        canvas.height = 256;
-        const scale = Math.min(256 / img.naturalWidth, 256 / img.naturalHeight);
-        const w = img.naturalWidth * scale;
-        const h = img.naturalHeight * scale;
-        ctx.drawImage(img, (256 - w) / 2, (256 - h) / 2, w, h);
-      } else {
-        canvas.width = img.naturalWidth;
-        canvas.height = img.naturalHeight;
-        if (cfg.whiteBg) {
-          ctx.fillStyle = "#ffffff";
-          ctx.fillRect(0, 0, canvas.width, canvas.height);
-        }
-        ctx.drawImage(img, 0, 0);
-      }
-
-      const quality = cfg.mime === "image/jpeg" ? 0.92 : undefined;
-      const dataUrl = canvas.toDataURL(cfg.mime, quality);
-      const outputMime = cfg.ico ? "image/x-icon" : cfg.mime;
-      const blob = dataUrlToBlob(dataUrl, outputMime);
-      setDownloadUrl(URL.createObjectURL(blob));
+      setCharCount(dataUrl.length);
+      const textBlob = new Blob([dataUrl], { type: "text/plain" });
+      setDownloadUrl(URL.createObjectURL(textBlob));
       setStatus("done");
       ToolTracking.processSuccess(variant.slug, PROCESSING_TYPE);
     } catch (err: unknown) {
@@ -144,14 +73,12 @@ export default function ImageConvertTool({ variant }: Props) {
   function handleDownload() {
     if (!downloadUrl) return;
     ToolTracking.downloadClicked(variant.slug, PROCESSING_TYPE);
-    const ext = cfg.ico ? ".ico" : `.${variant.outputFormat}`;
-    const baseName = file?.name.replace(/\.[^.]+$/, "") ?? "converted";
-    const a = document.createElement("a"); a.href = downloadUrl; a.download = `${baseName}${ext}`; a.click();
+    const baseName = file?.name.replace(/\.[^.]+$/, "") ?? "image";
+    const a = document.createElement("a"); a.href = downloadUrl; a.download = `${baseName}-base64.txt`; a.click();
   }
 
   const isProcessing = status === "processing";
   const isReady = !!file && !isProcessing;
-  const inputExt = variant.inputFormat.toUpperCase();
 
   return (
     <>
@@ -162,7 +89,7 @@ export default function ImageConvertTool({ variant }: Props) {
           style={{ border: "2px dashed #bfdbfe", borderRadius: "12px", padding: "16px", background: "#f8faff" }}>
           {file ? (
             <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-              <div style={{ width: "40px", height: "52px", borderRadius: "6px", background: "#eff6ff", border: "1px solid #bfdbfe", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, fontSize: "10px", fontWeight: 700, color: "#2563eb", textTransform: "uppercase" }}>{inputExt}</div>
+              <div style={{ width: "40px", height: "52px", borderRadius: "6px", background: "#eff6ff", border: "1px solid #bfdbfe", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, fontSize: "10px", fontWeight: 700, color: "#2563eb", textTransform: "uppercase" }}>IMG</div>
               <div style={{ flex: 1, minWidth: 0 }}>
                 <p style={{ fontSize: "13px", fontWeight: 600, color: "#111", margin: "0 0 2px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{file.name}</p>
                 <button onClick={() => inputRef.current?.click()} style={{ fontSize: "11px", color: "#2563eb", background: "none", border: "none", cursor: "pointer", padding: 0 }}>Change file</button>
@@ -171,7 +98,7 @@ export default function ImageConvertTool({ variant }: Props) {
             </div>
           ) : (
             <div style={{ textAlign: "center", padding: "8px 0" }}>
-              <div style={{ fontSize: "13px", color: "#666", marginBottom: "10px" }}>Drag & drop your {inputExt} file here or</div>
+              <div style={{ fontSize: "13px", color: "#666", marginBottom: "10px" }}>Drag & drop your image here or</div>
               <button onClick={() => inputRef.current?.click()} style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", padding: "10px 20px", background: "#2563eb", color: "#fff", borderRadius: "10px", fontWeight: 600, cursor: "pointer", fontSize: "14px", border: "none" }}>
                 {variant.inputLabel}
               </button>
@@ -182,7 +109,7 @@ export default function ImageConvertTool({ variant }: Props) {
         <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
           <button disabled={!isReady} onClick={handleConvert}
             style={{ padding: "10px 20px", background: isReady ? "#2563eb" : "#d1d5db", color: "#fff", border: "none", borderRadius: "8px", fontWeight: 600, fontSize: "14px", cursor: isReady ? "pointer" : "not-allowed" }}>
-            {isProcessing ? "Converting..." : `Convert to ${variant.outputFormat.toUpperCase()}`}
+            {isProcessing ? "Converting..." : "Convert to Base64"}
           </button>
           {isProcessing && <Spinner />}
         </div>
@@ -197,11 +124,11 @@ export default function ImageConvertTool({ variant }: Props) {
           <div style={{ border: "1px solid #bfdbfe", borderRadius: "12px", overflow: "hidden" }}>
             <div style={{ background: "#eff6ff", padding: "12px 16px" }}>
               <p style={{ fontSize: "15px", fontWeight: 700, color: "#2563eb", margin: "0 0 2px" }}>✅ Conversion complete</p>
-              <p style={{ fontSize: "12px", color: "#16a34a", margin: 0 }}>Your {variant.outputFormat.toUpperCase()} file is ready to download</p>
+              <p style={{ fontSize: "12px", color: "#16a34a", margin: 0 }}>{charCount.toLocaleString()} characters · data URL format</p>
             </div>
             <div style={{ padding: "12px 16px", background: "#fff" }}>
               <button onClick={handleDownload} style={{ width: "100%", padding: "11px", background: "#16a34a", color: "#fff", border: "none", borderRadius: "8px", fontWeight: 600, fontSize: "14px", cursor: "pointer" }}>
-                ⬇ Download {variant.outputFormat.toUpperCase()}
+                ⬇ Download TXT
               </button>
             </div>
             <div style={{ padding: "10px 16px", background: "#f9fafb", borderTop: "1px solid #e5e7eb" }}>
