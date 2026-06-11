@@ -21,6 +21,7 @@ const VARIANT_META: Record<string, { icon: string; desc: string }> = {
   "csv-to-pdf":       { icon: "📊", desc: "Convert a CSV spreadsheet to a PDF table" },
   "json-to-pdf":      { icon: "📄", desc: "Convert a JSON file to a formatted PDF" },
   "svg-to-pdf":       { icon: "🖼️", desc: "Convert SVG vector graphics to a PDF" },
+  "pdf-metadata":     { icon: "🔍", desc: "Extract metadata from a PDF as a JSON file" },
 };
 
 type Props = {

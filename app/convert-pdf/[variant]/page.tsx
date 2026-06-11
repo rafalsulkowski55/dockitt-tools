@@ -14,6 +14,7 @@ import MarkdownToPdfTool from "./MarkdownToPdfTool";
 import CsvToPdfTool from "./CsvToPdfTool";
 import JsonToPdfTool from "./JsonToPdfTool";
 import SvgToPdfTool from "./SvgToPdfTool";
+import PdfMetadataTool from "./PdfMetadataTool";
 import Link from "next/link";
 
 function ConvertToolRouter({ variant }: { variant: ConvertVariant }) {
@@ -30,6 +31,7 @@ function ConvertToolRouter({ variant }: { variant: ConvertVariant }) {
     case "csv-to-pdf":      return <CsvToPdfTool variant={variant} />;
     case "json-to-pdf":     return <JsonToPdfTool variant={variant} />;
     case "svg-to-pdf":      return <SvgToPdfTool variant={variant} />;
+    case "pdf-metadata":    return <PdfMetadataTool variant={variant} />;
     default:                return <ConvertTool variant={variant} />;
   }
 }

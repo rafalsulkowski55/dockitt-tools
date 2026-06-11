@@ -705,6 +705,49 @@ export const convertVariants: ConvertVariant[] = [
       },
     ],
   },
+  {
+    slug: "pdf-metadata",
+    name: "PDF Metadata",
+    title: "Extract PDF Metadata Online",
+    description: "Extract metadata from PDF files online — free and without any sign-up.",
+    longDescription: "Every PDF file contains hidden metadata — information about the document such as its title, author, creation date, modification date, page count, and the software used to create it. Dockitt's PDF Metadata Extractor reads this information directly in your browser using pdf-lib and exports it as a clean JSON file. No file is uploaded to any server.",
+    primaryKeyword: "pdf metadata extractor",
+    inputFormat: "pdf",
+    outputFormat: "json",
+    inputLabel: "Choose PDF",
+    accept: ".pdf",
+    howTo: [
+      "Click 'Choose PDF' and select the PDF file you want to inspect.",
+      "Click 'Extract Metadata' and wait while the tool reads the document information.",
+      "Download the JSON file containing all available metadata from your PDF.",
+    ],
+    faqs: [
+      {
+        question: "What metadata can be extracted from a PDF?",
+        answer: "PDF files can contain a range of metadata fields including the document title, author name, subject, keywords, the application used to create it, the PDF producer, creation date, and last modification date. Not all PDFs contain all fields — some may be empty if the creator did not set them.",
+      },
+      {
+        question: "Is the metadata extraction done in my browser or on a server?",
+        answer: "The extraction is handled entirely in your browser using pdf-lib. Your file is never uploaded to any server. It stays on your device throughout the entire process.",
+      },
+      {
+        question: "Why are some metadata fields empty in the output?",
+        answer: "Not all PDF creators fill in every metadata field. For example, a PDF exported from a basic tool may only contain the creation date and page count, while a professionally produced document may include the author, title, subject, and keywords. Empty fields simply mean that information was not set when the PDF was created.",
+      },
+      {
+        question: "Can I edit the metadata after extracting it?",
+        answer: "This tool is for reading and exporting metadata only. If you need to edit PDF metadata, you would need a dedicated PDF editor. The JSON output from this tool can be used as a reference for what metadata currently exists in the file.",
+      },
+      {
+        question: "What does the page count in the metadata tell me?",
+        answer: "The page count field shows the total number of pages in the PDF document. This is useful for quickly checking document length without opening the file in a full PDF viewer.",
+      },
+      {
+        question: "Can I extract metadata from a password-protected PDF?",
+        answer: "No. Password-protected PDFs cannot be read until the protection is removed. Use the Dockitt Unlock PDF tool to remove the password first, then extract the metadata from the unlocked file.",
+      },
+    ],
+  },
 ];
 
 export function getConvertVariant(slug: string) {
