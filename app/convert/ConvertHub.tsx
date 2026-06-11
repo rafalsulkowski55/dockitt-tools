@@ -3,6 +3,24 @@
 import { useState } from "react";
 import Link from "next/link";
 import type { ConvertVariant } from "@/data/convert/variants";
+import { getAllConvertImageVariants } from "@/data/convert-image/variants";
+
+const IMAGE_VARIANT_META: Record<string, { icon: string; desc: string }> = {
+  "jpg-to-png":   { icon: "🖼️", desc: "Convert JPEG to lossless PNG" },
+  "jpg-to-webp":  { icon: "🖼️", desc: "Convert JPEG to modern WebP" },
+  "jpg-to-bmp":   { icon: "🖼️", desc: "Convert JPEG to uncompressed BMP" },
+  "jpg-to-ico":   { icon: "🔷", desc: "Convert JPEG to ICO icon format" },
+  "png-to-jpg":   { icon: "🖼️", desc: "Convert PNG to compressed JPEG" },
+  "png-to-webp":  { icon: "🖼️", desc: "Convert PNG to modern WebP" },
+  "png-to-bmp":   { icon: "🖼️", desc: "Convert PNG to uncompressed BMP" },
+  "png-to-ico":   { icon: "🔷", desc: "Convert PNG to ICO icon format" },
+  "webp-to-jpg":  { icon: "🖼️", desc: "Convert WebP to JPEG for compatibility" },
+  "webp-to-png":  { icon: "🖼️", desc: "Convert WebP to lossless PNG" },
+  "webp-to-bmp":  { icon: "🖼️", desc: "Convert WebP to uncompressed BMP" },
+  "bmp-to-jpg":   { icon: "🖼️", desc: "Convert BMP to compressed JPEG" },
+  "bmp-to-png":   { icon: "🖼️", desc: "Convert BMP to lossless PNG" },
+  "bmp-to-webp":  { icon: "🖼️", desc: "Convert BMP to modern WebP" },
+};
 
 const VARIANT_META: Record<string, { icon: string; desc: string }> = {
   "pdf-to-jpg":  { icon: "🖼️", desc: "Extract every page as a JPEG image" },
@@ -112,16 +130,32 @@ export default function ConvertHub({ variants }: Props) {
           )}
 
           {tab === "image" && (
-            <div style={{ textAlign: "center", padding: "60px 24px" }}>
-              <div style={{ display: "inline-block", background: "#fff7ed", color: "#ea580c", fontSize: "11px", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", padding: "4px 12px", borderRadius: "99px", marginBottom: "20px" }}>
-                Coming Soon
-              </div>
-              <h2 style={{ fontSize: "28px", fontWeight: 700, color: "#0f0f0f", marginBottom: "12px", marginTop: 0 }}>
-                Image conversion tools
+            <div>
+              <h2 style={{ fontSize: "16px", fontWeight: 700, color: "#111", marginBottom: "16px", marginTop: 0, borderLeft: "3px solid #2563eb", paddingLeft: "12px" }}>
+                Image Conversion
               </h2>
-              <p style={{ fontSize: "16px", color: "#6b7280", marginBottom: 0, lineHeight: 1.6, maxWidth: "480px", margin: "0 auto" }}>
-                Browser-based image converters are on the way. Convert between JPG, PNG, WebP, AVIF and more — no upload, no account.
-              </p>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: "12px" }}>
+                {getAllConvertImageVariants().map((v) => {
+                  const meta = IMAGE_VARIANT_META[v.slug] ?? { icon: "🔄", desc: v.description };
+                  return (
+                    <Link key={v.slug} href={`/convert-image/${v.slug}`} style={{ textDecoration: "none" }}>
+                      <div style={{ background: "#ffffff", border: "1px solid #e5e7eb", borderRadius: "12px", padding: "20px", display: "flex", flexDirection: "column", gap: "10px", height: "100%", transition: "border-color 0.15s" }}>
+                        <span style={{ fontSize: "28px" }}>{meta.icon}</span>
+                        <div>
+                          <p style={{ fontSize: "14px", fontWeight: 700, color: "#111", margin: "0 0 4px" }}>{v.name}</p>
+                          <p style={{ fontSize: "13px", color: "#6b7280", margin: 0, lineHeight: 1.5 }}>{meta.desc}</p>
+                        </div>
+                        <p style={{ fontSize: "12px", color: "#2563eb", fontWeight: 600, margin: 0 }}>Convert now →</p>
+                      </div>
+                    </Link>
+                  );
+                })}
+              </div>
+
+              <div style={{ marginTop: "32px", padding: "16px 20px", background: "#f0fdf4", border: "1px solid #bbf7d0", borderRadius: "10px", display: "flex", alignItems: "center", gap: "10px", fontSize: "13px", color: "#14532d" }}>
+                <span style={{ flexShrink: 0 }}>✅</span>
+                <span><strong>All conversions run in your browser.</strong> Your files never leave your device — no upload, no server, complete privacy.</span>
+              </div>
             </div>
           )}
 
