@@ -26,7 +26,6 @@ const TOOL_META: Record<string, { icon: string; desc: string }> = {
   "xml-to-csv":             { icon: "🔄", desc: "Extract XML records as CSV rows" },
   "yaml-to-json":           { icon: "⚙️", desc: "Parse YAML config files and output JSON" },
   "json-to-yaml":           { icon: "⚙️", desc: "Convert JSON to clean, readable YAML" },
-  "json-formatter":         { icon: "✨", desc: "Pretty-print and validate JSON with 2 or 4 spaces" },
   "csv-viewer":             { icon: "👁️", desc: "Render CSV data as a formatted HTML table" },
   "word-counter":           { icon: "🔢", desc: "Count words, characters, sentences and reading time" },
   "text-case-converter":    { icon: "Aa", desc: "Convert between UPPERCASE, camelCase, snake_case and more" },

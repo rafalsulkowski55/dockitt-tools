@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { getAllFileTools } from "@/data/file-tools/tools";
+import { getAllDevTools } from "@/data/dev-tools/tools";
 
 export const metadata: Metadata = {
-  title: "File Utilities Online — Free Browser-Based Tools | Dockitt",
-  description: "Free browser-based file utilities. Create ZIP archives, extract files, compute file hashes and inspect file metadata. Everything runs in your browser — no upload, no account.",
+  title: "Developer Tools Online — Free Browser-Based Utilities | Dockitt",
+  description: "Free browser-based developer tools. JSON formatter, Base64 encoder/decoder, URL encoder, password generator, UUID generator, color picker and CSS minifier. No upload, no account.",
   openGraph: {
-    title: "File Utilities Online — Free Browser-Based Tools | Dockitt",
-    description: "Free browser-based file utilities. Create ZIP archives, extract files, compute file hashes and inspect file metadata. Everything runs in your browser — no upload, no account.",
-    url: "https://www.dockitt.com/file-tools",
+    title: "Developer Tools Online — Free Browser-Based Utilities | Dockitt",
+    description: "Free browser-based developer tools. JSON formatter, Base64 encoder/decoder, URL encoder, password generator, UUID generator, color picker and CSS minifier. No upload, no account.",
+    url: "https://www.dockitt.com/dev-tools",
     siteName: "Dockitt",
     locale: "en_US",
     type: "website",
@@ -16,14 +16,17 @@ export const metadata: Metadata = {
 };
 
 const TOOL_META: Record<string, { icon: string; desc: string }> = {
-  "create-zip":   { icon: "🗜️", desc: "Bundle multiple files into a single ZIP archive" },
-  "extract-zip":  { icon: "📦", desc: "View and download individual files from a ZIP" },
-  "file-hash":    { icon: "🔒", desc: "Compute SHA-1, SHA-256 or SHA-512 hash of any file" },
-  "file-metadata":{ icon: "🔍", desc: "Inspect file name, size, type and last-modified date" },
+  "json-formatter":     { icon: "✨", desc: "Pretty-print and validate JSON with 2 or 4 spaces" },
+  "base64-encoder":     { icon: "🔤", desc: "Encode or decode text and files as Base64" },
+  "url-encoder":        { icon: "🔗", desc: "Percent-encode or decode URLs and query strings" },
+  "password-generator": { icon: "🔑", desc: "Generate strong random passwords with a strength meter" },
+  "uuid-generator":     { icon: "🆔", desc: "Generate UUIDs in standard, uppercase or no-hyphens format" },
+  "color-picker":       { icon: "🎨", desc: "Pick colors and convert between HEX, RGB, HSL and HSV" },
+  "css-minifier":       { icon: "✂️", desc: "Minify CSS by stripping comments and whitespace" },
 };
 
-export default function FileToolsPage() {
-  const tools = getAllFileTools();
+export default function DevToolsPage() {
+  const tools = getAllDevTools();
 
   return (
     <main style={{ background: "#f9fafb", minHeight: "100vh" }}>
@@ -36,14 +39,14 @@ export default function FileToolsPage() {
               ← All Tools
             </Link>
           </nav>
-          <p style={{ fontSize: "11px", fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", color: "#2563eb", marginBottom: "8px" }}>
-            File Utilities
+          <p style={{ fontSize: "11px", fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", color: "#7c3aed", marginBottom: "8px" }}>
+            Developer Tools
           </p>
           <h1 style={{ fontSize: "clamp(24px, 4vw, 38px)", fontWeight: 700, color: "#0f0f0f", letterSpacing: "-0.02em", marginBottom: "12px", marginTop: 0 }}>
-            File Utilities Online
+            Developer Tools Online
           </h1>
           <p style={{ fontSize: "17px", color: "#4b5563", lineHeight: 1.6, marginBottom: 0, marginTop: 0, maxWidth: "580px" }}>
-            Create and extract ZIP archives, compute file hashes and inspect file metadata. All tools run entirely in your browser — no upload, no account, complete privacy.
+            Format JSON, encode Base64, generate passwords and UUIDs, pick colors and minify CSS. All tools run entirely in your browser — no upload, no account, complete privacy.
           </p>
         </div>
       </section>
@@ -55,14 +58,14 @@ export default function FileToolsPage() {
             {tools.map((t) => {
               const meta = TOOL_META[t.slug] ?? { icon: "🛠️", desc: t.description };
               return (
-                <Link key={t.slug} href={`/file-tools/${t.slug}`} style={{ textDecoration: "none" }}>
+                <Link key={t.slug} href={`/dev-tools/${t.slug}`} style={{ textDecoration: "none" }}>
                   <div style={{ background: "#ffffff", border: "1px solid #e5e7eb", borderRadius: "12px", padding: "20px", display: "flex", flexDirection: "column", gap: "10px", height: "100%" }}>
                     <span style={{ fontSize: "28px" }}>{meta.icon}</span>
                     <div>
                       <p style={{ fontSize: "14px", fontWeight: 700, color: "#111", margin: "0 0 4px" }}>{t.name}</p>
                       <p style={{ fontSize: "13px", color: "#6b7280", margin: 0, lineHeight: 1.5 }}>{meta.desc}</p>
                     </div>
-                    <p style={{ fontSize: "12px", color: "#2563eb", fontWeight: 600, margin: 0 }}>Open tool →</p>
+                    <p style={{ fontSize: "12px", color: "#7c3aed", fontWeight: 600, margin: 0 }}>Open tool →</p>
                   </div>
                 </Link>
               );

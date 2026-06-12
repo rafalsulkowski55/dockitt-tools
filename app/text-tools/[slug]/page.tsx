@@ -12,7 +12,6 @@ import CsvToXmlTool from "../components/CsvToXmlTool";
 import XmlToCsvTool from "../components/XmlToCsvTool";
 import YamlToJsonTool from "../components/YamlToJsonTool";
 import JsonToYamlTool from "../components/JsonToYamlTool";
-import JsonFormatterTool from "../components/JsonFormatterTool";
 import CsvViewerTool from "../components/CsvViewerTool";
 import WordCounterTool from "../components/WordCounterTool";
 import TextCaseConverterTool from "../components/TextCaseConverterTool";
@@ -33,7 +32,6 @@ function TextToolRouter({ tool }: { tool: TextTool }) {
     case "xml-to-csv":             return <XmlToCsvTool             tool={tool} />;
     case "yaml-to-json":           return <YamlToJsonTool           tool={tool} />;
     case "json-to-yaml":           return <JsonToYamlTool           tool={tool} />;
-    case "json-formatter":         return <JsonFormatterTool         tool={tool} />;
     case "csv-viewer":             return <CsvViewerTool             tool={tool} />;
     case "word-counter":           return <WordCounterTool           tool={tool} />;
     case "text-case-converter":    return <TextCaseConverterTool    tool={tool} />;

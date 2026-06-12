@@ -5,21 +5,20 @@ import { getAllConvertImageVariants } from "@/data/convert-image/variants";
 import { getAllEditImageTools } from "@/data/edit-image/tools";
 import { getAllTextTools } from "@/data/text-tools/tools";
 import { getAllFileTools } from "@/data/file-tools/tools";
+import { getAllDevTools } from "@/data/dev-tools/tools";
 
 export const metadata = {
   title: "All Tools — PDF, Image, Text & More | Dockitt",
-  description: "Browse 98 free browser-based tools: merge, split, convert, edit PDFs; convert and edit images; transform text and data; create archives. No signup required.",
+  description: "Browse 98 free browser-based tools: merge, split, convert, edit PDFs; convert and edit images; transform text and data; developer utilities. No signup required.",
 };
 
 const TOP_CATEGORIES = [
-  { name: "Core PDF Tools",   desc: "Merge, split, rotate and delete PDF pages.",     icon: "✂️", color: "#2563eb", bg: "#eff6ff",  href: "/categories/core",    count: 4 },
-  { name: "PDF Utilities",    desc: "Crop, reorder, extract pages and count words.",   icon: "🔧", color: "#16a34a", bg: "#f0fdf4",  href: "/categories/utility", count: 4 },
-  { name: "PDF Edit & Sign",  desc: "Add watermarks and sign PDF documents.",          icon: "✍️", color: "#dc2626", bg: "#fef2f2",  href: "/categories/security", count: 2 },
-  { name: "PDF Convert",      desc: "Convert between PDF, images and documents.",      icon: "🔄", color: "#ea580c", bg: "#fff7ed",  href: "/convert-pdf",        count: 17 },
-  { name: "Image Convert",    desc: "Convert between JPG, PNG, WebP and more.",        icon: "🖼️", color: "#9333ea", bg: "#fdf4ff",  href: "/convert-image",      count: 28 },
-  { name: "Image Edit",       desc: "Resize, crop, compress and rotate images.",       icon: "✏️", color: "#0891b2", bg: "#ecfeff",  href: "/edit-image",         count: 13 },
-  { name: "Text & Data",      desc: "Convert, format and transform text and data.",    icon: "📝", color: "#0369a1", bg: "#f0f9ff",  href: "/text-tools",         count: 18 },
-  { name: "File Utilities",   desc: "Archive, hash, encode and inspect files.",        icon: "🗂️", color: "#7c3aed", bg: "#f5f3ff",  href: "/file-tools",         count: 10 },
+  { name: "PDF Tools",        desc: "Merge, split, rotate, crop and edit PDF files.",         icon: "📄", color: "#2563eb", bg: "#eff6ff",  href: "/categories/pdf",  count: 10 },
+  { name: "File Converter",   desc: "Convert between PDF, images and document formats.",       icon: "🔄", color: "#ea580c", bg: "#fff7ed",  href: "/convert",         count: 46 },
+  { name: "Image Edit",       desc: "Resize, crop, compress and rotate images.",               icon: "✏️", color: "#0891b2", bg: "#ecfeff",  href: "/edit-image",      count: 13 },
+  { name: "Text & Data",      desc: "Convert, format and transform text and data files.",      icon: "📝", color: "#0369a1", bg: "#f0f9ff",  href: "/text-tools",      count: 17 },
+  { name: "Developer Tools",  desc: "JSON formatter, Base64, UUID generator and more.",        icon: "⚙️", color: "#7c3aed", bg: "#f5f3ff",  href: "/dev-tools",       count: 7  },
+  { name: "File Utilities",   desc: "Create ZIP archives, hash files and inspect metadata.",   icon: "🗂️", color: "#16a34a", bg: "#f0fdf4",  href: "/file-tools",      count: 4  },
 ];
 
 const TOOL_ICONS: Record<string, string> = {
@@ -27,6 +26,16 @@ const TOOL_ICONS: Record<string, string> = {
   "delete-pdf-pages": "🗑️", "extract-pdf-pages": "📤", "protect-pdf": "🔐",
   "unlock-pdf": "🔓", "watermark-pdf": "💧", "sign-pdf": "✍️", "crop-pdf": "✂️",
   "repair-pdf": "🔧", "ocr-pdf": "🔍", "reorder-pdf-pages": "🔀", "pdf-word-count": "🔢",
+  "add-page-numbers": "🔢", "flatten-pdf": "📄", "remove-metadata": "🔍", "resize-pages": "📐",
+};
+
+const DEV_TOOL_ICONS: Record<string, string> = {
+  "json-formatter": "✨", "base64-encoder": "🔤", "url-encoder": "🔗",
+  "password-generator": "🔑", "uuid-generator": "🆔", "color-picker": "🎨", "css-minifier": "✂️",
+};
+
+const FILE_TOOL_ICONS: Record<string, string> = {
+  "create-zip": "🗜️", "extract-zip": "📦", "file-hash": "🔒", "file-metadata": "🔍",
 };
 
 function SectionHeading({ title, href, color }: { title: string; href: string; color: string }) {
@@ -54,14 +63,12 @@ function ToolCard({ name, desc, href, icon = "📄" }: { name: string; desc: str
 
 export default function CategoriesPage() {
   const pdfTools = getAllTools();
-  const coreTools = pdfTools.filter((t) => t.category === "core");
-  const utilityTools = pdfTools.filter((t) => t.category === "utility");
-  const securityTools = pdfTools.filter((t) => t.category === "security");
   const pdfConvert = getAllConvertVariants();
   const imgConvert = getAllConvertImageVariants();
   const imgEdit = getAllEditImageTools();
   const textTools = getAllTextTools();
   const fileTools = getAllFileTools();
+  const devTools = getAllDevTools();
 
   const gridStyle: React.CSSProperties = {
     display: "grid",
@@ -107,40 +114,23 @@ export default function CategoriesPage() {
           ))}
         </div>
 
-        {/* Core PDF */}
-        <SectionHeading title="Core PDF Tools" href="/categories/core" color="#2563eb" />
+        {/* PDF Tools */}
+        <SectionHeading title="PDF Tools" href="/categories/pdf" color="#2563eb" />
         <div style={gridStyle}>
-          {coreTools.map((t) => (
+          {pdfTools.map((t) => (
             <ToolCard key={t.slug} name={t.name} desc={t.shortDescription} href={`/tools/${t.slug}`} icon={TOOL_ICONS[t.slug]} />
           ))}
         </div>
 
-        {/* PDF Utilities */}
-        <SectionHeading title="PDF Utilities" href="/categories/utility" color="#16a34a" />
-        <div style={gridStyle}>
-          {utilityTools.map((t) => (
-            <ToolCard key={t.slug} name={t.name} desc={t.shortDescription} href={`/tools/${t.slug}`} icon={TOOL_ICONS[t.slug]} />
-          ))}
-        </div>
-
-        {/* PDF Edit & Sign */}
-        <SectionHeading title="PDF Edit & Sign" href="/categories/security" color="#dc2626" />
-        <div style={gridStyle}>
-          {securityTools.map((t) => (
-            <ToolCard key={t.slug} name={t.name} desc={t.shortDescription} href={`/tools/${t.slug}`} icon={TOOL_ICONS[t.slug]} />
-          ))}
-        </div>
-
-        {/* PDF Convert */}
-        <SectionHeading title="PDF Convert" href="/convert-pdf" color="#ea580c" />
+        {/* File Converter */}
+        <SectionHeading title="File Converter — PDF" href="/convert-pdf" color="#ea580c" />
         <div style={gridStyle}>
           {pdfConvert.map((v) => (
             <ToolCard key={v.slug} name={v.name} desc={v.description} href={`/convert-pdf/${v.slug}`} icon="🔄" />
           ))}
         </div>
 
-        {/* Image Convert */}
-        <SectionHeading title="Image Convert" href="/convert-image" color="#9333ea" />
+        <SectionHeading title="File Converter — Image" href="/convert-image" color="#ea580c" />
         <div style={gridStyle}>
           {imgConvert.map((v) => (
             <ToolCard key={v.slug} name={v.name} desc={v.description} href={`/convert-image/${v.slug}`} icon="🖼️" />
@@ -163,11 +153,19 @@ export default function CategoriesPage() {
           ))}
         </div>
 
+        {/* Developer Tools */}
+        <SectionHeading title="Developer Tools" href="/dev-tools" color="#7c3aed" />
+        <div style={gridStyle}>
+          {devTools.map((t) => (
+            <ToolCard key={t.slug} name={t.name} desc={t.description} href={`/dev-tools/${t.slug}`} icon={DEV_TOOL_ICONS[t.slug] ?? "⚙️"} />
+          ))}
+        </div>
+
         {/* File Utilities */}
-        <SectionHeading title="File Utilities" href="/file-tools" color="#7c3aed" />
+        <SectionHeading title="File Utilities" href="/file-tools" color="#16a34a" />
         <div style={gridStyle}>
           {fileTools.map((t) => (
-            <ToolCard key={t.slug} name={t.name} desc={t.description} href={`/file-tools/${t.slug}`} icon="🗂️" />
+            <ToolCard key={t.slug} name={t.name} desc={t.description} href={`/file-tools/${t.slug}`} icon={FILE_TOOL_ICONS[t.slug] ?? "🗂️"} />
           ))}
         </div>
 

@@ -1,6 +1,7 @@
 import { getAllTools } from '@/lib/tools'
 import { getAllConvertVariants } from '@/data/convert/variants'
 import { getAllVariants } from '@/data/variants'
+import { getAllDevTools } from '@/data/dev-tools/tools'
 
 export default function sitemap() {
   const baseUrl = 'https://www.dockitt.com'
@@ -29,7 +30,15 @@ export default function sitemap() {
     priority: 0.8,
   }))
 
-  const categoryUrls = ['core', 'security', 'utility'].map((slug) => ({
+  const devTools = getAllDevTools()
+  const devToolUrls = devTools.map((tool) => ({
+    url: `${baseUrl}/dev-tools/${tool.slug}`,
+    lastModified: new Date(),
+    changeFrequency: 'weekly' as const,
+    priority: 0.7,
+  }))
+
+  const categoryUrls = ['core', 'security', 'utility', 'pdf'].map((slug) => ({
     url: `${baseUrl}/categories/${slug}`,
     lastModified: new Date(),
     changeFrequency: 'weekly' as const,
@@ -40,6 +49,7 @@ export default function sitemap() {
     { url: baseUrl, priority: 1.0 },
     { url: `${baseUrl}/categories`, priority: 0.8 },
     { url: `${baseUrl}/convert`, priority: 0.8 },
+    { url: `${baseUrl}/dev-tools`, priority: 0.8 },
     { url: `${baseUrl}/about`, priority: 0.4 },
     { url: `${baseUrl}/contact`, priority: 0.4 },
     { url: `${baseUrl}/privacy`, priority: 0.3 },
@@ -50,5 +60,5 @@ export default function sitemap() {
     changeFrequency: 'monthly' as const,
   }))
 
-  return [...staticPages, ...toolUrls, ...variantUrls, ...convertUrls, ...categoryUrls]
+  return [...staticPages, ...toolUrls, ...variantUrls, ...convertUrls, ...devToolUrls, ...categoryUrls]
 }

@@ -28,17 +28,6 @@ const DROPDOWN_LINK: React.CSSProperties = {
   whiteSpace: "nowrap",
 };
 
-const DROPDOWN_HEADER_LINK: React.CSSProperties = {
-  display: "block",
-  padding: "8px 12px",
-  fontSize: "12px",
-  color: "#2563eb",
-  fontWeight: 700,
-  borderRadius: "6px",
-  textDecoration: "none",
-  letterSpacing: "0.01em",
-};
-
 const DIVIDER: React.CSSProperties = {
   height: "1px",
   background: "#e5e7eb",
@@ -47,12 +36,9 @@ const DIVIDER: React.CSSProperties = {
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [convertOpen, setConvertOpen] = useState(false);
   const [toolsOpen, setToolsOpen] = useState(false);
-  const [mobileConvertOpen, setMobileConvertOpen] = useState(false);
   const [mobileToolsOpen, setMobileToolsOpen] = useState(false);
 
-  const convertTimer = useRef<NodeJS.Timeout | null>(null);
   const toolsTimer = useRef<NodeJS.Timeout | null>(null);
 
   const close = () => setMenuOpen(false);
@@ -86,32 +72,9 @@ export default function Header() {
             Home
           </Link>
 
-          {/* Convert dropdown */}
-          <div
-            style={{ position: "relative" }}
-            onMouseEnter={() => { if (convertTimer.current) clearTimeout(convertTimer.current); setConvertOpen(true); }}
-            onMouseLeave={() => { convertTimer.current = setTimeout(() => setConvertOpen(false), 150); }}
-          >
-            <button style={{
-              fontSize: "14px", color: "#444", background: "none", border: "none",
-              cursor: "pointer", padding: "6px 10px", borderRadius: "6px",
-              display: "flex", alignItems: "center", gap: "5px",
-            }}>
-              Convert <span style={{ fontSize: "9px", opacity: 0.6 }}>▾</span>
-            </button>
-            {convertOpen && (
-              <div
-                style={DROPDOWN_PANEL}
-                onMouseEnter={() => { if (convertTimer.current) clearTimeout(convertTimer.current); }}
-                onMouseLeave={() => { convertTimer.current = setTimeout(() => setConvertOpen(false), 150); }}
-              >
-                <Link href="/convert" style={DROPDOWN_HEADER_LINK} onClick={() => setConvertOpen(false)}>All Converters</Link>
-                <div style={DIVIDER} />
-                <Link href="/convert-pdf" style={DROPDOWN_LINK} onClick={() => setConvertOpen(false)}>PDF Convert</Link>
-                <Link href="/convert-image" style={DROPDOWN_LINK} onClick={() => setConvertOpen(false)}>Image Convert</Link>
-              </div>
-            )}
-          </div>
+          <Link href="/convert" style={{ fontSize: "14px", color: "#444", textDecoration: "none", padding: "6px 10px", borderRadius: "6px" }}>
+            Convert
+          </Link>
 
           {/* Tools dropdown */}
           <div
@@ -132,11 +95,11 @@ export default function Header() {
                 onMouseEnter={() => { if (toolsTimer.current) clearTimeout(toolsTimer.current); }}
                 onMouseLeave={() => { toolsTimer.current = setTimeout(() => setToolsOpen(false), 150); }}
               >
-                <Link href="/categories/core" style={DROPDOWN_LINK} onClick={() => setToolsOpen(false)}>PDF Organize</Link>
-                <Link href="/categories/security" style={DROPDOWN_LINK} onClick={() => setToolsOpen(false)}>PDF Edit & Sign</Link>
+                <Link href="/categories/pdf" style={DROPDOWN_LINK} onClick={() => setToolsOpen(false)}>PDF Tools</Link>
                 <div style={DIVIDER} />
                 <Link href="/edit-image" style={DROPDOWN_LINK} onClick={() => setToolsOpen(false)}>Image Edit</Link>
                 <Link href="/text-tools" style={DROPDOWN_LINK} onClick={() => setToolsOpen(false)}>Text & Data</Link>
+                <Link href="/dev-tools" style={DROPDOWN_LINK} onClick={() => setToolsOpen(false)}>Developer Tools</Link>
                 <Link href="/file-tools" style={DROPDOWN_LINK} onClick={() => setToolsOpen(false)}>File Utilities</Link>
               </div>
             )}
@@ -180,21 +143,7 @@ export default function Header() {
         }} className="mobile-nav">
 
           <Link href="/" onClick={close} style={{ padding: "12px 16px", fontSize: "15px", color: "#111", textDecoration: "none" }}>Home</Link>
-
-          {/* Mobile Convert */}
-          <button
-            onClick={() => setMobileConvertOpen(!mobileConvertOpen)}
-            style={{ padding: "12px 16px", fontSize: "15px", color: "#111", background: "none", border: "none", textAlign: "left", cursor: "pointer", display: "flex", justifyContent: "space-between", alignItems: "center" }}
-          >
-            Convert <span style={{ fontSize: "10px", opacity: 0.55 }}>{mobileConvertOpen ? "▴" : "▾"}</span>
-          </button>
-          {mobileConvertOpen && (
-            <div style={{ background: "#f9fafb", borderTop: "1px solid #f3f4f6", borderBottom: "1px solid #f3f4f6" }}>
-              <Link href="/convert" onClick={close} style={{ padding: "10px 28px", fontSize: "13px", color: "#2563eb", fontWeight: 700, textDecoration: "none", display: "block" }}>All Converters</Link>
-              <Link href="/convert-pdf" onClick={close} style={{ padding: "10px 28px", fontSize: "13px", color: "#444", textDecoration: "none", display: "block" }}>PDF Convert</Link>
-              <Link href="/convert-image" onClick={close} style={{ padding: "10px 28px", fontSize: "13px", color: "#444", textDecoration: "none", display: "block" }}>Image Convert</Link>
-            </div>
-          )}
+          <Link href="/convert" onClick={close} style={{ padding: "12px 16px", fontSize: "15px", color: "#111", textDecoration: "none" }}>Convert</Link>
 
           {/* Mobile Tools */}
           <button
@@ -205,10 +154,10 @@ export default function Header() {
           </button>
           {mobileToolsOpen && (
             <div style={{ background: "#f9fafb", borderTop: "1px solid #f3f4f6", borderBottom: "1px solid #f3f4f6" }}>
-              <Link href="/categories/core" onClick={close} style={{ padding: "10px 28px", fontSize: "13px", color: "#444", textDecoration: "none", display: "block" }}>PDF Organize</Link>
-              <Link href="/categories/security" onClick={close} style={{ padding: "10px 28px", fontSize: "13px", color: "#444", textDecoration: "none", display: "block" }}>PDF Edit & Sign</Link>
+              <Link href="/categories/pdf" onClick={close} style={{ padding: "10px 28px", fontSize: "13px", color: "#444", textDecoration: "none", display: "block" }}>PDF Tools</Link>
               <Link href="/edit-image" onClick={close} style={{ padding: "10px 28px", fontSize: "13px", color: "#444", textDecoration: "none", display: "block" }}>Image Edit</Link>
               <Link href="/text-tools" onClick={close} style={{ padding: "10px 28px", fontSize: "13px", color: "#444", textDecoration: "none", display: "block" }}>Text & Data</Link>
+              <Link href="/dev-tools" onClick={close} style={{ padding: "10px 28px", fontSize: "13px", color: "#444", textDecoration: "none", display: "block" }}>Developer Tools</Link>
               <Link href="/file-tools" onClick={close} style={{ padding: "10px 28px", fontSize: "13px", color: "#444", textDecoration: "none", display: "block" }}>File Utilities</Link>
             </div>
           )}

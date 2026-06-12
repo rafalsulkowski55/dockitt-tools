@@ -232,28 +232,6 @@ export const textTools: TextTool[] = [
     ],
   },
   {
-    slug: "json-formatter",
-    name: "JSON Formatter",
-    title: "JSON Formatter & Validator — Free Online Tool",
-    description: "Format and validate JSON online. Pretty-print with 2 or 4 space indentation. Highlights errors. Free, browser-based.",
-    longDescription: "Minified or poorly formatted JSON is hard to read and debug. This tool parses and reformats any valid JSON with proper indentation and line breaks, making the structure immediately clear. It also validates the JSON syntax and reports errors with the line number and description if the input is invalid. Choose between 2-space or 4-space indentation to match your project's code style.",
-    primaryKeyword: "json formatter online",
-    category: "text-tools",
-    howTo: [
-      "Paste your minified or unformatted JSON into the input textarea.",
-      "Choose 2 or 4 space indentation, then click 'Format JSON'.",
-      "Copy the formatted JSON to clipboard or download it as a .json file.",
-    ],
-    faqs: [
-      { question: "Does this tool validate my JSON?", answer: "Yes. The tool uses JSON.parse() to parse your input, which performs strict JSON validation. If the input is not valid JSON, an error message is displayed describing what went wrong and where. Common issues include: trailing commas (not allowed in JSON, though allowed in JavaScript), unquoted keys, single-quoted strings (JSON requires double quotes), and comments (JSON does not support comments)." },
-      { question: "What is the difference between 2-space and 4-space indentation?", answer: "Both produce semantically identical JSON — only the whitespace differs. 2-space indentation is more compact and is the default in many JavaScript projects (Prettier, many ESLint configs). 4-space indentation is traditional in Python-influenced projects and some style guides. Use whichever matches the conventions of your codebase." },
-      { question: "Can I use this to minify JSON?", answer: "This tool is designed for formatting (expanding). For minification (removing all whitespace), JSON.stringify(JSON.parse(input)) with no indentation argument produces minified JSON. A dedicated JSON minifier tool would be more appropriate for that use case." },
-      { question: "What is the maximum size of JSON I can format?", answer: "There is no hard limit. The tool uses the browser's built-in JSON.parse and JSON.stringify, which can handle very large JSON files. In practice, files up to tens of megabytes format near-instantly. Files in the hundreds of megabytes may slow down the browser tab." },
-      { question: "Does the formatter change the data in any way?", answer: "No. The formatter preserves all JSON values exactly. It does not change string content, number precision, key order (keys retain their original order as parsed by the browser's JSON engine), or any other aspect of the data. Only whitespace is modified." },
-      { question: "Is my JSON sent to a server?", answer: "No. Formatting runs entirely in your browser using the built-in JSON.parse and JSON.stringify functions. No data is sent anywhere. This makes the tool safe for formatting JSON that contains API keys, access tokens, or other confidential values." },
-    ],
-  },
-  {
     slug: "csv-viewer",
     name: "CSV Viewer",
     title: "CSV Viewer — View CSV Files as a Table Online",
