@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { getAllConvertVariants } from "@/data/convert/variants";
+import { getAllConvertImageVariants } from "@/data/convert-image/variants";
 
 export const FORMAT_LABELS: Record<string, string> = {
   pdf: "PDF", jpg: "JPG", png: "PNG", webp: "WebP", bmp: "BMP",
@@ -28,16 +30,25 @@ const FORMAT_COLORS: Record<string, { bg: string; fg: string }> = {
   image: { bg: "#eff6ff", fg: "#2563eb" },
 };
 
-export interface SlimVariant {
+type ConvEntry = {
   slug: string;
-  inputFormat: string;
-  outputFormat: string;
+  from: string;
+  to: string;
+  route: "convert-pdf" | "convert-image";
+};
+
+function buildAllEntries(): ConvEntry[] {
+  return [
+    ...getAllConvertVariants().map((v) => ({ slug: v.slug, from: v.inputFormat, to: v.outputFormat, route: "convert-pdf" as const })),
+    ...getAllConvertImageVariants().map((v) => ({ slug: v.slug, from: v.inputFormat, to: v.outputFormat, route: "convert-image" as const })),
+  ];
 }
 
+const ALL_ENTRIES = buildAllEntries();
+
 interface ConvertSelectorProps {
-  variants: SlimVariant[];
   currentSlug?: string;
-  baseUrl: string;
+  currentRoute?: "convert-pdf" | "convert-image";
   showConvertButton?: boolean;
 }
 
@@ -74,38 +85,42 @@ function FormatBlock({ format, label, options, onChange }: {
   );
 }
 
-export default function ConvertSelector({ variants, currentSlug, baseUrl, showConvertButton = false }: ConvertSelectorProps) {
+export default function ConvertSelector({ currentSlug, currentRoute, showConvertButton = false }: ConvertSelectorProps) {
   const router = useRouter();
-  const current = variants.find((v) => v.slug === currentSlug);
 
-  const fromOptions = Array.from(new Set(variants.map((v) => v.inputFormat)));
-  const initialFrom = current?.inputFormat ?? fromOptions[0] ?? "";
+  const current = ALL_ENTRIES.find((e) => e.slug === currentSlug && e.route === currentRoute);
 
+  const fromOptions = Array.from(new Set(ALL_ENTRIES.map((e) => e.from)));
+  const initialFrom = current?.from ?? fromOptions[0] ?? "";
   const [from, setFrom] = useState(initialFrom);
 
-  const toOptions = Array.from(new Set(variants.filter((v) => v.inputFormat === from).map((v) => v.outputFormat)));
-  const initialTo = current?.outputFormat ?? toOptions[0] ?? "";
+  const toOptions = Array.from(new Set(ALL_ENTRIES.filter((e) => e.from === from).map((e) => e.to)));
+  const initialTo = current?.to ?? toOptions[0] ?? "";
   const [to, setTo] = useState(initialTo);
 
   const effectiveTo = toOptions.includes(to) ? to : (toOptions[0] ?? "");
-  const targetVariant = variants.find((v) => v.inputFormat === from && v.outputFormat === effectiveTo);
+  const targetEntry = ALL_ENTRIES.find((e) => e.from === from && e.to === effectiveTo);
+
+  function navigate(entry: ConvEntry) {
+    router.push(`/${entry.route}/${entry.slug}`);
+  }
 
   function handleFromChange(newFrom: string) {
     setFrom(newFrom);
-    const avail = Array.from(new Set(variants.filter((v) => v.inputFormat === newFrom).map((v) => v.outputFormat)));
+    const avail = Array.from(new Set(ALL_ENTRIES.filter((e) => e.from === newFrom).map((e) => e.to)));
     const newTo = avail[0] ?? "";
     setTo(newTo);
     if (!showConvertButton) {
-      const target = variants.find((v) => v.inputFormat === newFrom && v.outputFormat === newTo);
-      if (target) router.push(`${baseUrl}/${target.slug}`);
+      const target = ALL_ENTRIES.find((e) => e.from === newFrom && e.to === newTo);
+      if (target) navigate(target);
     }
   }
 
   function handleToChange(newTo: string) {
     setTo(newTo);
     if (!showConvertButton) {
-      const target = variants.find((v) => v.inputFormat === from && v.outputFormat === newTo);
-      if (target) router.push(`${baseUrl}/${target.slug}`);
+      const target = ALL_ENTRIES.find((e) => e.from === from && e.to === newTo);
+      if (target) navigate(target);
     }
   }
 
@@ -119,17 +134,17 @@ export default function ConvertSelector({ variants, currentSlug, baseUrl, showCo
 
       {showConvertButton && (
         <button
-          disabled={!targetVariant}
-          onClick={() => { if (targetVariant) router.push(`${baseUrl}/${targetVariant.slug}`); }}
+          disabled={!targetEntry}
+          onClick={() => { if (targetEntry) navigate(targetEntry); }}
           style={{
             padding: "10px 22px",
-            background: targetVariant ? "#2563eb" : "#d1d5db",
+            background: targetEntry ? "#2563eb" : "#d1d5db",
             color: "#fff",
             border: "none",
             borderRadius: "10px",
             fontWeight: 700,
             fontSize: "14px",
-            cursor: targetVariant ? "pointer" : "not-allowed",
+            cursor: targetEntry ? "pointer" : "not-allowed",
             whiteSpace: "nowrap",
           }}
         >

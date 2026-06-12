@@ -82,7 +82,6 @@ export async function generateStaticParams() {
 export default async function ConvertImageVariantPage({ params }: PageProps) {
   const { variant } = await params;
   const v = getConvertImageVariant(variant);
-  const all = getAllConvertImageVariants();
   if (!v) notFound();
 
   const bullets = [
@@ -142,11 +141,7 @@ export default async function ConvertImageVariantPage({ params }: PageProps) {
                   </p>
                   <Link href="/convert" style={{ fontSize: "12px", color: "#2563eb", textDecoration: "none", fontWeight: 500 }}>← All Converters</Link>
                 </div>
-                <ConvertSelector
-                  variants={all.map((item) => ({ slug: item.slug, inputFormat: item.inputFormat, outputFormat: item.outputFormat }))}
-                  currentSlug={variant}
-                  baseUrl="/convert-image"
-                />
+                <ConvertSelector currentSlug={variant} currentRoute="convert-image" />
               </div>
 
               {/* Privacy banner */}

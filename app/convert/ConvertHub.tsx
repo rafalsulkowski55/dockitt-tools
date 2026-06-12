@@ -71,8 +71,6 @@ export default function ConvertHub({ variants }: Props) {
     transition: "all 0.15s",
   });
 
-  const pdfSlim = variants.map((v) => ({ slug: v.slug, inputFormat: v.inputFormat, outputFormat: v.outputFormat }));
-  const imgSlim = imgVariants.map((v) => ({ slug: v.slug, inputFormat: v.inputFormat, outputFormat: v.outputFormat }));
 
   return (
     <main style={{ background: "#f9fafb", minHeight: "100vh" }}>
@@ -101,12 +99,7 @@ export default function ConvertHub({ variants }: Props) {
             <p style={{ fontSize: "12px", fontWeight: 600, color: "#9ca3af", textTransform: "uppercase", letterSpacing: "0.06em", margin: "0 0 14px" }}>
               Select conversion
             </p>
-            {tab === "pdf" && (
-              <ConvertSelector variants={pdfSlim} baseUrl="/convert-pdf" showConvertButton />
-            )}
-            {tab === "image" && (
-              <ConvertSelector variants={imgSlim} baseUrl="/convert-image" showConvertButton />
-            )}
+            <ConvertSelector showConvertButton />
           </div>
         </div>
       </section>

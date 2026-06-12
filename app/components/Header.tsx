@@ -72,7 +72,7 @@ export default function Header() {
             Home
           </Link>
 
-          <Link href="/convert" style={{ fontSize: "14px", color: "#444", textDecoration: "none", padding: "6px 10px", borderRadius: "6px" }}>
+          <Link href="/convert-pdf/pdf-to-jpg" style={{ fontSize: "14px", color: "#444", textDecoration: "none", padding: "6px 10px", borderRadius: "6px" }}>
             Convert
           </Link>
 
@@ -143,7 +143,7 @@ export default function Header() {
         }} className="mobile-nav">
 
           <Link href="/" onClick={close} style={{ padding: "12px 16px", fontSize: "15px", color: "#111", textDecoration: "none" }}>Home</Link>
-          <Link href="/convert" onClick={close} style={{ padding: "12px 16px", fontSize: "15px", color: "#111", textDecoration: "none" }}>Convert</Link>
+          <Link href="/convert-pdf/pdf-to-jpg" onClick={close} style={{ padding: "12px 16px", fontSize: "15px", color: "#111", textDecoration: "none" }}>Convert</Link>
 
           {/* Mobile Tools */}
           <button

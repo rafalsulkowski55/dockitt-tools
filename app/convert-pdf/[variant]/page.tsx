@@ -58,7 +58,6 @@ export async function generateStaticParams() {
 export default async function ConvertPage({ params }: ConvertPageProps) {
   const { variant } = await params;
   const v = getConvertVariant(variant);
-  const all = getAllConvertVariants();
   if (!v) notFound();
 
   const FIFTY_MB_SLUGS = new Set(["pdf-to-jpg", "pdf-to-png", "pdf-to-webp", "pdf-to-bmp", "pdf-to-markdown"]);
@@ -122,11 +121,7 @@ export default async function ConvertPage({ params }: ConvertPageProps) {
                   </p>
                   <Link href="/convert" style={{ fontSize: "12px", color: "#2563eb", textDecoration: "none", fontWeight: 500 }}>← All Converters</Link>
                 </div>
-                <ConvertSelector
-                  variants={all.map((item) => ({ slug: item.slug, inputFormat: item.inputFormat, outputFormat: item.outputFormat }))}
-                  currentSlug={variant}
-                  baseUrl="/convert-pdf"
-                />
+                <ConvertSelector currentSlug={variant} currentRoute="convert-pdf" />
               </div>
 
               {/* Privacy banner */}
