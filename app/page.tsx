@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import {
   Lock, Zap, Layers,
   Smartphone, ShieldCheck, FolderOpen, Settings, Download,
-  X, Scissors, ScanText, FileText,
+  X, Scissors, ScanText, FileText, Image, Pencil, FileCode2, Archive,
 } from "lucide-react";
 
 const USE_CASES = [
@@ -224,10 +224,14 @@ function UploadBox() {
 }
 
 const CATEGORIES = [
-  { slug: "core", name: "Organize PDF", desc: "Merge, split, rotate and delete PDF pages.", count: 4, icon: Scissors, color: "#2563eb", bg: "#eff6ff", href: "/categories/core" },
-  { slug: "utility", name: "PDF Utilities", desc: "Crop, reorder, extract pages and count words.", count: 4, icon: ScanText, color: "#16a34a", bg: "#f0fdf4", href: "/categories/utility" },
-  { slug: "security", name: "Edit & Sign", desc: "Add watermarks and sign PDF documents.", count: 2, icon: Lock, color: "#dc2626", bg: "#fef2f2", href: "/categories/security" },
-  { slug: "convert", name: "Convert PDF", desc: "Convert between PDF, JPG and PNG formats.", count: 4, icon: FileText, color: "#ea580c", bg: "#fff7ed", href: "/convert-pdf" },
+  { slug: "core",     name: "Core PDF Tools",  desc: "Merge, split, rotate and delete PDF pages.",         count: 4,  icon: Scissors,   color: "#2563eb", bg: "#eff6ff", href: "/categories/core" },
+  { slug: "utility",  name: "PDF Utilities",   desc: "Crop, reorder, extract pages and count words.",       count: 4,  icon: ScanText,   color: "#16a34a", bg: "#f0fdf4", href: "/categories/utility" },
+  { slug: "security", name: "PDF Edit & Sign", desc: "Add watermarks and sign PDF documents.",              count: 2,  icon: Lock,       color: "#dc2626", bg: "#fef2f2", href: "/categories/security" },
+  { slug: "convert",  name: "PDF Convert",     desc: "Convert between PDF, images and documents.",          count: 17, icon: FileText,   color: "#ea580c", bg: "#fff7ed", href: "/convert-pdf" },
+  { slug: "img-conv", name: "Image Convert",   desc: "Convert between JPG, PNG, WebP and more.",            count: 28, icon: Image,      color: "#9333ea", bg: "#fdf4ff", href: "/convert-image" },
+  { slug: "img-edit", name: "Image Edit",      desc: "Resize, crop, compress and rotate images.",           count: 13, icon: Pencil,     color: "#0891b2", bg: "#ecfeff", href: "/edit-image" },
+  { slug: "text",     name: "Text & Data",     desc: "Convert, format and transform text and data.",        count: 18, icon: FileCode2,  color: "#0369a1", bg: "#f0f9ff", href: "/text-tools" },
+  { slug: "files",    name: "File Utilities",  desc: "Archive, hash, encode and inspect files.",            count: 10, icon: Archive,    color: "#7c3aed", bg: "#f5f3ff", href: "/file-tools" },
 ];
 
 export default function Home() {
@@ -252,7 +256,7 @@ export default function Home() {
                 {[
                   { Icon: ShieldCheck, text: "Files never leave your device - processed in your browser", color: "#16a34a" },
                   { Icon: Zap, text: "100% free - no account required", color: "#ca8a04" },
-                  { Icon: Layers, text: "15 free tools - all browser-based", color: "#2563eb" },
+                  { Icon: Layers, text: "98 free tools - all browser-based", color: "#2563eb" },
                 ].map((item) => (
                   <div key={item.text} style={{ display: "flex", alignItems: "center", gap: "10px", fontSize: "16px", color: "#374151" }}>
                     <item.Icon size={20} color={item.color} strokeWidth={2.5} />
@@ -278,7 +282,7 @@ export default function Home() {
             Browse by category
           </h2>
           <p style={{ fontSize: "14px", color: "#4b5563", marginBottom: "24px" }}>
-            Everything you need to work with PDF files, no installation required.
+            Everything you need to work with PDF files, images, text and data.
           </p>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: "12px" }}>
             {CATEGORIES.map((cat) => (

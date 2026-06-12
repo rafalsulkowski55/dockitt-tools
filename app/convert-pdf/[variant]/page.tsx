@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { getAllConvertVariants, getConvertVariant } from "@/data/convert/variants";
 import type { ConvertVariant } from "@/data/convert/variants";
+import ConvertSelector from "@/app/components/ConvertSelector";
 import ConvertTool from "./ConvertTool";
 import PdfToWebpTool from "./PdfToWebpTool";
 import PdfToBmpTool from "./PdfToBmpTool";
@@ -115,17 +116,17 @@ export default async function ConvertPage({ params }: ConvertPageProps) {
             <div style={{ alignSelf: "start", background: "#ffffff", border: "1px solid #e5e7eb", borderRadius: "16px", overflow: "hidden" }}>
               {/* Variant switcher */}
               <div style={{ padding: "12px 16px", borderBottom: "1px solid #e5e7eb", background: "#f9fafb" }}>
-                <p style={{ fontSize: "11px", fontWeight: 600, color: "#9ca3af", textTransform: "uppercase", letterSpacing: "0.06em", margin: "0 0 8px" }}>
-                  Conversion type
-                </p>
-                <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
-                  {all.map((item) => (
-                    <Link key={item.slug} href={`/convert-pdf/${item.slug}`}
-                      style={{ padding: "6px 12px", borderRadius: "8px", fontSize: "12px", fontWeight: 500, textDecoration: "none", background: item.slug === variant ? "#2563eb" : "#fff", color: item.slug === variant ? "#fff" : "#374151", border: "1px solid", borderColor: item.slug === variant ? "#2563eb" : "#e5e7eb" }}>
-                      {item.name}
-                    </Link>
-                  ))}
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
+                  <p style={{ fontSize: "11px", fontWeight: 600, color: "#9ca3af", textTransform: "uppercase", letterSpacing: "0.06em", margin: 0 }}>
+                    Convert
+                  </p>
+                  <Link href="/convert" style={{ fontSize: "12px", color: "#2563eb", textDecoration: "none", fontWeight: 500 }}>← All Converters</Link>
                 </div>
+                <ConvertSelector
+                  variants={all.map((item) => ({ slug: item.slug, inputFormat: item.inputFormat, outputFormat: item.outputFormat }))}
+                  currentSlug={variant}
+                  baseUrl="/convert-pdf"
+                />
               </div>
 
               {/* Privacy banner */}

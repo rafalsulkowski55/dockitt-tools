@@ -1,48 +1,78 @@
 import Link from "next/link";
 import { getAllTools } from "@/lib/tools";
 import { getAllConvertVariants } from "@/data/convert/variants";
-
-const TOOL_ICONS: Record<string, string> = {
-  "compress-pdf": "📦",
-  "merge-pdf": "🔗",
-  "split-pdf": "✂️",
-  "rotate-pdf": "🔄",
-  "delete-pdf-pages": "🗑️",
-  "extract-pdf-pages": "📤",
-  "protect-pdf": "🔐",
-  "unlock-pdf": "🔓",
-  "watermark-pdf": "💧",
-  "sign-pdf": "✍️",
-  "crop-pdf": "✂️",
-  "repair-pdf": "🔧",
-  "ocr-pdf": "🔍",
-  "reorder-pdf-pages": "🔀",
-};
-
-const CATEGORY_LABELS: Record<string, string> = {
-  core: "Core PDF Tools",
-  security: "PDF Security Tools",
-  utility: "PDF Utility Tools",
-};
+import { getAllConvertImageVariants } from "@/data/convert-image/variants";
+import { getAllEditImageTools } from "@/data/edit-image/tools";
+import { getAllTextTools } from "@/data/text-tools/tools";
+import { getAllFileTools } from "@/data/file-tools/tools";
 
 export const metadata = {
-  title: "All Tools — PDF, Image & More | Dockitt",
-  description: "Browse all free browser-based tools: merge, split, convert, edit PDFs, images, text and files. No signup required.",
+  title: "All Tools — PDF, Image, Text & More | Dockitt",
+  description: "Browse 98 free browser-based tools: merge, split, convert, edit PDFs; convert and edit images; transform text and data; create archives. No signup required.",
 };
 
-export default function CategoriesPage() {
-  const tools = getAllTools();
-  const convertVariants = getAllConvertVariants();
+const TOP_CATEGORIES = [
+  { name: "Core PDF Tools",   desc: "Merge, split, rotate and delete PDF pages.",     icon: "✂️", color: "#2563eb", bg: "#eff6ff",  href: "/categories/core",    count: 4 },
+  { name: "PDF Utilities",    desc: "Crop, reorder, extract pages and count words.",   icon: "🔧", color: "#16a34a", bg: "#f0fdf4",  href: "/categories/utility", count: 4 },
+  { name: "PDF Edit & Sign",  desc: "Add watermarks and sign PDF documents.",          icon: "✍️", color: "#dc2626", bg: "#fef2f2",  href: "/categories/security", count: 2 },
+  { name: "PDF Convert",      desc: "Convert between PDF, images and documents.",      icon: "🔄", color: "#ea580c", bg: "#fff7ed",  href: "/convert-pdf",        count: 17 },
+  { name: "Image Convert",    desc: "Convert between JPG, PNG, WebP and more.",        icon: "🖼️", color: "#9333ea", bg: "#fdf4ff",  href: "/convert-image",      count: 28 },
+  { name: "Image Edit",       desc: "Resize, crop, compress and rotate images.",       icon: "✏️", color: "#0891b2", bg: "#ecfeff",  href: "/edit-image",         count: 13 },
+  { name: "Text & Data",      desc: "Convert, format and transform text and data.",    icon: "📝", color: "#0369a1", bg: "#f0f9ff",  href: "/text-tools",         count: 18 },
+  { name: "File Utilities",   desc: "Archive, hash, encode and inspect files.",        icon: "🗂️", color: "#7c3aed", bg: "#f5f3ff",  href: "/file-tools",         count: 10 },
+];
 
-  const grouped: Record<string, typeof tools> = {};
-  for (const tool of tools) {
-    if (!grouped[tool.category]) grouped[tool.category] = [];
-    grouped[tool.category].push(tool);
-  }
+const TOOL_ICONS: Record<string, string> = {
+  "compress-pdf": "📦", "merge-pdf": "🔗", "split-pdf": "✂️", "rotate-pdf": "🔄",
+  "delete-pdf-pages": "🗑️", "extract-pdf-pages": "📤", "protect-pdf": "🔐",
+  "unlock-pdf": "🔓", "watermark-pdf": "💧", "sign-pdf": "✍️", "crop-pdf": "✂️",
+  "repair-pdf": "🔧", "ocr-pdf": "🔍", "reorder-pdf-pages": "🔀", "pdf-word-count": "🔢",
+};
+
+function SectionHeading({ title, href, color }: { title: string; href: string; color: string }) {
+  return (
+    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
+      <h2 style={{ fontSize: "16px", fontWeight: 700, color: "#111", margin: 0, borderLeft: `3px solid ${color}`, paddingLeft: "12px" }}>
+        {title}
+      </h2>
+      <Link href={href} style={{ fontSize: "12px", color: "#2563eb", fontWeight: 600, textDecoration: "none" }}>See all →</Link>
+    </div>
+  );
+}
+
+function ToolCard({ name, desc, href, icon = "📄" }: { name: string; desc: string; href: string; icon?: string }) {
+  return (
+    <Link href={href} style={{ textDecoration: "none" }}>
+      <div style={{ background: "#fff", border: "1px solid #e5e7eb", borderRadius: "10px", padding: "14px", display: "flex", flexDirection: "column", gap: "6px", height: "100%" }}>
+        <span style={{ fontSize: "18px" }}>{icon}</span>
+        <p style={{ fontSize: "13px", fontWeight: 600, color: "#111", margin: "0 0 2px" }}>{name}</p>
+        <p style={{ fontSize: "12px", color: "#9ca3af", margin: 0, lineHeight: 1.4 }}>{desc}</p>
+      </div>
+    </Link>
+  );
+}
+
+export default function CategoriesPage() {
+  const pdfTools = getAllTools();
+  const coreTools = pdfTools.filter((t) => t.category === "core");
+  const utilityTools = pdfTools.filter((t) => t.category === "utility");
+  const securityTools = pdfTools.filter((t) => t.category === "security");
+  const pdfConvert = getAllConvertVariants();
+  const imgConvert = getAllConvertImageVariants();
+  const imgEdit = getAllEditImageTools();
+  const textTools = getAllTextTools();
+  const fileTools = getAllFileTools();
+
+  const gridStyle: React.CSSProperties = {
+    display: "grid",
+    gridTemplateColumns: "repeat(auto-fill, minmax(170px, 1fr))",
+    gap: "8px",
+    marginBottom: "40px",
+  };
 
   return (
     <main style={{ background: "#f9fafb", minHeight: "100vh" }}>
-      <div style={{ maxWidth: "960px", margin: "0 auto", padding: "48px 24px" }}>
+      <div style={{ maxWidth: "1020px", margin: "0 auto", padding: "48px 24px" }}>
 
         {/* Header */}
         <div style={{ marginBottom: "36px" }}>
@@ -53,94 +83,98 @@ export default function CategoriesPage() {
             Browse all tools
           </h1>
           <p style={{ fontSize: "15px", color: "#4b5563", margin: 0 }}>
-            All tools are free, require no signup, and most run directly in your browser.
+            98 free tools — all run in your browser, no signup, no upload to external servers.
           </p>
         </div>
 
-        {/* Grouped tool categories */}
-        {Object.entries(grouped).map(([category, categoryTools]) => (
-          <div key={category} style={{ marginBottom: "40px" }}>
-            <h2 style={{ fontSize: "16px", fontWeight: 700, color: "#111", marginBottom: "14px", borderLeft: "3px solid #2563eb", paddingLeft: "12px" }}>
-              {CATEGORY_LABELS[category] ?? category}
-            </h2>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))", gap: "10px" }}>
-              {categoryTools.map((tool) => (
-                <Link key={tool.slug} href={`/tools/${tool.slug}`} style={{ textDecoration: "none" }}>
-                  <div style={{
-                    background: "#fff", border: "1px solid #e5e7eb",
-                    borderRadius: "12px", padding: "16px",
-                    display: "flex", flexDirection: "column", gap: "8px",
-                    height: "100%",
-                  }}>
-                    <span style={{ fontSize: "20px" }}>{TOOL_ICONS[tool.slug] ?? "📄"}</span>
-                    <div>
-                      <p style={{ fontSize: "13px", fontWeight: 600, color: "#111", marginBottom: "3px" }}>{tool.name}</p>
-                      <p style={{ fontSize: "12px", color: "#9ca3af", lineHeight: 1.4, margin: 0 }}>{tool.shortDescription}</p>
-                    </div>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </div>
-        ))}
-
-        {/* Convert PDF section */}
-        <div style={{ marginBottom: "40px" }}>
-          <h2 style={{ fontSize: "16px", fontWeight: 700, color: "#111", marginBottom: "14px", borderLeft: "3px solid #2563eb", paddingLeft: "12px" }}>
-            Convert PDF
-          </h2>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))", gap: "10px" }}>
-            {convertVariants.map((variant) => (
-              <Link key={variant.slug} href={`/convert-pdf/${variant.slug}`} style={{ textDecoration: "none" }}>
-                <div style={{
-                  background: "#fff", border: "1px solid #e5e7eb",
-                  borderRadius: "12px", padding: "16px",
-                  display: "flex", flexDirection: "column", gap: "8px",
-                  height: "100%",
-                }}>
-                  <span style={{ fontSize: "20px" }}>🔄</span>
-                  <div>
-                    <p style={{ fontSize: "13px", fontWeight: 600, color: "#111", marginBottom: "3px" }}>{variant.name}</p>
-                    <p style={{ fontSize: "12px", color: "#9ca3af", lineHeight: 1.4, margin: 0 }}>{variant.description}</p>
-                  </div>
+        {/* Category cards */}
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: "10px", marginBottom: "48px" }}>
+          {TOP_CATEGORIES.map((cat) => (
+            <Link key={cat.href} href={cat.href} style={{ textDecoration: "none" }}>
+              <div style={{ background: "#fff", border: "1px solid #e5e7eb", borderRadius: "12px", padding: "20px", display: "flex", alignItems: "flex-start", gap: "14px", height: "100%" }}>
+                <div style={{ width: "42px", height: "42px", borderRadius: "10px", background: cat.bg, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "20px", flexShrink: 0 }}>
+                  {cat.icon}
                 </div>
-              </Link>
-            ))}
-          </div>
-        </div>
-
-        {/* Coming soon categories */}
-        {[
-          { label: "Image Convert", href: "/convert-image", icon: "🖼️", desc: "Convert between JPG, PNG, WebP and more" },
-          { label: "Image Edit", href: "/edit-image", icon: "✏️", desc: "Resize, crop, compress and rotate images" },
-          { label: "Text & Data", href: "/text-tools", icon: "📝", desc: "Transform, encode and format text and data" },
-          { label: "File Utilities", href: "/file-tools", icon: "🗂️", desc: "Compress, archive and inspect files" },
-        ].map((cat) => (
-          <div key={cat.href} style={{ marginBottom: "40px" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "14px" }}>
-              <h2 style={{ fontSize: "16px", fontWeight: 700, color: "#111", margin: 0, borderLeft: "3px solid #e5e7eb", paddingLeft: "12px" }}>
-                {cat.label}
-              </h2>
-              <span style={{ background: "#fff7ed", color: "#ea580c", fontSize: "10px", fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", padding: "2px 8px", borderRadius: "99px" }}>
-                Coming soon
-              </span>
-            </div>
-            <Link href={cat.href} style={{ textDecoration: "none" }}>
-              <div style={{
-                background: "#fff", border: "1px dashed #e5e7eb",
-                borderRadius: "12px", padding: "20px 24px",
-                display: "flex", alignItems: "center", gap: "16px",
-              }}>
-                <span style={{ fontSize: "24px" }}>{cat.icon}</span>
-                <div>
-                  <p style={{ fontSize: "13px", fontWeight: 600, color: "#111", margin: "0 0 3px" }}>{cat.label}</p>
-                  <p style={{ fontSize: "12px", color: "#9ca3af", margin: 0 }}>{cat.desc}</p>
+                <div style={{ flex: 1 }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: "6px" }}>
+                    <p style={{ fontSize: "14px", fontWeight: 700, color: "#111", margin: "0 0 4px" }}>{cat.name}</p>
+                    <span style={{ fontSize: "11px", color: "#9ca3af", flexShrink: 0 }}>{cat.count}</span>
+                  </div>
+                  <p style={{ fontSize: "12px", color: "#6b7280", margin: 0, lineHeight: 1.4 }}>{cat.desc}</p>
                 </div>
-                <span style={{ marginLeft: "auto", fontSize: "13px", color: "#2563eb", fontWeight: 500 }}>See what's coming →</span>
               </div>
             </Link>
-          </div>
-        ))}
+          ))}
+        </div>
+
+        {/* Core PDF */}
+        <SectionHeading title="Core PDF Tools" href="/categories/core" color="#2563eb" />
+        <div style={gridStyle}>
+          {coreTools.map((t) => (
+            <ToolCard key={t.slug} name={t.name} desc={t.shortDescription} href={`/tools/${t.slug}`} icon={TOOL_ICONS[t.slug]} />
+          ))}
+        </div>
+
+        {/* PDF Utilities */}
+        <SectionHeading title="PDF Utilities" href="/categories/utility" color="#16a34a" />
+        <div style={gridStyle}>
+          {utilityTools.map((t) => (
+            <ToolCard key={t.slug} name={t.name} desc={t.shortDescription} href={`/tools/${t.slug}`} icon={TOOL_ICONS[t.slug]} />
+          ))}
+        </div>
+
+        {/* PDF Edit & Sign */}
+        <SectionHeading title="PDF Edit & Sign" href="/categories/security" color="#dc2626" />
+        <div style={gridStyle}>
+          {securityTools.map((t) => (
+            <ToolCard key={t.slug} name={t.name} desc={t.shortDescription} href={`/tools/${t.slug}`} icon={TOOL_ICONS[t.slug]} />
+          ))}
+        </div>
+
+        {/* PDF Convert */}
+        <SectionHeading title="PDF Convert" href="/convert-pdf" color="#ea580c" />
+        <div style={gridStyle}>
+          {pdfConvert.map((v) => (
+            <ToolCard key={v.slug} name={v.name} desc={v.description} href={`/convert-pdf/${v.slug}`} icon="🔄" />
+          ))}
+        </div>
+
+        {/* Image Convert */}
+        <SectionHeading title="Image Convert" href="/convert-image" color="#9333ea" />
+        <div style={gridStyle}>
+          {imgConvert.map((v) => (
+            <ToolCard key={v.slug} name={v.name} desc={v.description} href={`/convert-image/${v.slug}`} icon="🖼️" />
+          ))}
+        </div>
+
+        {/* Image Edit */}
+        <SectionHeading title="Image Edit" href="/edit-image" color="#0891b2" />
+        <div style={gridStyle}>
+          {imgEdit.map((t) => (
+            <ToolCard key={t.slug} name={t.name} desc={t.description} href={`/edit-image/${t.slug}`} icon="✏️" />
+          ))}
+        </div>
+
+        {/* Text & Data */}
+        <SectionHeading title="Text & Data" href="/text-tools" color="#0369a1" />
+        <div style={gridStyle}>
+          {textTools.map((t) => (
+            <ToolCard key={t.slug} name={t.name} desc={t.description} href={`/text-tools/${t.slug}`} icon="📝" />
+          ))}
+        </div>
+
+        {/* File Utilities */}
+        <SectionHeading title="File Utilities" href="/file-tools" color="#7c3aed" />
+        <div style={gridStyle}>
+          {fileTools.map((t) => (
+            <ToolCard key={t.slug} name={t.name} desc={t.description} href={`/file-tools/${t.slug}`} icon="🗂️" />
+          ))}
+        </div>
+
+        <div style={{ padding: "16px 20px", background: "#f0fdf4", border: "1px solid #bbf7d0", borderRadius: "10px", display: "flex", alignItems: "center", gap: "10px", fontSize: "13px", color: "#14532d" }}>
+          <span style={{ flexShrink: 0 }}>✅</span>
+          <span><strong>All 98 tools run in your browser.</strong> No upload, no account, complete privacy.</span>
+        </div>
 
       </div>
     </main>
